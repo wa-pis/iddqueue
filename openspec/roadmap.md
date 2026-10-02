@@ -29,7 +29,7 @@ CI-регрессии retry wakeup и изоляции recover test исправ
 ## Следующая очередь работ — 2026-10-03
 
 [extend-postgres-capabilities](changes/extend-postgres-capabilities/proposal.md) —
-этап 1 завершён (80 tests passed, все шесть CI jobs run 37063065568 success); этап 2 завершён (87 tests passed, шесть CI jobs run 37065548460 success); этап 3 завершён (97 tests passed, шесть CI jobs run 37069326903 success); этап 4 завершён (102 tests passed, шесть CI jobs run 37070389403 success); этап 5 завершён (105 tests passed, шесть CI jobs run 37071887095 success); этап 6 завершён (113 tests passed, шесть CI jobs run 37072742814 success); этап 7 не начат. Proposal, design, семь delta specs и
+этап 1 завершён (80 tests passed, все шесть CI jobs run 37063065568 success); этап 2 завершён (87 tests passed, шесть CI jobs run 37065548460 success); этап 3 завершён (97 tests passed, шесть CI jobs run 37069326903 success); этап 4 завершён (102 tests passed, шесть CI jobs run 37070389403 success); этап 5 завершён (105 tests passed, шесть CI jobs run 37071887095 success); этап 6 завершён (113 tests passed, шесть CI jobs run 37072742814 success); этап 7 реализован локально (120 tests passed), GitHub CI ожидается. Proposal, design, семь delta specs и
 [tasks](changes/extend-postgres-capabilities/tasks.md) описывают этапы.
 Каждая фича выполняется последовательно и фиксируется отдельным commit.
 

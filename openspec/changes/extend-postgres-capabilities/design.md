@@ -160,3 +160,21 @@ Plain batch использует Psycopg executemany/pipeline существую
 After hooks выполняются только после успешного пакета (после commit для owned
 transaction); внешние hooks могут предшествовать последующему caller rollback.
 Python side effects hooks не атомарны с БД, как и при одиночной отправке.
+
+## Этап 7 — фактический контракт scheduler
+
+PostgresScheduler хранит message template, interval_ms, next_run и enabled в
+namespaced schedules table. Create name уникален, без overwrite; interval —
+положительные bigint milliseconds, start_at требует timezone. Без start_at due
+берётся из clock_timestamp. CLI schedule create/list/disable и scheduler
+--once/foreground не импортируют actors. Worker регистрирует actors отдельно.
+Tick выбирает до 100 rows (максимум limit 1000) FOR UPDATE SKIP LOCKED и держит
+locks до общего commit. Message UUID — uuid5(schedule_id, UTC next_run), dedup key
+в зарезервированном iddqueue:schedule namespace с TTL семь дней. Expiry ключа не
+удаляет dedup row. Enqueue и продвижение next_run используют одну connection;
+ошибки не retried автоматически. Coalesce SQL переносит next_run на ближайший
+будущий слот исходной сетки с clock_timestamp, без catch-up пропусков.
+Disable сериализуется UPDATE row lock со scheduler, не отменяет queued tasks.
+SIGTERM/SIGINT завершают текущий tick, затем прекращают polling; DB ошибка
+завершает процесс, рестарт — обязанность service manager. Paused очередь
+получает durable queued occurrences; её workers продолжают после resume.

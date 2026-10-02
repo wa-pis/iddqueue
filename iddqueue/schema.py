@@ -15,6 +15,8 @@ def process_psql_lines(raw_lines, schema, prefix):
             line.replace(':"schema"', schema)
             .replace(':"state"', statename)
             .replace(':"queue"', tablename)
+            .replace(':"schedules"', quote_ident(prefix + "schedules"))
+            .replace(':"schedules_due"', quote_ident(prefix + "schedules_due"))
             .replace(':"attempts"', quote_ident(prefix + "attempts"))
             .replace(':"attempts_message"', quote_ident(prefix + "attempts_message"))
             .replace(':"attempts_age"', quote_ident(prefix + "attempts_age"))
@@ -47,7 +49,7 @@ def generate_coordination_sql(schema="dramatiq", prefix=""):
 def generate_upgrade_sql(schema="dramatiq", prefix=""):
     """Add optional storage without changing existing queue data."""
     parts = [generate_coordination_sql(schema, prefix)]
-    for name in ("deduplication.sql", "control.sql", "cancellation.sql", "history.sql"):
+    for name in ("deduplication.sql", "control.sql", "cancellation.sql", "history.sql", "scheduler.sql"):
         with open(os.path.join(os.path.dirname(__file__), name)) as fo:
             parts.append("\n".join(process_psql_lines(fo, schema, prefix)))
     return "\n".join(parts)

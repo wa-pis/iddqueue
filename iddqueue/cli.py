@@ -5,7 +5,10 @@ import json
 import logging
 import os
 import pdb
+import signal
 import sys
+import threading
+from datetime import datetime
 from textwrap import dedent
 from uuid import UUID
 
@@ -16,11 +19,12 @@ from psycopg import sql
 from psycopg.types.json import Jsonb
 
 from .broker import QUERIES as BROKER_QUERIES
-from .broker import message_lock, purge
+from .broker import PostgresBroker, message_lock, purge
 from .cancellation import cancel, cancellation_status
 from .control import is_paused, set_paused
 from .history import list_attempts, purge_attempts
 from .metrics import queue_statistics
+from .scheduler import PostgresScheduler
 from .schema import generate_init_sql, generate_upgrade_sql
 from .utils import QueryManager, make_pool, transaction
 
@@ -216,7 +220,74 @@ def make_argument_parser():
     retention.set_defaults(command=history_purge_command)
     retention.add_argument("--maxage", default="30 days")
 
+    schedules = subparsers.add_parser("schedule").add_subparsers()
+    create = schedules.add_parser("create")
+    create.set_defaults(command=schedule_command, schedule_operation="create")
+    create.add_argument("name")
+    create.add_argument("actor")
+    create.add_argument("--queue", default="default")
+    create.add_argument("--interval-ms", type=positive_ms, required=True)
+    create.add_argument("--start-at", type=datetime.fromisoformat)
+    create.add_argument("--args", type=json.loads, default=[])
+    create.add_argument("--kwargs", type=json.loads, default={})
+    create.add_argument("--options", type=json.loads, default={})
+    listing = schedules.add_parser("list")
+    listing.set_defaults(command=schedule_command, schedule_operation="list")
+    disable = schedules.add_parser("disable")
+    disable.set_defaults(command=schedule_command, schedule_operation="disable")
+    disable.add_argument("name")
+    runner = subparsers.add_parser("scheduler")
+    runner.set_defaults(command=scheduler_command)
+    runner.add_argument("--poll-ms", type=positive_ms, default=1000)
+    runner.add_argument("--once", action="store_true")
+
     return parser
+
+
+def positive_ms(value):
+    value = int(value)
+    if value <= 0:
+        raise argparse.ArgumentTypeError("milliseconds must be positive")
+    return value
+
+
+def _scheduler(args):
+    return PostgresScheduler(PostgresBroker(pool=args.pool, schema=args.schemaname,
+                                           prefix=args.prefix, results=False, middleware=[]))
+
+
+def schedule_command(args):
+    scheduler = _scheduler(args)
+    if args.schedule_operation == "create":
+        if not isinstance(args.args, list) or not isinstance(args.kwargs, dict) or not isinstance(args.options, dict):
+            raise ValueError("args must be a JSON array; kwargs/options must be JSON objects")
+        message = Message(args.queue, args.actor, tuple(args.args), args.kwargs, args.options)
+        print(json.dumps(dict(schedule_id=scheduler.create(
+            args.name, message, interval_ms=args.interval_ms, start_at=args.start_at))))
+    elif args.schedule_operation == "list":
+        print(json.dumps(scheduler.list()))
+    else:
+        found = scheduler.disable(args.name)
+        print(json.dumps(dict(name=args.name, disabled=found)))
+        return 0 if found else 1
+
+
+def scheduler_command(args):
+    scheduler = _scheduler(args)
+    if args.once:
+        print(json.dumps(dict(published=len(scheduler.tick()))))
+        return
+    stopped = threading.Event()
+    previous = {sig: signal.signal(sig, lambda *_: stopped.set()) for sig in (signal.SIGTERM, signal.SIGINT)}
+    try:
+        while not stopped.is_set():
+            count = len(scheduler.tick())
+            if count:
+                logger.info("Scheduler published %d occurrences.", count)
+            stopped.wait(args.poll_ms / 1000)
+    finally:
+        for sig, handler in previous.items():
+            signal.signal(sig, handler)
 
 
 def history_list_command(args):

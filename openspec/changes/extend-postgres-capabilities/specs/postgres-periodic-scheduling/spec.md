@@ -23,3 +23,19 @@ Scheduler SHALL хранить расписание и next_run в PostgreSQL, �
 #### Scenario: Disabled schedule
 - **WHEN** расписание отключено
 - **THEN** новые occurrences не отправляются; уже queued задачи сохраняются
+
+#### Scenario: Crash after commit
+- **WHEN** scheduler погиб после commit отправки и продвижения next_run
+- **THEN** задача остаётся queued; следующий tick не повторяет committed occurrence
+
+#### Scenario: Paused destination
+- **WHEN** due расписание адресует приостановленную очередь
+- **THEN** occurrence публикуется queued, actor начинает выполнение после resume
+
+#### Scenario: Schedule namespace isolation
+- **WHEN** одинаковые имена расписаний используются в разных schema/prefix
+- **THEN** публикация и disable в одной области не изменяют другую
+
+#### Scenario: Foreground shutdown
+- **WHEN** foreground scheduler получает SIGTERM либо SIGINT
+- **THEN** текущая tick транзакция завершается, loop останавливается и CLI pool закрывается

@@ -616,3 +616,42 @@ run once per published message; duplicates run none. Before hooks precede the
 writes, after hooks run after successful writes (and after commit for the owned
 transaction). External hooks describe the SQL operation and may run before the
 caller subsequently rolls back. Python hook side effects cannot be rolled back.
+
+### PostgreSQL interval scheduler
+
+Upgrade each namespace before use: `iddqueue upgrade`. Schedules persist a
+Dramatiq message template and a positive fixed interval in milliseconds. Workers
+must register the actor; the scheduler does not import or execute actor code.
+
+```sh
+iddqueue schedule create reports generate_report --queue reports --interval-ms 60000 \
+  --kwargs '{"account": 42}'
+iddqueue schedule list
+iddqueue scheduler --poll-ms 1000
+iddqueue scheduler --once
+iddqueue schedule disable reports
+```
+
+`--args` accepts a JSON array; `--kwargs` and `--options` accept JSON objects.
+`--start-at` accepts an ISO timestamp with a timezone. By default the first run
+is immediately due according to PostgreSQL. Times are stored as timestamptz and
+listed in UTC. Names are unique within `--schemaname`/`--prefix`; create does not
+overwrite a schedule. The Python API is `PostgresScheduler(broker)` from
+`iddqueue.scheduler`, with `create(name, message, interval_ms=..., start_at=...)`,
+`list()`, `disable(name)` and `tick(limit=100)`.
+
+Multiple foreground scheduler processes can share the namespace: row locks with
+`SKIP LOCKED` select due schedules. Publishing and advancing `next_run` commit in
+one transaction. A crash before commit leaves the occurrence due; a crash after
+commit leaves its message queued and its next run advanced. Each occurrence uses
+a deterministic message UUID and the reserved dedup key prefix
+`iddqueue:schedule:` (seven-day TTL). Expiry allows key reuse; it does not delete dedup rows. Delivery by workers is still at least once.
+
+Missed intervals coalesce into one task, then advance to the next future point
+on the original interval grid using PostgreSQL time. There is no cron/calendar
+syntax or replay of every missed run. A paused destination still receives queued
+occurrences; resume lets workers process them. Disable waits for an in-flight
+scheduler transaction and prevents future publications while preserving queued
+tasks. SIGTERM/SIGINT lets the current tick finish, then exits and closes the CLI
+pool. Database errors exit the foreground process; a service manager may restart
+it. Polling and actor enqueue hooks may add latency to short intervals.

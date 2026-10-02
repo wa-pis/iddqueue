@@ -162,3 +162,31 @@ BEGIN/COMMIT и wire round trips не подсчитывались. Резуль
 commit 02b99cc. Все шесть Python 3.10/3.13/3.14 × PostgreSQL 14/18 jobs success,
 включая функциональные batch scenarios и build/LICENSE. Этап 7 не начат;
 общий change активен до scheduler и финальной синхронизации specs.
+
+
+# Evidence — этап 7, interval scheduler
+
+2026-10-03. Namespaced schedules table, init/upgrade, PostgresScheduler,
+CLI schedule create/list/disable и scheduler --once/foreground.
+
+Фактически выполнено:
+- Dedicated PostgreSQL 14.20/Python 3.13.14: **120 passed in 49.37s**.
+- Seven targeted scenarios: 7 passed in 1.22s перед итоговым full suite.
+- Два отдельных Python scheduler процесса стартуют по общему barrier:
+  один occurrence, одна queue row и dedup key, следующий tick пустой.
+- SIGKILL после enqueue до outer commit: competing tick SKIP LOCKED,
+  uncommitted queue не видна; после crash следующий tick публикует без потери.
+- SIGKILL после commit: queued/next_run сохраняются, повторный tick пустой.
+- Coalesce пропуска 95 секунд при interval 10 секунд: ровно одна задача,
+  next_run сдвинут на 100 секунд исходной сетки; non-UTC start_at/list UTC.
+- Disable повторяемый/missing, старые queued сохраняются; disabled due не публикуется.
+- Paused destination: actor не вызван, после resume normal Results done.
+- Namespaced quoted identifiers, одно имя в разных prefix независимо,
+  init/двойной upgrade; invalid interval/timezone/name/tick limit rejected.
+- CLI JSON template/list без payload, foreground SIGTERM exit 0, --once,
+  disable, invalid timezone/JSON container не создают schedules.
+- Ruff, poetry check, strict OpenSpec, git diff --check: success.
+- Wheel/sdist build, LICENSE checker, scheduler.sql в обоих archives: success.
+
+Этап 7.5 ожидает отдельный commit/push и GitHub CI. Финальный sync/archive
+выполнится после подтверждения CI; prepared matrix не считается выполненной.
