@@ -50,6 +50,10 @@ pool = make_pool("application_name=dramatiq-pg")
 # and maxconn query argument.
 dramatiq.set_broker(dramatiq_pg.PostgresBroker(pool=pool))
 dramatiq.get_broker().add_middleware(AsyncIO())
+if os.environ.get("EXAMPLE_PROMETHEUS"):
+    from dramatiq.middleware.prometheus import Prometheus
+
+    dramatiq.get_broker().add_middleware(Prometheus())
 dramatiq.get_broker().add_middleware(
     GroupCallbacks(dramatiq_pg.PostgresRateLimiterBackend(pool=pool))
 )
@@ -59,7 +63,7 @@ seed = int(os.environ.get("SEED", int(time.time())))
 random.seed(seed)
 
 
-@dramatiq.actor(store_results=True)
+@dramatiq.actor(store_results=True, queue_name=os.environ.get("EXAMPLE_QUEUE", "default"))
 def saver(*, wait=0, **data):
     time.sleep(wait)
     logger.debug("Returning %.60s.", data)
@@ -89,7 +93,7 @@ def writer(*args, **kwargs):
 
 # Set minimal value for max_backoff to avoid waiting 30days when running func
 # tests on CI.
-@dramatiq.actor(max_backoff=100)
+@dramatiq.actor(max_backoff=100, queue_name=os.environ.get("EXAMPLE_QUEUE", "default"))
 def failing(always=True, message="Forged failure", wait=0):
     time.sleep(wait)
     if always or random.randint(0, 1):

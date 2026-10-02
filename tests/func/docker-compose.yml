@@ -20,7 +20,7 @@ services:
     working_dir: /workspace
     command: >-
       sh -c 'pip install poetry && poetry config virtualenvs.in-project false &&
-      poetry install --extras binary && poetry run tests/func/entrypoint.sh'
+      poetry install --extras "binary monitoring" && poetry run tests/func/entrypoint.sh'
     depends_on:
       postgres:
         condition: service_healthy

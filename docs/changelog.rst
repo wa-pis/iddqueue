@@ -4,6 +4,9 @@ Dramatiq-pg Changelog
 Unreleased
 ----------
 
+- Add per-queue ready/scheduled backlog and optional PostgreSQL Prometheus metrics.
+- Reset enqueue timestamps when requeuing a new attempt.
+
 - Add last-error metadata, paginated failed-task inspection and targeted retry.
 
 - Verify pipelines, groups, AsyncIO actors, retry exhaustion callbacks and timedelta delays against PostgreSQL.

@@ -38,6 +38,7 @@ files = [
 ]
 
 [package.dependencies]
+prometheus-client = {version = ">=0.2", optional = true, markers = "extra == \"prometheus\""}
 watchdog = {version = ">=6.0.0", optional = true, markers = "extra == \"watch\""}
 
 [package.extras]
@@ -107,6 +108,24 @@ files = [
 [package.extras]
 dev = ["pre-commit", "tox"]
 testing = ["coverage", "pytest", "pytest-benchmark"]
+
+[[package]]
+name = "prometheus-client"
+version = "0.26.0"
+description = "Python client for the Prometheus monitoring system."
+optional = true
+python-versions = ">=3.9"
+groups = ["main"]
+markers = "extra == \"monitoring\""
+files = [
+    {file = "prometheus_client-0.26.0-py3-none-any.whl", hash = "sha256:fa93d06737aa02bacd05794768508bb97d2fbee28cb3bca04eaae92f0ca953d6"},
+    {file = "prometheus_client-0.26.0.tar.gz", hash = "sha256:04a91bcf94e2cf74a44a1a874d651a2e853ed354b6e822f3b7487751465d5c2b"},
+]
+
+[package.extras]
+aiohttp = ["aiohttp"]
+django = ["django"]
+twisted = ["twisted"]
 
 [[package]]
 name = "psycopg"
@@ -473,8 +492,9 @@ watchmedo = ["PyYAML (>=3.10)"]
 
 [extras]
 binary = ["psycopg"]
+monitoring = ["dramatiq"]
 
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4"
-content-hash = "e014d38de213e505029788bdc195706f80ce488fda791004f7a1e00f12547272"
+content-hash = "1c435da475a6c1e6148926dae046f574b3004f8275e8804907b585ce159d419c"

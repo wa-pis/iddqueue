@@ -114,3 +114,19 @@ in middleware registration order when customizing the middleware list.
 The CLI ``failed list/show`` displays rejected messages as JSON; ``retry ID``
 conditionally requeues a rejected row and clears its stale result. See README
 for filters, cursor pagination, payload opt-in and retry-cycle semantics.
+
+
+Queue statistics
+================
+
+``queue_statistics(pool, *, schema="dramatiq", prefix="", queue=None)``
+from ``dramatiq_pg.metrics`` returns a list of snapshots containing ``queue``,
+``counts`` for queued/consumed/done/rejected, ``ready``, ``scheduled`` and
+``oldest_ready_seconds``. It uses a single PostgreSQL statement and does not
+require Prometheus. Ready age uses the current enqueue timestamp and ETA;
+consumed rows are excluded from ready age. Empty selected queues return zeros.
+
+``PostgresQueueCollector(pool, **options)`` uses the same query and yields
+Prometheus gauges with queue/state labels. It imports prometheus_client only
+when collecting. Registry registration performs no database access. The caller
+owns the pool and should register the collector in a dedicated exporter process.

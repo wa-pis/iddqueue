@@ -450,6 +450,7 @@ QUERIES = QueryManager(
                 DO UPDATE SET
                     "state" = 'queued',
                     message = EXCLUDED.message,
+                    mtime = clock_timestamp(),
                     queue_name = EXCLUDED.queue_name
             RETURNING queue_name, message
         )
@@ -508,7 +509,7 @@ QUERIES = QueryManager(
         REQUEUE=dedent(
             """\
         UPDATE {schema}.{tablename}
-            SET state = 'queued'
+            SET state = 'queued', mtime = clock_timestamp()
         WHERE message_id = ANY(%s::uuid[]);
         """
         ),

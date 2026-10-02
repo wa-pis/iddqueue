@@ -19,3 +19,22 @@
 ## Migration Plan
 
 Выполнить tasks.md, повторить релевантные интеграционные проверки и сборку. Для изменения SQL подготовить явную миграцию существующей базы и обратимый путь до включения новой функции. Новые опциональные возможности включаются явно. После проверки синхронизировать delta spec и архивировать change.
+
+## Implementation Notes
+
+mtime подходит для ready-age только в queued. ENQUEUE при конфликте,
+REQUEUE и CLI recover теперь обновляют mtime: текущая попытка не наследует
+старый возраст. Ready_at = max(mtime, ETA), ready учитывает queued с наступившим
+ready_at, scheduled — будущий ETA в queued/consumed. Consumed может означать
+prefetch, поэтому это не счётчик выполняющихся actors. Delayed queues остаются
+отдельными. Изменение схемы не требуется; исторические queued используют свой mtime.
+
+stats без флагов сохраняет прежние общие totals; --json и --queue используют
+queue_statistics. Collector выполняет тот же запрос с labels queue/state и
+лениво импортирует prometheus_client. Extra monitoring переиспользует
+Dramatiq[prometheus]; основной wheel не требует Prometheus.
+
+Стандартный middleware импортируется из dramatiq.middleware.prometheus;
+в example.py включается явно через EXAMPLE_PROMETHEUS. SQL collector размещается
+в отдельном exporter-процессе; не внедряется в стандартный multiprocess endpoint.
+Существующий индекс не изменён: измерения не показали необходимости нового.

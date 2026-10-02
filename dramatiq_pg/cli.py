@@ -17,6 +17,7 @@ from psycopg.types.json import Jsonb
 
 from .broker import QUERIES as BROKER_QUERIES
 from .broker import message_lock, purge
+from .metrics import queue_statistics
 from .schema import generate_init_sql
 from .utils import QueryManager, make_pool, transaction
 
@@ -173,6 +174,8 @@ def make_argument_parser():
 
     subparser = subparsers.add_parser("stats")
     subparser.set_defaults(command=stats_command)
+    subparser.add_argument("--queue")
+    subparser.add_argument("--json", action="store_true")
 
     failed = subparsers.add_parser("failed")
     operations = failed.add_subparsers()
@@ -220,6 +223,10 @@ def init_command(args):
 
 
 def stats_command(args):
+    if args.json or args.queue is not None:
+        snapshots = queue_statistics(args.pool, schema=args.schemaname, prefix=args.prefix, queue=args.queue)
+        print(json.dumps(snapshots))
+        return
     with transaction(args.pool) as curs:
         curs.execute(QUERIES.STATS)
         stats = dict(curs.fetchall())
@@ -314,7 +321,7 @@ QUERIES = QueryManager(
         RECOVER=dedent(
             """\
     UPDATE {schema}.{tablename}
-    SET state = 'queued'
+    SET state = 'queued', mtime = clock_timestamp()
     WHERE state = 'consumed'
         AND mtime < NOW() - %s::interval;
     """

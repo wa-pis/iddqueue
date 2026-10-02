@@ -93,7 +93,7 @@ The logo is a creation of [Damien CAZEILS](http://www.damiencazeils.com/)
 ## Development
 
 ```console
-poetry install --extras binary
+poetry install --extras "binary monitoring"
 poetry run dramatiq-pg init
 poetry run python tests/pypsql < tests/func/schema.sql
 poetry run pytest tests/unit tests/func
@@ -283,3 +283,65 @@ Diagnostic metadata is saved with queue state; tasks lost before acknowledgment
 may not have it. Purge removes rejected tasks according to existing retention.
 Only the latest error is retained. Retrying requires idempotent actors; it does
 not reverse prior side effects or reset barriers and downstream pipelines.
+
+### PostgreSQL queue metrics
+
+`dramatiq-pg stats` keeps its original state totals. Use `stats --json` for
+per-queue snapshots, or `stats --queue default` for one queue (including zeros
+when empty). Each snapshot includes all four stored-state counts, `ready`,
+`scheduled` and `oldest_ready_seconds`.
+
+Ready backlog includes only queued messages whose ETA has passed. Scheduled
+messages include future ETAs in queued or consumed state, since Dramatiq can
+prefetch delayed messages. Consumed means claimed/prefetched, not necessarily
+executing. Delayed queue names remain separate (for example `default.DQ`).
+Age starts at the later of the current enqueue time and ETA. Re-enqueue/recovery
+resets enqueue time; original message timestamps do not measure the current
+attempt. Existing queued rows use their existing `mtime`; no migration is needed.
+
+Install `dramatiq-pg[monitoring]` to enable Prometheus. For standard processing,
+retry and duration metrics, add middleware in the worker's actor module:
+
+```python
+from dramatiq.middleware.prometheus import Prometheus
+
+broker.add_middleware(Prometheus())
+```
+
+Its default endpoint is port 9191; Dramatiq supports `dramatiq_prom_host`,
+`dramatiq_prom_port` and `dramatiq_prom_db`. The test example enables it only
+when `EXAMPLE_PROMETHEUS=1` is set.
+
+Register the PostgreSQL collector in a separate exporter process. Its pool
+belongs to that process; keep it separate from worker multiprocessing state:
+
+```python
+from threading import Event
+from prometheus_client import CollectorRegistry, start_http_server
+from dramatiq_pg.metrics import PostgresQueueCollector
+from dramatiq_pg.utils import make_pool
+
+pool = make_pool("postgresql://localhost/app")
+registry = CollectorRegistry()
+registry.register(PostgresQueueCollector(pool))
+start_http_server(9192, addr="127.0.0.1", registry=registry)
+try:
+    Event().wait()
+finally:
+    pool.close()
+```
+
+SQL metrics are `dramatiq_pg_queue_messages` (queue/state),
+`dramatiq_pg_queue_ready`, `dramatiq_pg_queue_scheduled` and
+`dramatiq_pg_queue_oldest_ready_seconds` (queue only). No message IDs or actor
+arguments become labels. A collector may select one `queue`, `schema` or `prefix`.
+Removed queues disappear from an unfiltered scrape; an explicitly selected
+empty queue returns zero. Scrape errors propagate instead of returning false
+zero backlog. The main broker does not import or require Prometheus.
+
+Each scrape performs an aggregate over stored rows, including retained done
+and rejected messages. Start with a 30–60 second scrape interval and measure on
+your workload. A local PostgreSQL 14 test with 10,000 rows and 1 KB payloads took
+about 2.85 ms for all queues and 1.08 ms for one queue using a sequential scan;
+these are sample measurements, not production guarantees. Retention, payload
+size and queue count affect cost; no additional index was justified by that test.

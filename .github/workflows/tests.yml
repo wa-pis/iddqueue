@@ -29,7 +29,7 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
       - run: pip install poetry
-      - run: poetry install --extras binary
+      - run: poetry install --extras "binary monitoring"
       - run: poetry run ruff check dramatiq_pg tests/unit tests/func example.py
       - run: poetry run pytest tests/unit
       - run: poetry run dramatiq-pg init

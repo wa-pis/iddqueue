@@ -73,7 +73,8 @@ def listener():
 
 
 class WorkerManager(object):
-    def __init__(self, name="workers"):
+    def __init__(self, name="workers", env=None):
+        self.env = env
         self.logfilename = f"my-{name}.log"
 
     def start(self):
@@ -90,6 +91,7 @@ class WorkerManager(object):
                 "example",
             ],
             start_new_session=True,
+            env=self.env,
         )
         self.watch_log(self.logfo, needle="Worker process is ready")
 
