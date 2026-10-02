@@ -381,3 +381,22 @@ channels and advisory locks differ. Persisted queued tasks and results remain in
 the same tables; restarted workers recover queued tasks from those tables.
 Rollback follows the same stop-and-restart sequence. This is application storage
 separation, not PostgreSQL permissions; use database roles for access control.
+
+
+### License and attribution
+
+This project is a fork of [DALIBO's dramatiq-pg](https://gitlab.com/dalibo/dramatiq-pg),
+originally credited to Étienne BERSAC and other upstream contributors.
+The original `Copyright (c) 2019, DALIBO` and full [LICENSE](LICENSE) are preserved
+in source, wheel and sdist. Package metadata identifies the PostgreSQL License.
+
+The PostgreSQL License permits use, modification and distribution for any
+purpose, including commercial use, provided the copyright notice and full
+license text accompany distributed copies. See the
+[official license text](https://www.postgresql.org/about/licence/).
+Dependencies retain their own licenses. These permissions do not guarantee
+that every possible legal claim is excluded. Publication and project naming
+remain separate decisions.
+
+After building, run `python scripts/check_license.py dist/*.whl dist/*.tar.gz`
+to verify the preserved upstream text and license metadata in both formats.

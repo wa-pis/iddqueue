@@ -20,4 +20,4 @@ CLI init/stats/purge/recover/flush на нестандартных schema/prefix
 
 ## Сохранение лицензии форка
 
-[preserve-fork-license](changes/preserve-fork-license/proposal.md) — новый план: сохранение полного LICENSE/copyright DALIBO в исходниках и wheel/sdist, README attribution и проверка упаковки в CI. Реализация ещё не выполнена; публикация не включена. Этот этап независим от решения об имени GitHub-проекта.
+[preserve-fork-license](changes/archive/2026-10-02-preserve-fork-license/proposal.md) — выполнено: сохранение полного LICENSE/copyright DALIBO в исходниках и wheel/sdist, README attribution и проверка упаковки в CI. LICENSE и метаданные в wheel/sdist проверены; отрицательные проверки успешны. Публикация не выполнена. Этот этап независим от решения об имени GitHub-проекта.
