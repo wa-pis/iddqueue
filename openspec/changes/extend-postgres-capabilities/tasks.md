@@ -36,7 +36,7 @@
 - [x] 5.2 Добавить paginated CLI history и независимый retention purge без args/kwargs по умолчанию.
 - [x] 5.3 Проверить successful/failed/retried/incomplete attempts, worker crash, isolation, pagination, retention и отсутствие writes при выключенной history.
 - [x] 5.4 Обновить docs и evidence этапа; выполнить Ruff, полный tests/unit tests/func на выделенном PostgreSQL, poetry check, strict OpenSpec и build/license checker при изменении packaging/SQL resources.
-- [ ] 5.5 После проверок зафиксировать этап отдельным commit и push в wa-pis/iddqueue main; проверить успешный GitHub CI и записать ссылку, не отмечая подготовленный workflow выполненным.
+- [x] 5.5 После проверок зафиксировать этап отдельным commit и push в wa-pis/iddqueue main; проверить успешный GitHub CI и записать ссылку, не отмечая подготовленный workflow выполненным.
 
 ## 6. Пакетная отправка
 

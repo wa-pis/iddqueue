@@ -126,4 +126,6 @@ CLI history list/purge; args/kwargs/options/results не сохраняются.
 - Системный poetry launcher не работал из-за libintl; тот же Poetry запускался
   через рабочий .venv/bin/python -m poetry, включая poetry run pytest/Ruff.
 
-Этап 5.5 ожидает commit/push и фактический GitHub CI. Этапы 6–7 не начаты.
+Этап 5.5 завершён: https://github.com/wa-pis/iddqueue/actions/runs/37071887095,
+commit 9843f1f. Все шесть Python 3.10/3.13/3.14 × PostgreSQL 14/18 jobs success,
+включая build/LICENSE и crash test. Этапы 6–7 не начаты; общий change активен.
