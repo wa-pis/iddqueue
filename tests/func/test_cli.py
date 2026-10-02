@@ -1,11 +1,8 @@
-import re
 import subprocess
 from uuid import uuid4
 
 import psycopg
 from psycopg import sql
-
-from example import writer
 
 
 def cli(*args):
@@ -22,13 +19,24 @@ def test_purge():
     assert "Deleted" in cli("purge", "--maxage", "1 second").stderr
 
 
-def test_recover(pgconn):
-    for i in range(8):
-        writer.send(message="prefill", index=i)
-    with pgconn() as curs:
-        curs.execute("UPDATE dramatiq.queue SET state = 'consumed';")
-    out = cli("recover", "--minage", "10 microsecond")
-    assert re.search(r"(?:\d{2,}|[^0]) messages", out.stderr)
+def test_recover():
+    schema = "recover_" + uuid4().hex[:12]
+    flags = ("--schemaname", schema)
+    with psycopg.connect("", autocommit=True) as conn:
+        try:
+            cli(*flags, "init")
+            for _ in range(8):
+                conn.execute(sql.SQL(
+                    "INSERT INTO {} (message_id, state, mtime) "
+                    "VALUES (%s, 'consumed', now()-interval '1 hour')"
+                ).format(sql.Identifier(schema, "queue")), (uuid4(),))
+            out = cli(*flags, "recover", "--minage", "1 minute")
+            assert "Recovered 8 messages" in out.stderr
+            assert conn.execute(sql.SQL(
+                "SELECT count(*) FROM {} WHERE state = 'queued'"
+            ).format(sql.Identifier(schema, "queue"))).fetchone() == (8,)
+        finally:
+            conn.execute(sql.SQL("DROP SCHEMA {} CASCADE").format(sql.Identifier(schema)))
 
 
 def test_flush():

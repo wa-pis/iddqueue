@@ -62,3 +62,7 @@ ResultTimeout в Prometheus retry scenario. Retry вернулся из DQ в о
 NOTIFY. После освобождения lock SHALL отправляться повторное уведомление,
 если запись всё ещё queued в той же очереди. Payload содержит UUID;
 состояние читается из таблицы. Периодический recovery не заменяет wakeup.
+
+Run 37054623793 выявил недетерминированный legacy test_recover: UPDATE общей
+очереди конкурировал с живыми workers. CLI recover проверяется на отдельной
+схеме с восемью заранее состаренными consumed строками и точным queued count.

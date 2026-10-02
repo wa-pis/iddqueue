@@ -100,3 +100,8 @@ Run https://github.com/wa-pis/iddqueue/actions/runs/37054101038:
 на Python 3.13.14/PostgreSQL 14.20. Ruff и strict OpenSpec прошли.
 Release очереди повторно уведомляет queued запись после старого session lock.
 Удалённая повторная матрица ещё ожидается; baseline пока не архивирован.
+
+Run 37054623793: Python 3.14/PostgreSQL 14 success; Python 3.10/PostgreSQL 14
+упал в legacy test_recover, остальные отменены fail-fast. Test_recover
+изолирован от живых workers собственной схемой. После изменения полный suite:
+**65 passed in 32.45s**, Ruff/poetry check/strict OpenSpec успешны.
