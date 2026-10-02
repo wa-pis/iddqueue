@@ -23,3 +23,8 @@ connections and crashes/restarts its workers.
 After changes, run the relevant checks: `poetry run ruff check dramatiq_pg tests/unit tests/func example.py`, `poetry run pytest tests/unit tests/func`
 (with a prepared test database), `poetry check`, and `poetry build` when
 packaging changes. Validate OpenSpec with `openspec validate --all --strict`.
+
+Commit each completed feature separately after its required checks pass.
+Include its implementation, tests, documentation and OpenSpec artifacts in
+that commit. Do not accumulate completed features in the working tree.
+Keep commits local until GitHub destination and push scope are agreed.
