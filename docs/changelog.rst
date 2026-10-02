@@ -5,6 +5,7 @@ Unreleased
 ----------
 
 
+- Verify pipelines, groups, AsyncIO actors, retry exhaustion callbacks and timedelta delays against PostgreSQL.
 
 - Add PostgreSQL rate limits, durable barriers and standard GroupCallbacks support.
 - Add an idempotent coordination-table migration and expiry cleanup.

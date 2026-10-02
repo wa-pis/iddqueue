@@ -26,6 +26,7 @@
 #
 #     python example.py
 
+import asyncio
 import json
 import logging
 import os
@@ -35,7 +36,7 @@ import sys
 import time
 
 import dramatiq.results
-from dramatiq.middleware import GroupCallbacks
+from dramatiq.middleware import AsyncIO, GroupCallbacks
 from psycopg.types.json import Jsonb
 
 import dramatiq_pg
@@ -48,6 +49,7 @@ pool = make_pool("application_name=dramatiq-pg")
 # PostgresBroker creates a ConnectionPool from URL, swallowing minconn
 # and maxconn query argument.
 dramatiq.set_broker(dramatiq_pg.PostgresBroker(pool=pool))
+dramatiq.get_broker().add_middleware(AsyncIO())
 dramatiq.get_broker().add_middleware(
     GroupCallbacks(dramatiq_pg.PostgresRateLimiterBackend(pool=pool))
 )
@@ -102,6 +104,26 @@ def rejecting(message="Rejecting"):
     writer(message=message)
     raise Exception(message)
 
+
+
+@dramatiq.actor(store_results=True, max_retries=0)
+def scale(value, factor=2, *, fail=False):
+    if fail:
+        raise ValueError("pipeline failed")
+    return value * factor
+
+
+@dramatiq.actor(store_results=True, max_retries=0)
+async def async_value(value, *, fail=False):
+    await asyncio.sleep(0.01)
+    if fail:
+        raise ValueError("async failed")
+    return value
+
+
+@dramatiq.actor(store_results=True)
+def execution_time():
+    return time.time()
 
 
 def main():

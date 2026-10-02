@@ -23,4 +23,4 @@ Pipelines, groups, async actors и on_retry_exhausted реализованы в 
 
 Интеграционные тесты, примеры и документация; минимальные исправления брокера только при обнаруженной несовместимости. Group completion callbacks зависят от postgres-coordination.
 
-Статус: запланировано; реализация ожидается.
+Статус: реализовано и проверено локально 2026-10-02; см. validation.md. Зависимость: завершение runtime-части modernize-postgres-broker.

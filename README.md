@@ -173,3 +173,75 @@ can be acquired while its original task is still running. Standard
 `GroupCallbacks` counts successful deliveries; repeated deliveries can contribute
 again and callbacks are not guaranteed exactly once. A group with failed tasks
 may never reach its barrier, and expired group state cannot reconstruct progress.
+
+### Standard Dramatiq composition and middleware
+
+The broker supports the standard `dramatiq.pipeline` and `dramatiq.group` APIs.
+Enable result storage on each actor whose result you want to retrieve:
+
+```python
+import dramatiq
+
+@dramatiq.actor(store_results=True)
+def multiply(value, factor=2):
+    return value * factor
+
+chain = dramatiq.pipeline([multiply.message(3), multiply.message(4)])
+chain.run()
+assert chain.get_result(block=True) == 24
+
+batch = dramatiq.group([multiply.message(3), multiply.message(4)])
+batch.run()
+assert list(batch.get_results(block=True)) == [6, 8]
+assert batch.completed_count == 2
+```
+
+Pipelines append a predecessor's result to the next actor's positional arguments.
+A failed step does not enqueue its successor. `get_results` returns group results
+in submission order; tasks may finish in another order. `completed_count` reads
+stored results, so actors without result storage are not counted and expired
+results no longer count. Terminal failures raise `ResultFailure`.
+
+For coroutine actors, add Dramatiq's standard `AsyncIO` middleware before
+declaring the actors, in the module loaded by every worker:
+
+```python
+import asyncio
+from dramatiq.middleware import AsyncIO
+
+broker.add_middleware(AsyncIO())
+
+@dramatiq.actor(store_results=True)
+async def async_task(value):
+    await asyncio.sleep(0.01)
+    return value
+```
+
+The PostgreSQL broker remains synchronous. Use async clients or
+`asyncio.to_thread` for blocking I/O inside coroutine actors.
+
+The default `Retries` middleware supports `on_retry_exhausted` (singular):
+
+```python
+@dramatiq.actor
+def report_failure(message, retry_metadata):
+    # message is a serialized Dramatiq message; metadata has
+    # retries and max_retries. Make any external action idempotent.
+    print(message["message_id"], retry_metadata)
+
+@dramatiq.actor(max_retries=3, on_retry_exhausted="report_failure")
+def unreliable_task():
+    raise RuntimeError("unavailable")
+```
+
+
+`Actor.send_with_options(delay=timedelta(seconds=1))` accepts a `timedelta`;
+Dramatiq converts it to milliseconds before calling the broker. Direct broker
+methods use millisecond delays. A delay specifies the earliest execution time,
+not an exact schedule.
+
+Smaller actor `priority` numbers run first among messages already prefetched by
+a worker. PostgreSQL does not provide global priority ordering across workers
+or all queued messages. Ordinary groups need only Results; completion callbacks
+additionally require `GroupCallbacks` and the PostgreSQL coordination table
+shown above. Pipelines, retries and callbacks retain at-least-once delivery.
