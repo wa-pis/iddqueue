@@ -93,3 +93,14 @@ build при packaging/SQL resources изменениях и GitHub CI, отде
 TTL dedup явно задаётся вызывающим приложением, history opt-in — границы
 первой реализации. Новое пожелание, меняющее эти контракты, сначала отражать
 в proposal/specs/design/tasks.
+
+## Этап 2 — уточнение реализации
+
+Queue control opt-in: PostgresBroker(queue_control=True), middleware gate первый,
+до других before_process hooks. Deferred pause не запускает after_skip hooks,
+поскольку стандартный Results иначе сохраняет None. Consumer ack возвращает
+такую задачу в queued без изменения retries/ETA и освобождает session lock.
+Общий control row с FOR SHARE сериализует claim/start gate с pause UPDATE.
+Resume отправляет scan wakeup в normal/DQ; consumer читает durable pending rows.
+Граница started — commit разрешающей SQL gate транзакции; уже разрешённый actor
+может завершиться после pause. Все workers области должны включить queue_control.

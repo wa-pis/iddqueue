@@ -431,3 +431,42 @@ removed. It prevents duplicate publication; workers retain at-least-once
 delivery, and actor side effects must remain idempotent. For workloads with
 many unique keys, remove expired deduplication rows periodically with SQL;
 only delete rows whose `expires_at <= clock_timestamp()`.
+
+
+### Pause and resume queues
+
+Run `iddqueue upgrade` on existing storage first. Enable queue control in every
+worker broker for that storage area:
+
+```python
+broker = PostgresBroker(queue_control=True)
+broker.pause_queue("emails")
+broker.resume_queue("emails")
+assert not broker.queue_is_paused("emails")
+```
+
+```sh
+iddqueue pause emails
+iddqueue queue-status emails
+iddqueue resume emails
+```
+
+CLI commands return JSON; schema/prefix flags precede the command.
+Control is opt-in to preserve operation against databases without the new table.
+Every participating worker must enable it; a worker without queue control
+ignores pause. Stop all participants for the upgrade and restart them with
+matching configuration. The example enables it with `EXAMPLE_QUEUE_CONTROL=1`.
+
+Pause persists across worker restarts. Publishing continues; both the normal
+and delayed queue stop starting actors, and prefetched tasks return to queued.
+Their ETA and retry budget remain intact; pause does not produce a Results
+value or trigger terminal skip callbacks. Already authorized actors finish
+normally. The start boundary is the commit of the SQL permission gate directly
+before actor hooks; pause serializes with this gate, not the Python function's
+first instruction. Gate database failures defer execution instead of allowing it.
+
+Resume is idempotent and notifies both queue listeners to scan durable rows.
+It also handles a resume racing with acknowledgment of a deferred message.
+Pausing one logical queue affects neither other queues nor other schema/prefix
+areas. Queue control middleware must remain first in the middleware list;
+place additional middleware after it.

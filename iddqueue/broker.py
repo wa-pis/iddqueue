@@ -15,6 +15,7 @@ from psycopg import Notify, sql
 from psycopg.pq import TransactionStatus
 from psycopg.types.json import Jsonb
 
+from .control import QueueControl, allow_start, is_paused, set_paused
 from .failures import FailureMetadata
 from .results import PostgresBackend
 from .utils import (
@@ -42,7 +43,7 @@ def purge(curs, max_age="30 days"):
 
 class PostgresBroker(Broker):
     def __init__(
-        self, *, pool=None, url="", results=True, schema=None, prefix=None, **kw
+        self, *, pool=None, url="", results=True, schema=None, prefix=None, queue_control=False, **kw
     ):
         super().__init__(**kw)
         if pool is not None and url:
@@ -61,6 +62,25 @@ class PostgresBroker(Broker):
 
         self.add_middleware(FailureMetadata())
         self.queries = QueryManager(QUERIES.queries, schema or "dramatiq", prefix or "")
+        self.queue_control = queue_control
+        if queue_control:
+            self.add_middleware(QueueControl(), before=type(self.middleware[0]))
+
+    def emit_after(self, signal, *args, **kwargs):
+        # A deferred actor is not a terminal skip (Results must not store None).
+        if signal == "skip_message" and getattr(args[0], "_pg_paused", False):
+            return
+        return super().emit_after(signal, *args, **kwargs)
+
+    def pause_queue(self, queue):
+        set_paused(self.pool, queue, True, schema=self.queries.schema, prefix=self.queries.prefix)
+
+    def resume_queue(self, queue):
+        set_paused(self.pool, queue, False, schema=self.queries.schema, prefix=self.queries.prefix)
+
+    def queue_is_paused(self, queue):
+        return is_paused(self.pool, queue, schema=self.queries.schema, prefix=self.queries.prefix)
+
 
     def close(self):
         if self._owns_pool:
@@ -73,6 +93,7 @@ class PostgresBroker(Broker):
             prefetch=prefetch,
             timeout=timeout,
             queries=self.queries,
+            queue_control=self.queue_control,
         )
 
     def declare_queue(self, queue_name):
@@ -178,8 +199,9 @@ class PostgresBroker(Broker):
 
 
 class PostgresConsumer(Consumer):
-    def __init__(self, *, pool, queue_name, prefetch, timeout, queries=None, **kw):
+    def __init__(self, *, pool, queue_name, prefetch, timeout, queries=None, queue_control=False, **kw):
         self.queries = queries or QUERIES
+        self.queue_control = queue_control
         self._consume_conn = None
         self._listen_conn = None
         self.notifies = []
@@ -232,6 +254,9 @@ class PostgresConsumer(Consumer):
                 full_payload = notify.payload
             else:
                 truncated_payload = json.loads(notify.payload)
+                if truncated_payload.get("scan"):
+                    self.notifies += self.fetch_pending_notifies()
+                    continue
                 full_payload = self.fetch_by_id(truncated_payload["message_id"])
             message = Message.decode(full_payload.encode("utf-8"))
             if self.consume_one(message):
@@ -252,6 +277,12 @@ class PostgresConsumer(Consumer):
     @raise_connection_error
     def ack(self, message):
         # This function is executed in worker thread!
+        if getattr(message, "_pg_paused", False):
+            with transaction(self.pool) as curs:
+                curs.execute(self.queries.DEFER_PAUSED, (message.message_id, message.queue_name))
+            self.unlock_q.put_nowait(message)
+            self.in_processing.remove(message.message_id)
+            return
 
         with transaction(self.pool) as curs:
             channel = self.queries.channel(message.queue_name, "ack")
@@ -339,6 +370,10 @@ class PostgresConsumer(Consumer):
 
         # Race to process message.
         with transaction(self.get_consume_conn()) as curs:
+            if self.queue_control and not allow_start(
+                curs, self.queue_name, self.queries.schema, self.queries.prefix
+            ):
+                return False
             lock = message_lock(message, schema=self.queries.schema, prefix=self.queries.prefix)
             curs.execute(self.queries.CONSUME_ONE, (message.message_id, lock))
             # If no row was updated, this mean another worker has consumed it.
@@ -483,6 +518,10 @@ QUERIES = QueryManager(
         FROM updated;
         """
         ),
+        DEFER_PAUSED="""
+        UPDATE {schema}.{tablename} SET state = 'queued'
+        WHERE message_id = %s AND queue_name = %s AND state = 'consumed';
+        """,
         CONSUME_ONE=dedent(
             """\
         UPDATE {schema}.{tablename}

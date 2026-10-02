@@ -8,10 +8,10 @@
 
 ## 2. Пауза и возобновление очереди
 
-- [ ] 2.1 Добавить control table/migration и pause/resume/status API/CLI для normal/DQ как одной логической очереди.
-- [ ] 2.2 Сериализовать pause и разрешение старта в SQL; остановить claim и prefetched execution без расходования retries; resume отправляет wakeup.
-- [ ] 2.3 Проверить pause/start race, prefetched и delayed сообщения, restart while paused, другие очереди и namespace isolation.
-- [ ] 2.4 Обновить docs и evidence этапа; выполнить Ruff, полный tests/unit tests/func на выделенном PostgreSQL, poetry check, strict OpenSpec и build/license checker при изменении packaging/SQL resources.
+- [x] 2.1 Добавить control table/migration и pause/resume/status API/CLI для normal/DQ как одной логической очереди.
+- [x] 2.2 Сериализовать pause и разрешение старта в SQL; остановить claim и prefetched execution без расходования retries; resume отправляет wakeup.
+- [x] 2.3 Проверить pause/start race, prefetched и delayed сообщения, restart while paused, другие очереди и namespace isolation.
+- [x] 2.4 Обновить docs и evidence этапа; выполнить Ruff, полный tests/unit tests/func на выделенном PostgreSQL, poetry check, strict OpenSpec и build/license checker при изменении packaging/SQL resources.
 - [ ] 2.5 После проверок зафиксировать этап отдельным commit и push в wa-pis/iddqueue main; проверить успешный GitHub CI и записать ссылку, не отмечая подготовленный workflow выполненным.
 
 ## 3. Отмена задач

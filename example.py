@@ -48,7 +48,7 @@ pool = make_pool("application_name=iddqueue")
 # PostgresBroker accepts either pool= or url=. URL is a libpq connstring.
 # PostgresBroker creates a ConnectionPool from URL, swallowing minconn
 # and maxconn query argument.
-dramatiq.set_broker(iddqueue.PostgresBroker(pool=pool))
+dramatiq.set_broker(iddqueue.PostgresBroker(pool=pool, queue_control=bool(os.environ.get("EXAMPLE_QUEUE_CONTROL"))))
 dramatiq.get_broker().add_middleware(AsyncIO())
 if os.environ.get("EXAMPLE_PROMETHEUS"):
     from dramatiq.middleware.prometheus import Prometheus

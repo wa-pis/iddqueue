@@ -22,3 +22,27 @@
 commit 7f39a4d, все шесть Python 3.10/3.13/3.14 × PostgreSQL 14/18 jobs success.
 Этап 1.1–1.5 завершён, реализация зафиксирована отдельно.
 Этапы 2–7 не реализованы. Общий change не архивируется.
+
+
+# Evidence — этап 2, управление очередью
+
+2026-10-03. Opt-in PostgresBroker(queue_control=True), pause/resume/status
+broker API и JSON CLI, control.sql в init/upgrade; upgrade идемпотентен.
+Pause/start gate сериализуется общей control row FOR SHARE/UPDATE.
+Deferred prefetched task возвращается queued без retry/Results/terminal skip.
+
+Фактически выполнено на dedicated PostgreSQL 14.20/Python 3.13.14:
+- Полный unit/functional suite: **87 passed in 35.56s**.
+- Обычная/DQ очередь: pause запрещает claim; CLI resume scan пробуждает
+  потребителя и сохраняет ETA; новая broker instance видит durable pause.
+- Реальный Worker: первый actor разрешён и завершается во время pause;
+  второй prefetched не запускается, Results остаётся missing, retries не растут.
+  Worker stop/start сохраняет pause; resume выполняет второй actor.
+- Concurrent start gate/pause: pause ждёт gate commit; последующая gate запрещает старт.
+- Resume до deferred ack: release повторно будит queued задачу, сообщение не теряется.
+- Независимые queue и storage prefix продолжают работать.
+- Gate OperationalError: SkipMessage, actor не запускается.
+- Ruff, poetry check, strict OpenSpec, git diff --check: success.
+- Poetry build и LICENSE checker wheel/sdist: success.
+
+Этап 2.5 ожидает удалённого CI; этапы 3–7 ещё не начаты.

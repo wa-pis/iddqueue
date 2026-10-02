@@ -17,6 +17,7 @@ from psycopg.types.json import Jsonb
 
 from .broker import QUERIES as BROKER_QUERIES
 from .broker import message_lock, purge
+from .control import is_paused, set_paused
 from .metrics import queue_statistics
 from .schema import generate_init_sql, generate_upgrade_sql
 from .utils import QueryManager, make_pool, transaction
@@ -176,6 +177,11 @@ def make_argument_parser():
     subparser.add_argument("--queue")
     subparser.add_argument("--json", action="store_true")
 
+    for name in ("pause", "resume", "queue-status"):
+        control = subparsers.add_parser(name)
+        control.add_argument("queue")
+        control.set_defaults(command=control_command, control_operation=name)
+
     failed = subparsers.add_parser("failed")
     operations = failed.add_subparsers()
     listing = operations.add_parser("list")
@@ -225,6 +231,15 @@ def upgrade_command(args):
     with transaction(args.pool) as curs:
         curs.execute(generate_upgrade_sql(args.schemaname, args.prefix))
     logger.info("Upgraded database.")
+
+
+def control_command(args):
+    if args.control_operation != "queue-status":
+        set_paused(args.pool, args.queue, args.control_operation == "pause",
+                   schema=args.schemaname, prefix=args.prefix)
+    print(json.dumps({"queue": q_name(args.queue),
+                      "paused": is_paused(args.pool, args.queue,
+                                          schema=args.schemaname, prefix=args.prefix)}))
 
 
 def stats_command(args):
