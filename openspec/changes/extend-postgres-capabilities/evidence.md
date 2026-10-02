@@ -45,4 +45,6 @@ Deferred prefetched task возвращается queued без retry/Results/te
 - Ruff, poetry check, strict OpenSpec, git diff --check: success.
 - Poetry build и LICENSE checker wheel/sdist: success.
 
-Этап 2.5 ожидает удалённого CI; этапы 3–7 ещё не начаты.
+Этап 2.5 завершён: https://github.com/wa-pis/iddqueue/actions/runs/37065548460,
+commit 4db00a0. Все шесть Python 3.10/3.13/3.14 × PostgreSQL 14/18 jobs success.
+Этапы 3–7 ещё не начаты; общий change остаётся активным.

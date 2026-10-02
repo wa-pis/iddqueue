@@ -12,7 +12,7 @@
 - [x] 2.2 Сериализовать pause и разрешение старта в SQL; остановить claim и prefetched execution без расходования retries; resume отправляет wakeup.
 - [x] 2.3 Проверить pause/start race, prefetched и delayed сообщения, restart while paused, другие очереди и namespace isolation.
 - [x] 2.4 Обновить docs и evidence этапа; выполнить Ruff, полный tests/unit tests/func на выделенном PostgreSQL, poetry check, strict OpenSpec и build/license checker при изменении packaging/SQL resources.
-- [ ] 2.5 После проверок зафиксировать этап отдельным commit и push в wa-pis/iddqueue main; проверить успешный GitHub CI и записать ссылку, не отмечая подготовленный workflow выполненным.
+- [x] 2.5 После проверок зафиксировать этап отдельным commit и push в wa-pis/iddqueue main; проверить успешный GitHub CI и записать ссылку, не отмечая подготовленный workflow выполненным.
 
 ## 3. Отмена задач
 
