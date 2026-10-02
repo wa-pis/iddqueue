@@ -18,5 +18,7 @@
 - Ruff, poetry check, strict OpenSpec, git diff --check: success.
 - Poetry wheel/sdist build, LICENSE checker: success; deduplication.sql есть в wheel.
 
-Удалённый CI этапа ещё ожидается; 1.5 пока не завершён.
+Удалённый CI этапа завершён: https://github.com/wa-pis/iddqueue/actions/runs/37063065568
+commit 7f39a4d, все шесть Python 3.10/3.13/3.14 × PostgreSQL 14/18 jobs success.
+Этап 1.1–1.5 завершён, реализация зафиксирована отдельно.
 Этапы 2–7 не реализованы. Общий change не архивируется.
