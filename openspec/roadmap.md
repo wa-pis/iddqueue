@@ -23,4 +23,28 @@ CLI init/stats/purge/recover/flush на нестандартных schema/prefix
 [preserve-fork-license](changes/archive/2026-10-02-preserve-fork-license/proposal.md) — выполнено: сохранение полного LICENSE/copyright DALIBO в исходниках и wheel/sdist, README attribution и проверка упаковки в CI. LICENSE и метаданные в wheel/sdist проверены; отрицательные проверки успешны. Публикация не выполнена. Этот этап независим от решения об имени GitHub-проекта.
 
 CI-регрессии retry wakeup и изоляции recover test исправлены; локально 65 tests passed.
-Все текущие changes завершены и архивированы. Публикация пакета требует отдельного запроса.
+Предыдущие changes завершены и архивированы. Публикация пакета требует отдельного запроса.
+
+
+## Следующая очередь работ — 2026-10-03
+
+[extend-postgres-capabilities](changes/extend-postgres-capabilities/proposal.md) —
+план подготовлен; реализация не начата. Proposal, design, семь delta specs и
+[tasks](changes/extend-postgres-capabilities/tasks.md) описывают этапы.
+Каждая фича выполняется последовательно и фиксируется отдельным commit.
+
+| Этап | Возможность | Зависимость |
+| --- | --- | --- |
+| 1 | Дедупликация отправки: ключ, TTL, конкурентные producers | Transactional enqueue |
+| 2 | Pause/resume очереди, включая DQ и prefetched tasks | Control table/migration |
+| 3 | Отмена до старта и cooperative cancellation | Pause/start gate |
+| 4 | AgeLimit, TimeLimit, ShutdownNotifications, Callbacks, CurrentMessage | Стандартный middleware Dramatiq |
+| 5 | Opt-in история попыток, CLI, retention | Lifecycle hooks |
+| 6 | Атомарная пакетная отправка | Enqueue/dedup API |
+| 7 | PostgreSQL interval scheduler, несколько процессов | Dedup + transactional enqueue |
+
+Новые возможности являются расширениями IDDQueue. Этап 4 проверяет встроенные
+middleware Dramatiq. Fixed interval scheduler не включает cron/calendar.
+Дедупликация подавляет публикацию и не обещает exactly-once execution.
+Автоматическую реализацию в ходе подготовки этого плана не начинать;
+переход к apply — после следующего запроса пользователя.

@@ -16,7 +16,7 @@ context: |
   GitHub CI passed all six Python 3.10/3.13/3.14 and PostgreSQL 14/18 combinations; run 37057164073.
   GitHub: https://github.com/wa-pis/iddqueue, private, main; publication policy remains undecided.
   Preserve PostgreSQL license and original contributor credits.
-  Feature roadmap: openspec/roadmap.md; all six local feature changes implemented and archived; baseline and GitHub setup complete and archived.
+  Feature roadmap: openspec/roadmap.md; previous six features and baseline archived; extend-postgres-capabilities planned, not implemented.
   User authorized recording all discussed features in OpenSpec on 2026-10-02.
 rules:
   proposal:
