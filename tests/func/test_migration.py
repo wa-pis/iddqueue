@@ -6,9 +6,9 @@ import pytest
 from dramatiq import Message
 from dramatiq.results import ResultMissing, ResultTimeout
 
-from dramatiq_pg import PostgresBackend, PostgresBroker
-from dramatiq_pg.broker import message_lock
-from dramatiq_pg.utils import getconn, make_pool, transaction
+from iddqueue import PostgresBackend, PostgresBroker
+from iddqueue.broker import message_lock
+from iddqueue.utils import getconn, make_pool, transaction
 
 
 def message():
@@ -50,7 +50,7 @@ def test_result_ttl_and_timezone(pool):
 
 
 def test_large_blocking_result(pool, monkeypatch):
-    import dramatiq_pg.results as results
+    import iddqueue.results as results
 
     backend = PostgresBackend(pool=pool)
     task = message()

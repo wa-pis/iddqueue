@@ -2,7 +2,7 @@ from uuid import uuid4
 
 
 def test_message_lock(monkeypatch, mocker):
-    from dramatiq_pg.broker import message_lock
+    from iddqueue.broker import message_lock
 
     for _ in range(20):
         message = mocker.Mock(message_id=uuid4(), queue_name="default")
@@ -17,7 +17,7 @@ def test_message_lock(monkeypatch, mocker):
         def hexdigest(self):
             return self.value
 
-    monkeypatch.setattr("dramatiq_pg.broker.sha256", MockSha256)
+    monkeypatch.setattr("iddqueue.broker.sha256", MockSha256)
     MockSha256.value = "0" * 64
     message = mocker.Mock(message_id=uuid4(), queue_name="default")
     assert message_lock(message) == -(2**63)
@@ -26,7 +26,7 @@ def test_message_lock(monkeypatch, mocker):
 
 
 def test_broker_schema_isolation():
-    from dramatiq_pg import PostgresBroker
+    from iddqueue import PostgresBroker
 
     first = PostgresBroker(schema="first", prefix="one_")
     second = PostgresBroker(schema="second", prefix="two_")

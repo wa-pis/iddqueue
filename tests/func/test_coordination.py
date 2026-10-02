@@ -14,7 +14,7 @@ from dramatiq.rate_limits import (
 )
 from psycopg import sql
 
-from dramatiq_pg import (
+from iddqueue import (
     PostgresRateLimiterBackend,
     generate_coordination_sql,
     generate_init_sql,

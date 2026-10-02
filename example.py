@@ -39,23 +39,23 @@ import dramatiq.results
 from dramatiq.middleware import AsyncIO, GroupCallbacks
 from psycopg.types.json import Jsonb
 
-import dramatiq_pg
-from dramatiq_pg.utils import make_pool
+import iddqueue
+from iddqueue.utils import make_pool
 
 logger = logging.getLogger(__name__)
 # Empty connstring let's you configure psycopg using PG* env vars.
-pool = make_pool("application_name=dramatiq-pg")
+pool = make_pool("application_name=iddqueue")
 # PostgresBroker accepts either pool= or url=. URL is a libpq connstring.
 # PostgresBroker creates a ConnectionPool from URL, swallowing minconn
 # and maxconn query argument.
-dramatiq.set_broker(dramatiq_pg.PostgresBroker(pool=pool))
+dramatiq.set_broker(iddqueue.PostgresBroker(pool=pool))
 dramatiq.get_broker().add_middleware(AsyncIO())
 if os.environ.get("EXAMPLE_PROMETHEUS"):
     from dramatiq.middleware.prometheus import Prometheus
 
     dramatiq.get_broker().add_middleware(Prometheus())
 dramatiq.get_broker().add_middleware(
-    GroupCallbacks(dramatiq_pg.PostgresRateLimiterBackend(pool=pool))
+    GroupCallbacks(iddqueue.PostgresRateLimiterBackend(pool=pool))
 )
 
 
@@ -77,7 +77,7 @@ def sleeper(param):
 
 @dramatiq.actor
 def writer(*args, **kwargs):
-    conn = dramatiq_pg.utils.getconn(pool)
+    conn = iddqueue.utils.getconn(pool)
     insert = (
         "INSERT INTO functest.witness (payload) VALUES (%s::jsonb);",
         (Jsonb(dict(args=args, kwargs=kwargs)),),
@@ -132,7 +132,7 @@ def execution_time():
 
 @dramatiq.actor(store_results=True, max_retries=1, min_backoff=500, max_backoff=500)
 def retryable(marker):
-    conn = dramatiq_pg.utils.getconn(pool)
+    conn = iddqueue.utils.getconn(pool)
     try:
         with conn.transaction(), conn.cursor() as cursor:
             cursor.execute("SELECT 1 FROM functest.witness WHERE payload->>'ready' = %s", (marker,))

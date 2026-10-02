@@ -1,5 +1,5 @@
 def test_generate_sql():
-    from dramatiq_pg import generate_init_sql
+    from iddqueue import generate_init_sql
 
     sql = generate_init_sql()
 

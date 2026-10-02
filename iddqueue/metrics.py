@@ -53,10 +53,10 @@ class PostgresQueueCollector:
     def collect(self):
         from prometheus_client.core import GaugeMetricFamily
 
-        counts = GaugeMetricFamily("dramatiq_pg_queue_messages", "Stored messages by state", labels=["queue", "state"])
-        ready = GaugeMetricFamily("dramatiq_pg_queue_ready", "Ready queued messages", labels=["queue"])
-        scheduled = GaugeMetricFamily("dramatiq_pg_queue_scheduled", "Future delayed messages, including prefetched", labels=["queue"])
-        age = GaugeMetricFamily("dramatiq_pg_queue_oldest_ready_seconds", "Age of oldest ready queued message", labels=["queue"])
+        counts = GaugeMetricFamily("iddqueue_queue_messages", "Stored messages by state", labels=["queue", "state"])
+        ready = GaugeMetricFamily("iddqueue_queue_ready", "Ready queued messages", labels=["queue"])
+        scheduled = GaugeMetricFamily("iddqueue_queue_scheduled", "Future delayed messages, including prefetched", labels=["queue"])
+        age = GaugeMetricFamily("iddqueue_queue_oldest_ready_seconds", "Age of oldest ready queued message", labels=["queue"])
         for snapshot in queue_statistics(self.pool, **self.options):
             queue = snapshot["queue"]
             for state, count in snapshot["counts"].items():

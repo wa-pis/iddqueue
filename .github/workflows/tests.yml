@@ -30,10 +30,10 @@ jobs:
           python-version: ${{ matrix.python }}
       - run: pip install poetry
       - run: poetry install --extras "binary monitoring"
-      - run: poetry run ruff check dramatiq_pg tests/unit tests/func example.py scripts/check_license.py
+      - run: poetry run ruff check iddqueue tests/unit tests/func example.py scripts/check_license.py
       - run: poetry build
       - run: poetry run python scripts/check_license.py dist/*.whl dist/*.tar.gz
       - run: poetry run pytest tests/unit
-      - run: poetry run dramatiq-pg init
+      - run: poetry run iddqueue init
       - run: poetry run python tests/pypsql < tests/func/schema.sql
       - run: poetry run pytest tests/func

@@ -62,6 +62,25 @@
 **64 passed in 32.51s**. Ruff, poetry check/build и strict OpenSpec validation
 успешны; исправления runtime не потребовались.
 
-Все независимые локальные задачи baseline завершены. GitHub owner/name,
-visibility и идентичность пакета ещё ожидают ответа пользователя. Удалённая
+Все независимые локальные задачи baseline завершены. GitHub owner и
+visibility ещё ожидают ответа пользователя. Удалённая
 матрица и публикация не заявляются выполненными; change не архивируется.
+
+
+## IDDQueue — 2026-10-02
+
+Имя пользователя применено: distribution/import/CLI/repository — iddqueue.
+Активные код, документация, tests и CI переименованы; upstream ссылки,
+LICENSE и авторство сохранены. SQL schema/таблицы, каналы и locks не менялись.
+Prometheus families переименованы в iddqueue_queue_*; README описывает миграцию.
+
+Фактически выполнено на Python 3.13.14 и выделенном PostgreSQL 14.20:
+- Полный tests/unit tests/func: **64 passed in 33.38s**.
+- Ruff, poetry check, git diff --check и strict OpenSpec: успешны.
+- Poetry build: iddqueue-0.13.0 wheel и sdist; check_license.py проверил оба.
+- Wheel установлен в /tmp/iddqueue-identity-smoke; из /tmp проверены
+  импорт из site-packages, metadata version 0.13.0, оба SQL resources,
+  lazy closed pool и CLI iddqueue --version (0.13.0).
+
+Baseline остаётся активным: owner/visibility/origin/push и удалённая матрица
+не выполнены. Публикация в PyPI не выполнялась.

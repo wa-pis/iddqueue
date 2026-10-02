@@ -1,9 +1,9 @@
-from dramatiq_pg.utils import (
+from example import pool
+from iddqueue.utils import (
     getconn,
     transaction,
     wait_for_notifies,
 )
-from example import pool
 
 
 def test_subscription_isolation(pgconn):

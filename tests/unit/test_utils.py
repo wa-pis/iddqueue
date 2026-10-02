@@ -1,6 +1,6 @@
 import pytest
 
-from dramatiq_pg.utils import make_pool
+from iddqueue.utils import make_pool
 
 
 @pytest.mark.parametrize(
@@ -25,7 +25,7 @@ def test_make_pool(url, min_size, max_size):
 
 
 def test_quote_ident():
-    from dramatiq_pg.utils import quote_ident
+    from iddqueue.utils import quote_ident
 
     assert '"table"' == quote_ident("table")
     assert '"with space"' == quote_ident("with space")

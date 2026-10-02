@@ -7,16 +7,16 @@ Enabling Postgres Broker
 
 Dramatiq-pg is available on PyPI. Install it with pip::
 
-    pip install dramatiq-pg
+    pip install iddqueue
 
-This package installs a Python package named ``dramatiq_pg`` and a script named
-``dramatiq-pg``. To use Postgres as a Dramatiq message broker, use
-``dramatiq_pg.PostgresBroker`` class.
+This package installs a Python package named ``iddqueue`` and a script named
+``iddqueue``. To use Postgres as a Dramatiq message broker, use
+``iddqueue.PostgresBroker`` class.
 
 ::
 
    from dramatiq import set_broker
-   from dramatiq_pg import PostgresBroker
+   from iddqueue import PostgresBroker
 
    set_broker(PostgresBroker())
 
@@ -36,7 +36,7 @@ Dramatiq-pg.
 
 ::
 
-    psql -f dramatiq_pg/schema.sql
+    psql -f iddqueue/schema.sql
 
 Table and type are contained in a ``dramatiq`` schema.
 
@@ -49,7 +49,7 @@ The ``pool`` is a psycopg connection pool object.
 
 ::
 
-   from dramatiq_pg import PostgresBroker
+   from iddqueue import PostgresBroker
    from psycopg_pool import ConnectionPool
 
    pool = ConnectionPool("", min_size=0, max_size=8,
@@ -66,7 +66,7 @@ not from keyword/value connection string.
 
 ::
 
-   from dramatiq_pg import PostgresBroker
+   from iddqueue import PostgresBroker
 
    broker = PostgresBroker(url="postgresql://user:password@host/dbname?minconn=8&maxconn=8")
 
@@ -117,7 +117,7 @@ broker (like RabbitMQ). To do this, directly use the ``PostgresBackend`` class.
 ::
 
    from dramatiq import Results
-   from dramatiq_pg import PostgresBackend
+   from iddqueue import PostgresBackend
 
    backend = PostgresBackend(url=conninfo)
    broker.add_middleware(Results(backend=backend))

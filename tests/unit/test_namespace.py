@@ -1,9 +1,9 @@
 import pytest
 from dramatiq import Message
 
-from dramatiq_pg import PostgresBackend
-from dramatiq_pg.broker import message_lock
-from dramatiq_pg.utils import notification_channel
+from iddqueue import PostgresBackend
+from iddqueue.broker import message_lock
+from iddqueue.utils import notification_channel
 
 
 def test_channels_and_locks():

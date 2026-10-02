@@ -8,6 +8,6 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./dramatiq_pg/schema.sql:/docker-entrypoint-initdb.d/000-queue.sql
-      - ./dramatiq_pg/coordination.sql:/docker-entrypoint-initdb.d/000-z-coordination.sql
+      - ./iddqueue/schema.sql:/docker-entrypoint-initdb.d/000-queue.sql
+      - ./iddqueue/coordination.sql:/docker-entrypoint-initdb.d/000-z-coordination.sql
       - ./tests/func/schema.sql:/docker-entrypoint-initdb.d/001-tests.sql

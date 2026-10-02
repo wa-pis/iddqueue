@@ -10,7 +10,7 @@ from example import writer
 
 def cli(*args):
     return subprocess.run(
-        ["dramatiq-pg", *args], capture_output=True, text=True, check=True
+        ["iddqueue", *args], capture_output=True, text=True, check=True
     )
 
 

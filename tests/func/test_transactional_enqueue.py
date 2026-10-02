@@ -8,7 +8,7 @@ from dramatiq.middleware import Middleware
 from psycopg import sql
 from psycopg.pq import TransactionStatus
 
-from dramatiq_pg import PostgresBroker
+from iddqueue import PostgresBroker
 
 
 @pytest.fixture

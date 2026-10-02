@@ -1,7 +1,7 @@
-![Dramatiq-pg](https://gitlab.com/dalibo/dramatiq-pg/raw/master/docs/logo-horizontal.png?inline=false)
+# IDDQueue
 
 [Dramatiq](https://dramatiq.io/) is a simple task queue implementation for
-Python3. dramatiq-pg provides a Postgres-based implementation of a dramatiq
+Python3. iddqueue provides a Postgres-based implementation of a dramatiq
 broker.
 
 
@@ -20,23 +20,28 @@ Note that dramatiq assumes tasks are idempotent. This broker makes the same
 assumptions for recovering after a crash.
 
 
+Renaming changes the distribution, Python imports and CLI to `iddqueue`.
+Update application imports and deployment commands. Prometheus metrics now use
+the `iddqueue_queue_` prefix; update dashboards. PostgreSQL tables, channels
+and advisory lock identities remain unchanged.
+
 ## Installation
 
-- Install dramatiq-pg package from PyPI:
+- Install the locally built wheel (PyPI publication is pending):
   ``` console
-  $ pip install "dramatiq-pg[binary]"
+  $ pip install "dist/iddqueue-0.13.0-py3-none-any.whl[binary]"
   ```
   Requires Python 3.10+, Dramatiq 2.2.1+ and Psycopg 3.3.6+.
 - Init database schema with `init` command.
   ``` console
-  $ dramatiq-pg init
+  $ iddqueue init
   ```
-  Or adapt `dramatiq-pg/schema.sql` to your needs.
+  Or adapt `iddqueue/schema.sql` to your needs.
 - Before importing actors, define global broker with a connection
   pool:
   ``` python
   import dramatiq
-  from dramatiq_pg import PostgresBroker
+  from iddqueue import PostgresBroker
 
   dramatiq.set_broker(PostgresBroker(url="postgresql://localhost/postgres"))
 
@@ -46,34 +51,21 @@ assumptions for recovering after a crash.
   ```
 
 Now declare/import actors and manage worker just like any [dramatiq
-setup](https://dramatiq.io/guide.html). An [example
-script](https://gitlab.com/dalibo/dramatiq-pg/blob/master/example.py) is
-available, tested on CI.
+setup](https://dramatiq.io/guide.html). See the local [example](example.py)
+and [documentation](docs/index.rst).
 
-The CLI tool `dramatiq-pg` allows you to requeue messages, purge old messages
-and show stats on the queue. See `--help` for details.
-
-[Dramatiq-pg
-documentation](https://gitlab.com/dalibo/dramatiq-pg/blob/master/docs/index.rst)
-is hosted on GitLab and give you more details on deployment and operation of
-Postgres as a Dramatiq broker.
-
+The CLI tool `iddqueue` manages queues and failed tasks. See `--help`.
 
 ## Integration
 
-**Django** : Use
-[django-dramatiq-pg](https://github.com/uptick/django-dramatiq-pg/) by [Curtis
-Maloney](https://gitlab.com/FunkyBob). It includes configuration, ORM model and
-database migration.
-
+The upstream [django-dramatiq-pg](https://github.com/uptick/django-dramatiq-pg/)
+integration by Curtis Maloney targets the original package. Compatibility with
+IDDQueue has not been verified.
 
 ## Support
 
-If you encounter a bug or miss a feature, please [open an issue on
-GitLab](https://gitlab.com/dalibo/dramatiq-pg/issues/new) with as much
-information as possible.
-
-dramatiq_pg is available under the PostgreSQL licence.
+The new GitHub issue tracker will be linked after repository setup.
+IDDQueue is available under the PostgreSQL licence.
 
 
 ## Credit
@@ -87,14 +79,14 @@ Thanks to all contributors :
 - Rafal Kwasny, improvements.
 
 
-The logo is a creation of [Damien CAZEILS](http://www.damiencazeils.com/)
+The upstream logo was created by [Damien CAZEILS](http://www.damiencazeils.com/).
 
 
 ## Development
 
 ```console
 poetry install --extras "binary monitoring"
-poetry run dramatiq-pg init
+poetry run iddqueue init
 poetry run python tests/pypsql < tests/func/schema.sql
 poetry run pytest tests/unit tests/func
 ```
@@ -135,11 +127,11 @@ committed. Workers still provide at-least-once delivery.
 ### PostgreSQL limiters and group callbacks
 
 Existing installations must add the coordination table before enabling this
-backend. Fresh `dramatiq-pg init` installations include it:
+backend. Fresh `iddqueue init` installations include it:
 
 ```python
 import psycopg
-from dramatiq_pg import generate_coordination_sql
+from iddqueue import generate_coordination_sql
 
 with psycopg.connect("postgresql://localhost/app") as connection:
     connection.execute(generate_coordination_sql(schema="dramatiq", prefix=""))
@@ -152,7 +144,7 @@ users of the coordination backend, then drop only `dramatiq.coordination`
 ```python
 from dramatiq.middleware import GroupCallbacks
 from dramatiq.rate_limits import ConcurrentRateLimiter
-from dramatiq_pg import PostgresRateLimiterBackend
+from iddqueue import PostgresRateLimiterBackend
 
 limits = PostgresRateLimiterBackend(pool=broker.pool)
 broker.add_middleware(GroupCallbacks(limits, barrier_ttl=900_000))
@@ -255,11 +247,11 @@ a successful attempt removes the last error. Existing rejected rows may have
 no diagnostic metadata; no database migration is required.
 
 ```sh
-dramatiq-pg failed list --queue default --actor send_receipt --limit 50
-dramatiq-pg failed list --queue default --after MESSAGE_ID
-dramatiq-pg failed show MESSAGE_ID
-dramatiq-pg failed show MESSAGE_ID --payload
-dramatiq-pg retry MESSAGE_ID
+iddqueue failed list --queue default --actor send_receipt --limit 50
+iddqueue failed list --queue default --after MESSAGE_ID
+iddqueue failed show MESSAGE_ID
+iddqueue failed show MESSAGE_ID --payload
+iddqueue retry MESSAGE_ID
 ```
 
 These commands produce JSON. `failed list` returns `items` and `next_after`;
@@ -286,7 +278,7 @@ not reverse prior side effects or reset barriers and downstream pipelines.
 
 ### PostgreSQL queue metrics
 
-`dramatiq-pg stats` keeps its original state totals. Use `stats --json` for
+`iddqueue stats` keeps its original state totals. Use `stats --json` for
 per-queue snapshots, or `stats --queue default` for one queue (including zeros
 when empty). Each snapshot includes all four stored-state counts, `ready`,
 `scheduled` and `oldest_ready_seconds`.
@@ -299,7 +291,7 @@ Age starts at the later of the current enqueue time and ETA. Re-enqueue/recovery
 resets enqueue time; original message timestamps do not measure the current
 attempt. Existing queued rows use their existing `mtime`; no migration is needed.
 
-Install `dramatiq-pg[monitoring]` to enable Prometheus. For standard processing,
+Install `iddqueue[monitoring]` to enable Prometheus. For standard processing,
 retry and duration metrics, add middleware in the worker's actor module:
 
 ```python
@@ -318,8 +310,8 @@ belongs to that process; keep it separate from worker multiprocessing state:
 ```python
 from threading import Event
 from prometheus_client import CollectorRegistry, start_http_server
-from dramatiq_pg.metrics import PostgresQueueCollector
-from dramatiq_pg.utils import make_pool
+from iddqueue.metrics import PostgresQueueCollector
+from iddqueue.utils import make_pool
 
 pool = make_pool("postgresql://localhost/app")
 registry = CollectorRegistry()
@@ -331,9 +323,9 @@ finally:
     pool.close()
 ```
 
-SQL metrics are `dramatiq_pg_queue_messages` (queue/state),
-`dramatiq_pg_queue_ready`, `dramatiq_pg_queue_scheduled` and
-`dramatiq_pg_queue_oldest_ready_seconds` (queue only). No message IDs or actor
+SQL metrics are `iddqueue_queue_messages` (queue/state),
+`iddqueue_queue_ready`, `iddqueue_queue_scheduled` and
+`iddqueue_queue_oldest_ready_seconds` (queue only). No message IDs or actor
 arguments become labels. A collector may select one `queue`, `schema` or `prefix`.
 Removed queues disappear from an unfiltered scrape; an explicitly selected
 empty queue returns zero. Scrape errors propagate instead of returning false
@@ -351,7 +343,7 @@ size and queue count affect cost; no additional index was justified by that test
 Use a distinct `(schema, prefix)` pair for each application sharing one database:
 
 ```python
-from dramatiq_pg import PostgresBroker
+from iddqueue import PostgresBroker
 
 first = PostgresBroker(schema="first_app", prefix="jobs_")
 second = PostgresBroker(schema="second_app", prefix="jobs_")

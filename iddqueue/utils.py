@@ -80,7 +80,7 @@ def make_pool(url, maxconn=16):
 
     maxconn = int(kwargs.pop("maxconn", maxconn))
     minconn = int(kwargs.pop("minconn", 0))
-    kwargs.setdefault("application_name", "dramatiq-pg")
+    kwargs.setdefault("application_name", "iddqueue")
     kwargs.setdefault("keepalives", "1")
     kwargs.setdefault("keepalives_count", "2")
     kwargs.setdefault("keepalives_idle", "5")

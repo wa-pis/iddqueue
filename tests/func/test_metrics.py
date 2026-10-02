@@ -14,10 +14,10 @@ from prometheus_client import CollectorRegistry, generate_latest
 from prometheus_client.parser import text_string_to_metric_families
 from psycopg.types.json import Jsonb
 
-from dramatiq_pg import PostgresBroker
-from dramatiq_pg.metrics import PostgresQueueCollector, queue_statistics
-from dramatiq_pg.utils import make_pool
 from example import failing, saver
+from iddqueue import PostgresBroker
+from iddqueue.metrics import PostgresQueueCollector, queue_statistics
+from iddqueue.utils import make_pool
 
 from .conftest import WorkerManager
 
@@ -47,9 +47,9 @@ def test_snapshot_delays_and_retry():
             registry.register(PostgresQueueCollector(pool, queue=queue))
             text = generate_latest(registry).decode()
             assert 'state="rejected"' in text
-            assert 'dramatiq_pg_queue_ready{queue="' + queue + '"} 1.0' in text
+            assert 'iddqueue_queue_ready{queue="' + queue + '"} 1.0' in text
             assert "actor" not in text and "message_id" not in text
-            result = subprocess.run(["dramatiq-pg", "stats", "--queue", queue], capture_output=True, text=True, check=True)
+            result = subprocess.run(["iddqueue", "stats", "--queue", queue], capture_output=True, text=True, check=True)
             assert json.loads(result.stdout)[0]["scheduled"] == 2
     finally:
         with psycopg.connect("", autocommit=True) as conn:

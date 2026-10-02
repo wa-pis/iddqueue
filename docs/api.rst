@@ -6,7 +6,7 @@ Dramatiq-pg ships a relatively simple API. Once you have initiated the broker,
 you're almost done with Dramatiq-pg and can use Dramatiq as usual.
 
 
-``dramatiq_pg.PostgresBroker(url="", pool=None, results=True)``
+``iddqueue.PostgresBroker(url="", pool=None, results=True)``
 ===============================================================
 
 :pool:
@@ -40,7 +40,7 @@ Initialization:
 
 .. code:: python
 
-   from dramatiq_pg import PostgresBroker
+   from iddqueue import PostgresBroker
 
    broker = PostgresBroker("postgresql://user:pass@host/dbname?maxconn=12")
    set_broker(broker)
@@ -53,7 +53,7 @@ Result usage:
    message.get_result(backend=broker.backend)
 
 
-``dramatiq_pg.PostgresBackend(url="", pool=None)``
+``iddqueue.PostgresBackend(url="", pool=None)``
 ==================================================
 
 Postgres-backed implementation of result storage for Dramatiq.
@@ -120,7 +120,7 @@ Queue statistics
 ================
 
 ``queue_statistics(pool, *, schema="dramatiq", prefix="", queue=None)``
-from ``dramatiq_pg.metrics`` returns a list of snapshots containing ``queue``,
+from ``iddqueue.metrics`` returns a list of snapshots containing ``queue``,
 ``counts`` for queued/consumed/done/rejected, ``ready``, ``scheduled`` and
 ``oldest_ready_seconds``. It uses a single PostgreSQL statement and does not
 require Prometheus. Ready age uses the current enqueue timestamp and ETA;

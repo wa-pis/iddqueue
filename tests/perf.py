@@ -30,9 +30,9 @@ from time import sleep
 
 import dramatiq
 
-import dramatiq_pg
-from dramatiq_pg.cli import transaction
-from dramatiq_pg.utils import make_pool
+import iddqueue
+from iddqueue.cli import transaction
+from iddqueue.utils import make_pool
 
 logger = logging.getLogger(__name__)
 # Empty connstring let's you configure psycopg using PG* env vars.
@@ -40,7 +40,7 @@ pool = make_pool("")
 # PostgresBroker accepts either pool= or url=. URL is a libpq connstring.
 # PostgresBroker creates a ConnectionPool from URL, swallowing minconn
 # and maxconn query argument.
-dramatiq.set_broker(dramatiq_pg.PostgresBroker(pool=pool))
+dramatiq.set_broker(iddqueue.PostgresBroker(pool=pool))
 
 
 @dramatiq.actor

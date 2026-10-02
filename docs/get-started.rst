@@ -2,19 +2,19 @@
  Get Started
 =============
 
-- Install dramatiq-pg package from PyPI::
+- Install iddqueue package from PyPI::
 
-     $ pip install "dramatiq-pg[binary]"
+     $ pip install "iddqueue[binary]"
 
 - Apply dramatiq\_pg/schema.sql file in your database::
 
-     $ psql -f dramatiq_pg/schema.sql
+     $ psql -f iddqueue/schema.sql
 
 - Before importing actors, define global broker with a connection
   pool::
 
       import dramatiq
-      from dramatiq_pg import PostgresBroker
+      from iddqueue import PostgresBroker
 
       dramatiq.set_broker(PostgresBroker(url="postgresql:///?maxconn=10"))
 
@@ -27,7 +27,7 @@ Now declare/import actors and manage worker just like any `dramatiq setup
 <https://gitlab.com/dalibo/dramatiq-pg/blob/master/example.py>`_ is available,
 tested on CI.
 
-The CLI tool ``dramatiq-pg`` allows you to flush queues, requeue messages, purge
+The CLI tool ``iddqueue`` allows you to flush queues, requeue messages, purge
 old messages and show stats on the queue. See ``--help`` for details.
 
 See more

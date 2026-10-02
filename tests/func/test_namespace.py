@@ -6,9 +6,9 @@ import pytest
 from dramatiq import Message
 from psycopg import sql
 
-from dramatiq_pg import PostgresBroker, PostgresRateLimiterBackend, generate_init_sql
-from dramatiq_pg.metrics import queue_statistics
-from dramatiq_pg.utils import notification_channel
+from iddqueue import PostgresBroker, PostgresRateLimiterBackend, generate_init_sql
+from iddqueue.metrics import queue_statistics
+from iddqueue.utils import notification_channel
 
 
 def consume_namespace(schema, prefix, output, release):

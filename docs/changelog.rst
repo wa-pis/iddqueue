@@ -58,7 +58,7 @@ Version 0.9.0
 Released 2020-10-02.
 
 - Allow to customize schema and table names.
-- Provide ``dramatiq-pg init`` helper command.
+- Provide ``iddqueue init`` helper command.
 - Correctly clear the advisory locks. Contribution from `@CaselIT`_.
 - Use loose constraint on tenacity. By `@rouge8`_.
 

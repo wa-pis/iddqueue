@@ -70,7 +70,7 @@ Other Usage
 -----------
 
 Their is some more connections required for monitoring and eventually manage
-queue with ``dramatiq-pg`` command. Consider each of these usage as a single
+queue with ``iddqueue`` command. Consider each of these usage as a single
 threaded application, consuming one connection.
 
 
@@ -114,18 +114,18 @@ Dramatiq has `Prometheus support built-in
 <https://dramatiq.io/advanced.html#prometheus-metrics>`_. Dramatiq-pg does
 **not** adds metrics to your regular Postgres monitoring.
 
-The ``dramatiq-pg`` CLI tool has a ``stats`` command that output some metric.
+The ``iddqueue`` CLI tool has a ``stats`` command that output some metric.
 
 ::
 
-   $ dramatiq-pg status
+   $ iddqueue status
    queued: 0
    consumed: 0
    done: 3
    rejected: 0
 
 
-The ``dramatiq-pg`` CLI tool is only configured using ``PG*`` env vars.
+The ``iddqueue`` CLI tool is only configured using ``PG*`` env vars.
 
 
 Crash recovery
@@ -143,7 +143,7 @@ Flushing
 --------
 
 You can flush all queues, including queued and consumed messages by using
-``dramatiq-pg flush`` command. All messages are lost.
+``iddqueue flush`` command. All messages are lost.
 
 
 Queue Maintainance
@@ -153,7 +153,7 @@ Dramatiq-pg tries to be self-healing, even without dedicated service. Worker
 randomly purge queues from message older than 30 days. Automatic purge triggers
 daily per worker.
 
-You can trigger manually a purge of old messages by calling ``dramatiq-pg
+You can trigger manually a purge of old messages by calling ``iddqueue
 purge``. This command accepts a ``--maxage`` argument with a Postgres interval
 value. All message marked as ``done`` or ``rejected`` and older than ``maxage``
 will be dropped.

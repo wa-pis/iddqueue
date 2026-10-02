@@ -11,13 +11,13 @@ from dramatiq.results import ResultFailure
 from psycopg import sql
 from psycopg.types.json import Jsonb
 
-from dramatiq_pg import generate_init_sql
-from dramatiq_pg.broker import message_lock
 from example import retryable
+from iddqueue import generate_init_sql
+from iddqueue.broker import message_lock
 
 
 def cli(*args):
-    return subprocess.run(["dramatiq-pg", *map(str, args)], capture_output=True, text=True)
+    return subprocess.run(["iddqueue", *map(str, args)], capture_output=True, text=True)
 
 
 def rejected(conn, message_id, *, state="rejected"):

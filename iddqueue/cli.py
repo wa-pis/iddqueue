@@ -56,11 +56,7 @@ def entrypoint():
         if debug:
             pdb.post_mortem(sys.exc_info()[2])
         else:
-            logger.error(
-                "Please file an issue at "
-                "https://gitlab.com/dalibo/dramatiq-pg/issues/new with full "
-                "log.",
-            )
+            logger.error("Report this error to the IDDQueue project maintainer.")
     exit(1)
 
 
@@ -92,9 +88,9 @@ def main():
 
 
 def make_argument_parser():
-    version = importlib.metadata.version("dramatiq-pg")
+    version = importlib.metadata.version("iddqueue")
     parser = argparse.ArgumentParser(
-        prog="dramatiq-pg",
+        prog="iddqueue",
         description="Maintainance utility for task-queue in Postgres.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )

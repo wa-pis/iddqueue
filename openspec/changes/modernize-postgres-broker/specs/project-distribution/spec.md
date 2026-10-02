@@ -35,3 +35,10 @@ GitHub CI SHALL проверять код и тесты на Python 3.10, 3.13 �
 #### Scenario: GitHub project setup
 - **WHEN** пользователь определил владельца, имя, видимость репозитория и идентичность Python-пакета
 - **THEN** создан новый репозиторий, origin указывает на него, upstream остаётся источником исходного проекта, а метаданные согласованы с выбранной идентичностью
+
+### Requirement: IDDQueue identity
+Пакет SHALL использовать distribution name iddqueue, import iddqueue и CLI iddqueue, сохраняя исходную лицензию и attribution.
+
+#### Scenario: Renamed wheel
+- **WHEN** собран и установлен wheel IDDQueue
+- **THEN** import iddqueue и команда iddqueue --version работают, а SQL schema и wire namespace остаются совместимыми с текущими данными
