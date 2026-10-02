@@ -12,6 +12,7 @@ from textwrap import dedent
 from dramatiq.results import ResultBackend, ResultMissing, ResultTimeout
 from psycopg.types.json import Jsonb
 
+from .cancellation import ResultCancelled
 from .utils import (
     QueryManager,
     make_pool,
@@ -57,6 +58,8 @@ class PostgresBackend(ResultBackend):
                 curs.execute(self.queries.GET, (key,))
                 row = curs.fetchone()
                 if row is not None:
+                    if row[1] == "cancelled":
+                        raise ResultCancelled(str(message))
                     return self.unwrap_result(row[0])
                 if not block:
                     raise ResultMissing(message)
@@ -86,10 +89,10 @@ QUERIES = QueryManager(
     dict(
         GET=dedent(
             """\
-    SELECT result
+    SELECT result, state::text
         FROM {schema}.{tablename}
-        WHERE message_id = %s AND result IS NOT NULL
-          AND result_ttl > NOW();
+        WHERE message_id = %s AND (state::text = 'cancelled' OR
+          (result IS NOT NULL AND result_ttl > NOW()));
     """
         ),
         STORE=dedent(
@@ -103,6 +106,7 @@ QUERIES = QueryManager(
         DO UPDATE SET mtime = NOW(),
                         result = EXCLUDED.result,
                         result_ttl = EXCLUDED.result_ttl
+        WHERE {schema}.{tablename}.state <> 'cancelled'
         RETURNING queue_name, message_id, result
     )
     SELECT

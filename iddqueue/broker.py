@@ -15,6 +15,7 @@ from psycopg import Notify, sql
 from psycopg.pq import TransactionStatus
 from psycopg.types.json import Jsonb
 
+from .cancellation import cancel, cancellation_status
 from .control import QueueControl, allow_start, is_paused, set_paused
 from .failures import FailureMetadata
 from .results import PostgresBackend
@@ -68,9 +69,18 @@ class PostgresBroker(Broker):
 
     def emit_after(self, signal, *args, **kwargs):
         # A deferred actor is not a terminal skip (Results must not store None).
-        if signal == "skip_message" and getattr(args[0], "_pg_paused", False):
+        if signal == "skip_message" and (getattr(args[0], "_pg_paused", False) or getattr(args[0], "_pg_cancelled", False)):
             return
         return super().emit_after(signal, *args, **kwargs)
+
+    def cancel(self, message_id):
+        return cancel(self.pool, message_id, schema=self.queries.schema, prefix=self.queries.prefix)
+
+    def cancellation_status(self, message_id):
+        return cancellation_status(self.pool, message_id, schema=self.queries.schema, prefix=self.queries.prefix)
+
+    def cancellation_requested(self, message_id):
+        return self.cancellation_status(message_id)["requested"]
 
     def pause_queue(self, queue):
         set_paused(self.pool, queue, True, schema=self.queries.schema, prefix=self.queries.prefix)
@@ -277,6 +287,10 @@ class PostgresConsumer(Consumer):
     @raise_connection_error
     def ack(self, message):
         # This function is executed in worker thread!
+        if getattr(message, "_pg_cancelled", False):
+            self.unlock_q.put_nowait(message)
+            self.in_processing.remove(message.message_id)
+            return
         if getattr(message, "_pg_paused", False):
             with transaction(self.pool) as curs:
                 curs.execute(self.queries.DEFER_PAUSED, (message.message_id, message.queue_name))
@@ -525,7 +539,7 @@ QUERIES = QueryManager(
         CONSUME_ONE=dedent(
             """\
         UPDATE {schema}.{tablename}
-            SET "state" = 'consumed',
+            SET "state" = 'consumed', started = FALSE,
                 mtime = NOW()
             WHERE message_id = %s
             AND state IN ('queued', 'consumed')
@@ -546,10 +560,11 @@ QUERIES = QueryManager(
             VALUES (%s, %s, 'queued', %s)
             ON CONFLICT (message_id)
                 DO UPDATE SET
-                    "state" = 'queued',
+                    "state" = 'queued', started = FALSE,
                     message = EXCLUDED.message,
                     mtime = clock_timestamp(),
                     queue_name = EXCLUDED.queue_name
+            WHERE {schema}.{tablename}.state <> 'cancelled'
             RETURNING queue_name, message
         )
         SELECT
@@ -584,7 +599,7 @@ QUERIES = QueryManager(
                 SET "state" = 'rejected', message = %s
             WHERE message_id = %s
                 AND queue_name = %s
-                AND state <> 'rejected'
+                AND state IN ('queued', 'consumed')
             RETURNING message
         )
         SELECT
@@ -600,15 +615,15 @@ QUERIES = QueryManager(
         PURGE=dedent(
             """\
         DELETE FROM {schema}.{tablename}
-        WHERE "state" IN ('done', 'rejected')
+        WHERE "state" IN ('done', 'rejected', 'cancelled')
         AND mtime <= (NOW() - %s::interval);
         """
         ),
         REQUEUE=dedent(
             """\
         UPDATE {schema}.{tablename}
-            SET state = 'queued', mtime = clock_timestamp()
-        WHERE message_id = ANY(%s::uuid[]);
+            SET state = 'queued', started = FALSE, mtime = clock_timestamp()
+        WHERE message_id = ANY(%s::uuid[]) AND state IN ('queued', 'consumed');
         """
         ),
     )

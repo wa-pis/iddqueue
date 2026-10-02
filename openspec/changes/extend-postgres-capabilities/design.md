@@ -104,3 +104,15 @@ Queue control opt-in: PostgresBroker(queue_control=True), middleware gate пер
 Resume отправляет scan wakeup в normal/DQ; consumer читает durable pending rows.
 Граница started — commit разрешающей SQL gate транзакции; уже разрешённый actor
 может завершиться после pause. Все workers области должны включить queue_control.
+
+
+## Этап 3 — уточнение cancellation
+
+Queue row started/cancel_requested сериализуется FOR UPDATE со start gate.
+Cancel до разрешения старта записывает cancelled и NOTIFY Results; started
+получает request flag. Cooperative API cancellation_requested(id) — проверка
+флага, actor сам выполняет cleanup и возвращается; его результат обычный done.
+При retry request сохраняется, started сбрасывается; следующая gate записывает
+cancelled. Все workers должны включать queue_control для prefetched protection.
+Cancelled сохраняется до purge; ResultCancelled наследует ResultFailure.
+Upgrade enum/columns выполняется при остановленных workers до нового runtime.

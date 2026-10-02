@@ -48,3 +48,26 @@ Deferred prefetched task возвращается queued без retry/Results/te
 Этап 2.5 завершён: https://github.com/wa-pis/iddqueue/actions/runs/37065548460,
 commit 4db00a0. Все шесть Python 3.10/3.13/3.14 × PostgreSQL 14/18 jobs success.
 Этапы 3–7 ещё не начаты; общий change остаётся активным.
+
+
+# Evidence — этап 3, cancellation
+
+2026-10-03. Cancel/status API и JSON CLI; queue started/cancel_requested,
+cancelled enum state, ResultCancelled, cooperative request check.
+SQL row locks сериализуют start/cancel; retries и terminal updates защищают
+cancelled tombstone. Stats/collector включают cancelled; purge учитывает его.
+
+Фактически выполнено:
+- Dedicated PostgreSQL 14.20/Python 3.13.14, full suite: **97 passed in 34.70s**.
+- Queued/DQ cancellation, repeated cancel, prefetched gate и stale ack/nack.
+- Running request, retry → cancelled, missing/done сохранение Results.
+- Реальный Worker: CurrentMessage actor увидел flag и вернул cleanup result;
+  второй prefetched actor не вызван.
+- Results waiter получает ResultCancelled; блокирующее чтение не ждёт timeout.
+- Cancel/start transaction race: cancel ждёт row lock и возвращает requested.
+- Prefix isolation с тем же UUID, upgrade дважды, CLI cancel/status/missing exit.
+- Ruff, poetry check, strict OpenSpec, git diff --check: success.
+- Wheel/sdist build и LICENSE checker: success; cancellation.sql включён в package.
+- Existing database upgrade выполнен CLI до запуска нового runtime.
+
+Этап 3.5 ожидает удалённого CI; этапы 4–7 не начаты.

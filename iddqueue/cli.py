@@ -17,6 +17,7 @@ from psycopg.types.json import Jsonb
 
 from .broker import QUERIES as BROKER_QUERIES
 from .broker import message_lock, purge
+from .cancellation import cancel, cancellation_status
 from .control import is_paused, set_paused
 from .metrics import queue_statistics
 from .schema import generate_init_sql, generate_upgrade_sql
@@ -182,6 +183,11 @@ def make_argument_parser():
         control.add_argument("queue")
         control.set_defaults(command=control_command, control_operation=name)
 
+    for name in ("cancel", "cancel-status"):
+        cancellation = subparsers.add_parser(name)
+        cancellation.add_argument("message_id", type=UUID)
+        cancellation.set_defaults(command=cancellation_command, cancellation_operation=name)
+
     failed = subparsers.add_parser("failed")
     operations = failed.add_subparsers()
     listing = operations.add_parser("list")
@@ -233,6 +239,14 @@ def upgrade_command(args):
     logger.info("Upgraded database.")
 
 
+def cancellation_command(args):
+    operation = cancel if args.cancellation_operation == "cancel" else cancellation_status
+    output = operation(args.pool, args.message_id, schema=args.schemaname, prefix=args.prefix)
+    print(json.dumps(output))
+    if output["state"] is None:
+        return 1
+
+
 def control_command(args):
     if args.control_operation != "queue-status":
         set_paused(args.pool, args.queue, args.control_operation == "pause",
@@ -251,7 +265,7 @@ def stats_command(args):
         curs.execute(QUERIES.STATS)
         stats = dict(curs.fetchall())
 
-    for state in "queued", "consumed", "done", "rejected":
+    for state in "queued", "consumed", "done", "rejected", "cancelled":
         print(f"{state}: {stats.get(state, 0)}")
 
 
@@ -341,7 +355,7 @@ QUERIES = QueryManager(
         RECOVER=dedent(
             """\
     UPDATE {schema}.{tablename}
-    SET state = 'queued', mtime = clock_timestamp()
+    SET state = 'queued', started = FALSE, mtime = clock_timestamp()
     WHERE state = 'consumed'
         AND mtime < NOW() - %s::interval;
     """

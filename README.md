@@ -281,7 +281,7 @@ not reverse prior side effects or reset barriers and downstream pipelines.
 
 `iddqueue stats` keeps its original state totals. Use `stats --json` for
 per-queue snapshots, or `stats --queue default` for one queue (including zeros
-when empty). Each snapshot includes all four stored-state counts, `ready`,
+when empty). Each snapshot includes all five stored-state counts, `ready`,
 `scheduled` and `oldest_ready_seconds`.
 
 Ready backlog includes only queued messages whose ETA has passed. Scheduled
@@ -470,3 +470,57 @@ It also handles a resume racing with acknowledgment of a deferred message.
 Pausing one logical queue affects neither other queues nor other schema/prefix
 areas. Queue control middleware must remain first in the middleware list;
 place additional middleware after it.
+
+
+### Cancel tasks
+
+Run `iddqueue upgrade` with workers stopped before upgrading this version:
+the queue gains `started`/`cancel_requested` columns and a `cancelled` enum
+value. Restart all participants together; enable `queue_control=True` on every
+worker to protect prefetched tasks and serialize cancellation with actor start.
+
+```python
+outcome = broker.cancel(message.message_id)
+status = broker.cancellation_status(message.message_id)
+```
+
+```sh
+iddqueue cancel MESSAGE_ID
+iddqueue cancel-status MESSAGE_ID
+```
+
+Cancel returns JSON-compatible `status` and `state`: `cancelled` for a task
+cancelled before its start permission, `requested` for an already started task,
+`terminal` for done/rejected, or `missing` (CLI exits nonzero).
+Repeated cancellation is idempotent. Cancel-status includes `state` and
+`requested`. Existing completed Results remain intact.
+
+Queued, delayed and prefetched cancellations never call the actor. Results
+raises `iddqueue.ResultCancelled` (a `ResultFailure` subclass), including for
+a waiter already blocked when cancellation commits. No retry/ack/nack/recover
+operation may revive a cancelled row. Queue statistics expose the additional
+`cancelled` state; purge uses the same retention policy as done/rejected.
+After the cancellation row is purged, Results follows ordinary missing semantics.
+
+Running actors are not interrupted. They may check the request between chunks,
+using standard `CurrentMessage` middleware:
+
+```python
+from dramatiq.middleware import CurrentMessage
+
+broker.add_middleware(CurrentMessage())
+
+@dramatiq.actor(store_results=True)
+def work():
+    message = CurrentMessage.get_current_message()
+    for chunk in chunks():
+        if broker.cancellation_requested(message.message_id):
+            return {"stopped": True}
+        process(chunk)
+```
+
+An actor that returns after cooperative cleanup completes normally with its
+returned result. If a requested task retries, the next start gate cancels that
+attempt. Do not reset cancellation by reusing its UUID; publish a new message
+for a fresh execution. Deduplication may return a cancelled original until its
+key TTL expires. At-least-once side effects still require idempotency.

@@ -37,7 +37,7 @@ def test_snapshot_delays_and_retry():
                     message.options["eta"] = int((time.time() + 60) * 1000)
                 conn.execute("INSERT INTO dramatiq.queue (message_id, queue_name, state, message, mtime) VALUES (%s, %s, %s, %s, now()-interval '1 hour')", (message.message_id, queue, state, Jsonb(message.asdict())))
             stats = queue_statistics(pool, queue=queue)[0]
-            assert stats["counts"] == {"queued": 2, "consumed": 1, "done": 1, "rejected": 1}
+            assert stats["counts"] == {"queued": 2, "consumed": 1, "done": 1, "rejected": 1, "cancelled": 0}
             assert stats["ready"] == 1 and stats["scheduled"] == 2
             assert stats["oldest_ready_seconds"] >= 3600
             retry = Message(message_id=ids[0], queue_name=queue, actor_name="test", args=(), kwargs={}, options={"retries": 1})

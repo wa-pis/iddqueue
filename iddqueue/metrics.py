@@ -4,7 +4,7 @@ from psycopg import sql
 
 from .utils import transaction
 
-STATES = ("queued", "consumed", "done", "rejected")
+STATES = ("queued", "consumed", "done", "rejected", "cancelled")
 
 
 def statistics_query(schema="dramatiq", prefix=""):
@@ -14,6 +14,7 @@ def statistics_query(schema="dramatiq", prefix=""):
             count(*) FILTER (WHERE state = 'consumed'),
             count(*) FILTER (WHERE state = 'done'),
             count(*) FILTER (WHERE state = 'rejected'),
+            count(*) FILTER (WHERE state = 'cancelled'),
             count(*) FILTER (WHERE state = 'queued' AND ready_at <= now()),
             count(*) FILTER (WHERE state IN ('queued', 'consumed') AND ready_at > now()),
             coalesce(greatest(0, extract(epoch FROM now() - min(ready_at)
@@ -30,8 +31,8 @@ def queue_statistics(pool, *, schema="dramatiq", prefix="", queue=None):
     with transaction(pool) as cursor:
         cursor.execute(statistics_query(schema, prefix), (queue, queue))
         rows = cursor.fetchall()
-    snapshots = [dict(queue=row[0], counts=dict(zip(STATES, row[1:5])),
-                      ready=row[5], scheduled=row[6], oldest_ready_seconds=float(row[7]))
+    snapshots = [dict(queue=row[0], counts=dict(zip(STATES, row[1:6])),
+                      ready=row[6], scheduled=row[7], oldest_ready_seconds=float(row[8]))
                  for row in rows]
     if not snapshots and queue is not None:
         snapshots.append(dict(queue=queue, counts=dict.fromkeys(STATES, 0),

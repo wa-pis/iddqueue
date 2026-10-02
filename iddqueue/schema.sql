@@ -9,11 +9,14 @@ CREATE TYPE :"schema".:"state" AS ENUM (
   'queued',
   'consumed',
   'rejected',
+  'cancelled',
   'done'
 );
 
 CREATE TABLE :"schema".:"queue"(
   message_id uuid PRIMARY KEY,
+  started BOOLEAN NOT NULL DEFAULT FALSE,
+  cancel_requested BOOLEAN NOT NULL DEFAULT FALSE,
   queue_name TEXT NOT NULL DEFAULT 'default',
   "state" :"schema".:"state",
   mtime TIMESTAMP WITH TIME ZONE DEFAULT NOW(),

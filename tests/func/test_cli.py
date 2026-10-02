@@ -48,7 +48,7 @@ def test_custom_schema_maintenance():
     prefix = 'jobs"_'
     flags = ("--schemaname", schema, "--prefix", prefix)
     table = sql.Identifier(schema, prefix + "queue")
-    states = ["queued", "consumed", "done", "rejected"]
+    states = ["queued", "consumed", "done", "rejected", "cancelled"]
     with psycopg.connect("", autocommit=True) as connection:
         # A second storage area must survive every operation on the first.
         control_schema = schema + "control"
@@ -66,7 +66,7 @@ def test_custom_schema_maintenance():
             assert cli(*flags, "stats").stdout.splitlines() == [state + ": 1" for state in states]
             assert "Recovered 1 messages" in cli(*flags, "recover", "--minage", "1 hour").stderr
             assert "queued: 2" in cli(*flags, "stats").stdout
-            assert "Deleted 2 messages" in cli(*flags, "purge", "--maxage", "1 hour").stderr
+            assert "Deleted 3 messages" in cli(*flags, "purge", "--maxage", "1 hour").stderr
             assert "Flushed 2 messages" in cli(*flags, "flush").stderr
             assert cli(*flags, "stats").stdout.splitlines() == [state + ": 0" for state in states]
             assert connection.execute(sql.SQL("SELECT state FROM {} WHERE message_id = %s").format(

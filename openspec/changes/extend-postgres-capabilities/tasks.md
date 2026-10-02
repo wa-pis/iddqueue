@@ -16,10 +16,10 @@
 
 ## 3. Отмена задач
 
-- [ ] 3.1 Добавить cancelled state/migration, request flag, cancel/status CLI/API и Results cancellation exception; обновить stats/metrics.
-- [ ] 3.2 Переиспользовать разрешение старта; отменять queued/delayed/prefetched до actor, предоставить cooperative check для started actor.
-- [ ] 3.3 Проверить cancel/start race, repeated cancel, missing/done, Results, retry/recover/ack races и отсутствие resurrection.
-- [ ] 3.4 Обновить docs и evidence этапа; выполнить Ruff, полный tests/unit tests/func на выделенном PostgreSQL, poetry check, strict OpenSpec и build/license checker при изменении packaging/SQL resources.
+- [x] 3.1 Добавить cancelled state/migration, request flag, cancel/status CLI/API и Results cancellation exception; обновить stats/metrics.
+- [x] 3.2 Переиспользовать разрешение старта; отменять queued/delayed/prefetched до actor, предоставить cooperative check для started actor.
+- [x] 3.3 Проверить cancel/start race, repeated cancel, missing/done, Results, retry/recover/ack races и отсутствие resurrection.
+- [x] 3.4 Обновить docs и evidence этапа; выполнить Ruff, полный tests/unit tests/func на выделенном PostgreSQL, poetry check, strict OpenSpec и build/license checker при изменении packaging/SQL resources.
 - [ ] 3.5 После проверок зафиксировать этап отдельным commit и push в wa-pis/iddqueue main; проверить успешный GitHub CI и записать ссылку, не отмечая подготовленный workflow выполненным.
 
 ## 4. Остальные middleware Dramatiq

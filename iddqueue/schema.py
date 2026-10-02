@@ -44,7 +44,7 @@ def generate_coordination_sql(schema="dramatiq", prefix=""):
 def generate_upgrade_sql(schema="dramatiq", prefix=""):
     """Add optional storage without changing existing queue data."""
     parts = [generate_coordination_sql(schema, prefix)]
-    for name in ("deduplication.sql", "control.sql"):
+    for name in ("deduplication.sql", "control.sql", "cancellation.sql"):
         with open(os.path.join(os.path.dirname(__file__), name)) as fo:
             parts.append("\n".join(process_psql_lines(fo, schema, prefix)))
     return "\n".join(parts)

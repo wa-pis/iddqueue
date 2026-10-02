@@ -4,6 +4,7 @@ from dramatiq.common import dq_name, q_name
 from dramatiq.middleware import Middleware, SkipMessage
 from psycopg import sql
 
+from .cancellation import notify_cancelled
 from .utils import notification_channel, transaction
 
 
@@ -54,10 +55,33 @@ class QueueControl(Middleware):
             with transaction(broker.pool) as cursor:
                 permitted = allow_start(cursor, message.queue_name,
                                         broker.queries.schema, broker.queries.prefix)
+                if permitted:
+                    table_name = sql.Identifier(broker.queries.schema, broker.queries.prefix + "queue")
+                    cursor.execute(sql.SQL(
+                        "SELECT state::text, cancel_requested FROM {} "
+                        "WHERE message_id = %s FOR UPDATE"
+                    ).format(table_name), (message.message_id,))
+                    row = cursor.fetchone()
+                    if row is None or row[0] == "cancelled" or row[1]:
+                        if row and row[0] in ("queued", "consumed"):
+                            cursor.execute(sql.SQL(
+                                "UPDATE {} SET state = 'cancelled' WHERE message_id = %s"
+                            ).format(table_name), (message.message_id,))
+                            notify_cancelled(cursor, message.message_id,
+                                             broker.queries.schema, broker.queries.prefix)
+                        message._pg_cancelled = True
+                    else:
+                        cursor.execute(sql.SQL(
+                            "UPDATE {} SET started = TRUE WHERE message_id = %s"
+                        ).format(table_name), (message.message_id,))
+        except SkipMessage:
+            raise
         except Exception:
             # Dramatiq logs ordinary hook errors and continues: fail closed.
             logging.getLogger(__name__).exception("Queue start gate failed")
             permitted = False
+        if getattr(message, "_pg_cancelled", False):
+            raise SkipMessage("Task cancelled")
         if not permitted:
             message._pg_paused = True
             raise SkipMessage("Queue paused")
