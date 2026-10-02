@@ -158,4 +158,7 @@ transactions **100 / 1**. Instrumentation исключает пустые health
 BEGIN/COMMIT и wire round trips не подсчитывались. Результат одной машины,
 без утверждения такой же скорости в production или для dedup batches.
 
-Этап 6.5 ожидает commit/push и подтверждённый GitHub CI. Этап 7 не начат.
+Этап 6.5 завершён: https://github.com/wa-pis/iddqueue/actions/runs/37072742814,
+commit 02b99cc. Все шесть Python 3.10/3.13/3.14 × PostgreSQL 14/18 jobs success,
+включая функциональные batch scenarios и build/LICENSE. Этап 7 не начат;
+общий change активен до scheduler и финальной синхронизации specs.
