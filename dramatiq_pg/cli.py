@@ -298,7 +298,7 @@ def retry_command(args):
             return 1
         payload = row[0]
         message = Message(**payload)
-        curs.execute("SELECT pg_try_advisory_xact_lock(%s)", (message_lock(message),))
+        curs.execute("SELECT pg_try_advisory_xact_lock(%s)", (message_lock(message, schema=args.schemaname, prefix=args.prefix),))
         if not curs.fetchone()[0]:
             logger.error("Retry refused: worker still holds the message lock")
             return 1
@@ -311,7 +311,7 @@ def retry_command(args):
             "WHERE message_id = %s AND state = 'rejected'"
         ).format(_table(args)), (Jsonb(payload), payload["queue_name"], args.message_id))
         curs.execute("SELECT pg_notify(%s, %s)",
-                     ("dramatiq." + payload["queue_name"] + ".enqueue",
+                     (BROKER_QUERIES.channel(payload["queue_name"], "enqueue"),
                       json.dumps({"message_id": str(args.message_id)})))
     print(json.dumps(dict(message_id=str(args.message_id), state="queued")))
 

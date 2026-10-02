@@ -345,3 +345,39 @@ your workload. A local PostgreSQL 14 test with 10,000 rows and 1 KB payloads too
 about 2.85 ms for all queues and 1.08 ms for one queue using a sequential scan;
 these are sample measurements, not production guarantees. Retention, payload
 size and queue count affect cost; no additional index was justified by that test.
+
+### Application storage isolation
+
+Use a distinct `(schema, prefix)` pair for each application sharing one database:
+
+```python
+from dramatiq_pg import PostgresBroker
+
+first = PostgresBroker(schema="first_app", prefix="jobs_")
+second = PostgresBroker(schema="second_app", prefix="jobs_")
+```
+
+Initialize each pair with `generate_init_sql(schema, prefix)` or the CLI's
+`--schemaname` and `--prefix`. SQL, enqueue/ack/result notifications and message
+locks use that same storage area. Identical queue names and UUIDs can be processed
+independently in different areas, including large payloads fetched by ID.
+Coordination backends and metrics collectors must use matching schema/prefix.
+For shared pools, configure each backend explicitly with the same pair.
+
+Results remain keyed by the message UUID. Dramatiq's logical `namespace` option
+does not change SQL storage. `use_namespace_prefix_keys=True` raises `ValueError`;
+use schema/prefix rather than a string key format for application isolation.
+Different queue names alone do not isolate results with identical UUIDs.
+
+The default area (`dramatiq`, empty prefix) retains existing short channel names
+and message locks. Other areas use stable hashed channels bounded to 63 bytes;
+long default queue names also use bounded channels. No schema migration is needed.
+
+Before upgrading non-default areas (or long default queue names), stop producers,
+drain or gracefully stop every worker using that area, and stop result waiters.
+Upgrade all participants together, then restart workers, result readers and
+producers with matching configurations. Do not mix old and new versions: their
+channels and advisory locks differ. Persisted queued tasks and results remain in
+the same tables; restarted workers recover queued tasks from those tables.
+Rollback follows the same stop-and-restart sequence. This is application storage
+separation, not PostgreSQL permissions; use database roles for access control.

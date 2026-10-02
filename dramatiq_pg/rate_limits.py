@@ -6,7 +6,7 @@ import time
 from dramatiq.rate_limits.backend import RateLimiterBackend
 from psycopg import sql
 
-from .utils import make_pool, transaction, wait_for_notifies
+from .utils import make_pool, storage_namespace, transaction, wait_for_notifies
 
 
 class PostgresRateLimiterBackend(RateLimiterBackend):
@@ -16,7 +16,7 @@ class PostgresRateLimiterBackend(RateLimiterBackend):
         self._owns_pool = pool is None
         self.pool = make_pool(url or "") if pool is None else pool
         self.table = sql.Identifier(schema, prefix + "coordination")
-        self.namespace = schema + "\0" + prefix + "\0"
+        self.namespace = storage_namespace(schema, prefix)
 
     def close(self):
         if self._owns_pool:

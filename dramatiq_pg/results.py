@@ -26,6 +26,8 @@ logger = logging.getLogger(__name__)
 
 class PostgresBackend(ResultBackend):
     def __init__(self, *, url=None, pool=None, schema=None, prefix=None, **kw):
+        if kw.get("use_namespace_prefix_keys"):
+            raise ValueError("use_namespace_prefix_keys is unsupported for UUID results; use schema/prefix isolation")
         super().__init__(**kw)
 
         if pool is not None and url:
@@ -49,7 +51,7 @@ class PostgresBackend(ResultBackend):
 
         timeout = 300_000 if timeout is None else timeout
         deadline = time.monotonic() + timeout / 1000
-        channel = f"dramatiq.{key}.results"
+        channel = self.queries.channel(key, "results")
         with transaction(self.pool, listen=channel) as curs:
             while True:
                 curs.execute(self.queries.GET, (key,))
@@ -73,6 +75,7 @@ class PostgresBackend(ResultBackend):
                     key,
                     Jsonb(tidy4json(result)),
                     f"{ttl} ms",
+                    self.queries.channel(key, "results"),
                 ),
             )
             if 0 == curs.rowcount:
@@ -103,7 +106,7 @@ QUERIES = QueryManager(
         RETURNING queue_name, message_id, result
     )
     SELECT
-        pg_notify('dramatiq.' || message_id || '.results', message_id::text)
+        pg_notify(%s, message_id::text)
     FROM stored;
     """
         ),

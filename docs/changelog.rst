@@ -4,6 +4,9 @@ Dramatiq-pg Changelog
 Unreleased
 ----------
 
+- Isolate notification channels and message locks by schema/prefix.
+- Reject string namespace-prefix result keys; retain UUID result identity.
+
 - Add per-queue ready/scheduled backlog and optional PostgreSQL Prometheus metrics.
 - Reset enqueue timestamps when requeuing a new attempt.
 

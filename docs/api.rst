@@ -130,3 +130,18 @@ consumed rows are excluded from ready age. Empty selected queues return zeros.
 Prometheus gauges with queue/state labels. It imports prometheus_client only
 when collecting. Registry registration performs no database access. The caller
 owns the pool and should register the collector in a dedicated exporter process.
+
+Storage namespaces
+==================
+
+Broker and Results isolate by ``schema``/``prefix``. Notifications and message
+locks include that area for non-default configurations. Channels use a stable
+digest where needed and remain within PostgreSQL's 63-byte identifier limit.
+Default short channels and default message-lock keys retain their old format.
+
+``PostgresBackend(use_namespace_prefix_keys=True)`` raises ``ValueError`` with
+instructions to use schema/prefix; keys remain message UUIDs. ``namespace`` from
+the Dramatiq Results base class is logical metadata, not a SQL storage boundary.
+Custom coordination backends and collectors must match the broker's storage
+area. Upgrade all producers, workers and result waiters together after stopping
+the old processes. Table layout and stored UUIDs are unchanged.

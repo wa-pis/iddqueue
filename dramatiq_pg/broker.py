@@ -24,6 +24,7 @@ from .utils import (
     make_pool,
     raise_connection_error,
     retry_pg,
+    storage_namespace,
     tidy4json,
     transaction,
     wait_for_notifies,
@@ -126,6 +127,7 @@ class PostgresBroker(Broker):
                 message.queue_name,
                 message.message_id,
                 Jsonb(tidy4json(message)),
+                self.queries.channel(message.queue_name, "enqueue"),
                 message.message_id,
             ),
         )
@@ -208,7 +210,7 @@ class PostgresConsumer(Consumer):
         # This function is executed in worker thread!
 
         with transaction(self.pool) as curs:
-            channel = f"dramatiq.{message.queue_name}.ack"
+            channel = self.queries.channel(message.queue_name, "ack")
             payload = tidy4json(message)
             logger.debug("Notifying %s for ACK %s.", channel, message.message_id)
             # dramatiq always ack a message, even if it has been requeued by
@@ -279,7 +281,7 @@ class PostgresConsumer(Consumer):
         self._listen_conn = conn = getconn(self.pool)
         # This is for NOTIFY consistency, according to Psycopg documentation.
         conn.autocommit = True
-        channel = sql.Identifier(f"dramatiq.{self.queue_name}.enqueue")
+        channel = sql.Identifier(self.queries.channel(self.queue_name, "enqueue"))
         with conn.cursor() as curs:
             logger.debug("Listening on channel %s.", channel)
             curs.execute(sql.SQL("LISTEN {}").format(channel))
@@ -293,7 +295,7 @@ class PostgresConsumer(Consumer):
 
         # Race to process message.
         with transaction(self.get_consume_conn()) as curs:
-            lock = message_lock(message)
+            lock = message_lock(message, schema=self.queries.schema, prefix=self.queries.prefix)
             curs.execute(self.queries.CONSUME_ONE, (message.message_id, lock))
             # If no row was updated, this mean another worker has consumed it.
             successfully_consumed = curs.rowcount == 1
@@ -313,7 +315,7 @@ class PostgresConsumer(Consumer):
 
         with transaction(self.pool) as curs:
             # Use the same channel as ack. Actually means done.
-            channel = f"dramatiq.{message.queue_name}.ack"
+            channel = self.queries.channel(message.queue_name, "ack")
             logger.debug("Notifying %s for NACK %s.", channel, message.message_id)
             payload = tidy4json(message)
             curs.execute(
@@ -350,7 +352,7 @@ class PostgresConsumer(Consumer):
         # We may have received a notify between LISTEN and SELECT of pending
         # messages. That's not a problem because we are able to skip spurious
         # notifies.
-        channel = f"dramatiq.{self.queue_name}.enqueue"
+        channel = self.queries.channel(self.queue_name, "enqueue")
         with transaction(conn) as curs:
             curs.execute(self.queries.FETCH_PENDING, (self.queue_name,))
             return [Notify(pid=0, channel=channel, payload=r[0]) for r in curs]
@@ -367,7 +369,7 @@ class PostgresConsumer(Consumer):
                     message = self.unlock_q.get(block=False)
                 except Empty:
                     return
-                lock = message_lock(message)
+                lock = message_lock(message, schema=self.queries.schema, prefix=self.queries.prefix)
                 logger.debug(
                     "Unlocking %s@%s (%s).",
                     message.message_id,
@@ -396,10 +398,12 @@ class PostgresConsumer(Consumer):
 _max_positive_int = 2**63
 
 
-def message_lock(message):
+def message_lock(message, *, schema="dramatiq", prefix=""):
     # create sha256 hash from input and create a 64 bit int from it, using
     # 16 hex char. any 16 char range is ok. it takes the center ones
     global_id = message.queue_name + str(message.message_id)
+    if schema != "dramatiq" or prefix:
+        global_id = storage_namespace(schema, prefix) + global_id
     hex = sha256(global_id.encode("utf-8")).hexdigest()
     unsigned = int(hex[24:40], 16)
     # PostgreSQL lock is a signed int on 64 bytes. Shift unsigned value from
@@ -455,7 +459,7 @@ QUERIES = QueryManager(
             RETURNING queue_name, message
         )
         SELECT
-            pg_notify('dramatiq.' || queue_name || '.enqueue',
+            pg_notify(%s,
                 CASE WHEN octet_length(message::text) >= 8000
                 THEN jsonb_build_object('message_id', %s::text)::text
                 ELSE message::text

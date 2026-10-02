@@ -2,6 +2,7 @@ import functools
 import json
 import logging
 from contextlib import ExitStack, contextmanager
+from hashlib import sha256
 from urllib.parse import parse_qsl, urlparse
 
 import tenacity
@@ -155,12 +156,28 @@ def wait_for_notifies(conn, timeout=1):
     return list(conn.notifies(timeout=timeout, stop_after=1))
 
 
+
+def storage_namespace(schema="dramatiq", prefix=""):
+    # PostgreSQL identifiers cannot contain NUL, so components cannot overlap.
+    return schema + "\0" + prefix + "\0"
+
+
+def notification_channel(key, event, *, schema="dramatiq", prefix=""):
+    legacy = f"dramatiq.{key}.{event}"
+    if schema == "dramatiq" and not prefix and len(legacy.encode()) <= 63:
+        return legacy
+    digest = sha256((storage_namespace(schema, prefix) + str(key) + "\0" + event).encode()).hexdigest()
+    return "dpg." + digest[:48]
+
 class QueryManager:
     def __init__(self, queries, schema="dramatiq", prefix=""):
         self.queries = queries
         self.schema = schema
         self.prefix = prefix
         self.build_queries(schema, prefix)
+
+    def channel(self, key, event):
+        return notification_channel(key, event, schema=self.schema, prefix=self.prefix)
 
     def build_queries(self, schema=None, prefix=None):
         schema = self.schema if schema is None else schema

@@ -19,3 +19,20 @@ SQL экземпляров уже разделён схемой/префиксо
 ## Migration Plan
 
 Выполнить tasks.md, повторить релевантные интеграционные проверки и сборку. Для изменения SQL подготовить явную миграцию существующей базы и обратимый путь до включения новой функции. Новые опциональные возможности включаются явно. После проверки синхронизировать delta spec и архивировать change.
+
+## Implementation Notes
+
+Общий storage_namespace сохраняет разделители NUL между PostgreSQL schema/prefix;
+NUL в SQL identifiers невозможен, поэтому пары не склеиваются неоднозначно.
+QueryManager.channel вычисляет имя по текущим schema/prefix. Default-короткие
+каналы сохранены, остальные — dpg. плюс digest длиной 48 hex символов.
+
+ENQUEUE и STORE используют параметризованное имя канала, ACK/NACK/LISTEN —
+тот же helper. Consume/unlock и CLI retry включают namespace в lock input;
+default lock input сохраняется. Coordination переиспользует общий namespace,
+сохраняя прежнее вычисление собственных locks/channels. SQL metrics уже scoped.
+
+Results UUID API сохраняется. use_namespace_prefix_keys=True отвергается до
+создания pool; namespace base-класса не трактуется как SQL isolation boundary.
+Таблицы не изменены. Документирована остановка всех старых участников перед
+обновлением non-default areas и default-очередей с длинными именами.
