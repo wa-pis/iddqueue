@@ -16,6 +16,8 @@ def process_psql_lines(raw_lines, schema, prefix):
             .replace(':"state"', statename)
             .replace(':"queue"', tablename)
             .replace(':"coordination"', quote_ident(prefix + "coordination"))
+            .replace(':"deduplication"', quote_ident(prefix + "deduplication"))
+            .replace(':"deduplication_expiry"', quote_ident(prefix + "deduplication_expiry"))
         )
 
 
@@ -28,7 +30,7 @@ def generate_init_sql(schema="dramatiq", prefix=""):
 
     path = os.path.dirname(__file__) + "/schema.sql"
     with open(path) as fo:
-        return "\n".join(process_psql_lines(fo, schema, prefix)) + "\n" + generate_coordination_sql(schema, prefix)
+        return "\n".join(process_psql_lines(fo, schema, prefix)) + "\n" + generate_upgrade_sql(schema, prefix)
 
 
 def generate_coordination_sql(schema="dramatiq", prefix=""):
@@ -36,3 +38,12 @@ def generate_coordination_sql(schema="dramatiq", prefix=""):
     path = os.path.join(os.path.dirname(__file__), "coordination.sql")
     with open(path) as fo:
         return "\n".join(process_psql_lines(fo, schema, prefix))
+
+
+def generate_upgrade_sql(schema="dramatiq", prefix=""):
+    """Add optional storage without changing existing queue data."""
+    path = os.path.join(os.path.dirname(__file__), "deduplication.sql")
+    with open(path) as fo:
+        return generate_coordination_sql(schema, prefix) + "\n" + "\n".join(
+            process_psql_lines(fo, schema, prefix)
+        )

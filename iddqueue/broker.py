@@ -7,7 +7,7 @@ from random import randint
 from textwrap import dedent
 
 from dramatiq.broker import Broker, Consumer, MessageProxy
-from dramatiq.common import compute_backoff, current_millis, dq_name
+from dramatiq.common import compute_backoff, current_millis, dq_name, q_name
 from dramatiq.errors import BrokerConnectionError
 from dramatiq.message import Message
 from dramatiq.results import Results
@@ -88,14 +88,22 @@ class PostgresBroker(Broker):
             self.emit_after("declare_delay_queue", delayed_name)
 
     @retry_pg
-    def enqueue(self, message, *, delay=None):
+    def enqueue(self, message, *, delay=None, deduplication_key=None, deduplication_ttl=None):
+        if deduplication_key is not None or deduplication_ttl is not None:
+            with transaction(self.pool) as curs:
+                returned, published = self._enqueue_deduplicated(
+                    curs, message, delay, deduplication_key, deduplication_ttl
+                )
+            if published:
+                self.emit_after("enqueue", returned, delay)
+            return returned
         message = self._prepare_enqueue(message, delay)
         with transaction(self.pool) as curs:
             self._write_enqueue(curs, message)
         self.emit_after("enqueue", message, delay)
         return message
 
-    def enqueue_in_transaction(self, message, *, connection, delay=None):
+    def enqueue_in_transaction(self, message, *, connection, delay=None, deduplication_key=None, deduplication_ttl=None):
         """Enqueue using the caller's active Psycopg transaction.
 
         The caller owns commit, rollback and the connection. Enqueue hooks
@@ -104,11 +112,47 @@ class PostgresBroker(Broker):
         """
         if connection.info.transaction_status != TransactionStatus.INTRANS:
             raise ValueError("enqueue_in_transaction requires an active transaction")
+        if deduplication_key is not None or deduplication_ttl is not None:
+            with transaction(connection) as curs:
+                returned, published = self._enqueue_deduplicated(
+                    curs, message, delay, deduplication_key, deduplication_ttl
+                )
+                if published:
+                    self.emit_after("enqueue", returned, delay)
+                return returned
         message = self._prepare_enqueue(message, delay)
         with connection.cursor() as curs:
             self._write_enqueue(curs, message)
         self.emit_after("enqueue", message, delay)
         return message
+
+    def _enqueue_deduplicated(self, curs, message, delay, key, ttl):
+        if not isinstance(key, str) or not key:
+            raise ValueError("deduplication_key must be a nonempty string")
+        if type(ttl) is not int or ttl <= 0:
+            raise ValueError("deduplication_ttl must be positive integer milliseconds")
+        table = sql.Identifier(self.queries.schema, self.queries.prefix + "deduplication")
+        queue = q_name(message.queue_name)
+        curs.execute(sql.SQL("""
+            INSERT INTO {} AS stored (queue_name, key, message_id, message, expires_at)
+            VALUES (%s, %s, %s, %s, clock_timestamp() + %s * interval '1 millisecond')
+            ON CONFLICT (queue_name, key) DO UPDATE SET
+                message_id = EXCLUDED.message_id, message = EXCLUDED.message,
+                expires_at = EXCLUDED.expires_at
+            WHERE stored.expires_at <= clock_timestamp()
+            RETURNING message_id
+        """).format(table), (queue, key, message.message_id, Jsonb(tidy4json(message)), ttl))
+        if curs.fetchone() is None:
+            curs.execute(sql.SQL(
+                "SELECT message FROM {} WHERE queue_name = %s AND key = %s"
+            ).format(table), (queue, key))
+            return Message.decode(json.dumps(curs.fetchone()[0]).encode()), False
+        message = self._prepare_enqueue(message, delay)
+        self._write_enqueue(curs, message)
+        curs.execute(sql.SQL(
+            "UPDATE {} SET message = %s WHERE queue_name = %s AND key = %s"
+        ).format(table), (Jsonb(tidy4json(message)), queue, key))
+        return message, True
 
     def _prepare_enqueue(self, message, delay):
         self.emit_before("enqueue", message, delay)

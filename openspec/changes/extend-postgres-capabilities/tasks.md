@@ -1,9 +1,9 @@
 ## 1. Дедупликация отправки
 
-- [ ] 1.1 Добавить namespaced dedup table/UNIQUE/TTL и idempotent migration; проверить init и upgrade существующей БД.
-- [ ] 1.2 Добавить API ключа/TTL для enqueue и enqueue_in_transaction; вернуть исходный ID при дубле без перезаписи payload и повторных enqueue hooks.
-- [ ] 1.3 Проверить concurrent producers, rollback/savepoint, expiry, payload conflict, purge до expiry и schema/prefix isolation на dedicated PostgreSQL.
-- [ ] 1.4 Обновить docs и evidence этапа; выполнить Ruff, полный tests/unit tests/func на выделенном PostgreSQL, poetry check, strict OpenSpec и build/license checker при изменении packaging/SQL resources.
+- [x] 1.1 Добавить namespaced dedup table/UNIQUE/TTL и idempotent migration; проверить init и upgrade существующей БД.
+- [x] 1.2 Добавить API ключа/TTL для enqueue и enqueue_in_transaction; вернуть исходный ID при дубле без перезаписи payload и повторных enqueue hooks.
+- [x] 1.3 Проверить concurrent producers, rollback/savepoint, expiry, payload conflict, purge до expiry и schema/prefix isolation на dedicated PostgreSQL.
+- [x] 1.4 Обновить docs и evidence этапа; выполнить Ruff, полный tests/unit tests/func на выделенном PostgreSQL, poetry check, strict OpenSpec и build/license checker при изменении packaging/SQL resources.
 - [ ] 1.5 После проверок зафиксировать этап отдельным commit и push в wa-pis/iddqueue main; проверить успешный GitHub CI и записать ссылку, не отмечая подготовленный workflow выполненным.
 
 ## 2. Пауза и возобновление очереди

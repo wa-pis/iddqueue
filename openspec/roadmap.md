@@ -29,7 +29,7 @@ CI-регрессии retry wakeup и изоляции recover test исправ
 ## Следующая очередь работ — 2026-10-03
 
 [extend-postgres-capabilities](changes/extend-postgres-capabilities/proposal.md) —
-план подготовлен; реализация не начата. Proposal, design, семь delta specs и
+этап 1 реализован локально (80 tests passed), ожидается CI; этапы 2–7 не начаты. Proposal, design, семь delta specs и
 [tasks](changes/extend-postgres-capabilities/tasks.md) описывают этапы.
 Каждая фича выполняется последовательно и фиксируется отдельным commit.
 
@@ -46,5 +46,4 @@ CI-регрессии retry wakeup и изоляции recover test исправ
 Новые возможности являются расширениями IDDQueue. Этап 4 проверяет встроенные
 middleware Dramatiq. Fixed interval scheduler не включает cron/calendar.
 Дедупликация подавляет публикацию и не обещает exactly-once execution.
-Автоматическую реализацию в ходе подготовки этого плана не начинать;
-переход к apply — после следующего запроса пользователя.
+Heartbeat после подготовки плана авторизовал переход к apply; работа выполняется последовательно.

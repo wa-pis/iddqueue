@@ -18,7 +18,7 @@ from psycopg.types.json import Jsonb
 from .broker import QUERIES as BROKER_QUERIES
 from .broker import message_lock, purge
 from .metrics import queue_statistics
-from .schema import generate_init_sql
+from .schema import generate_init_sql, generate_upgrade_sql
 from .utils import QueryManager, make_pool, transaction
 
 logger = logging.getLogger(__name__)
@@ -140,6 +140,9 @@ def make_argument_parser():
     subparser = subparsers.add_parser("init")
     subparser.set_defaults(command=init_command)
 
+    subparser = subparsers.add_parser("upgrade")
+    subparser.set_defaults(command=upgrade_command)
+
     subparser = subparsers.add_parser("purge")
     subparser.set_defaults(command=purge_command)
     subparser.add_argument(
@@ -216,6 +219,12 @@ def init_command(args):
     with transaction(args.pool) as curs:
         curs.execute(generate_init_sql(args.schemaname, args.prefix))
     logger.info("Initialized database.")
+
+
+def upgrade_command(args):
+    with transaction(args.pool) as curs:
+        curs.execute(generate_upgrade_sql(args.schemaname, args.prefix))
+    logger.info("Upgraded database.")
 
 
 def stats_command(args):

@@ -393,3 +393,41 @@ remain separate decisions.
 
 After building, run `python scripts/check_license.py dist/*.whl dist/*.tar.gz`
 to verify the preserved upstream text and license metadata in both formats.
+
+### Deduplicated publishing
+
+Upgrade existing storage with `iddqueue upgrade` (or
+`generate_upgrade_sql(schema, prefix)`) before using deduplication.
+Fresh `init` includes the table. Stop workers during schema upgrades.
+
+Call the broker explicitly; these keywords are broker API parameters, not
+Dramatiq actor options:
+
+```python
+message = broker.enqueue(
+    send_receipt.message(order_id),
+    deduplication_key=f"receipt:{order_id}",
+    deduplication_ttl=60_000,
+)
+```
+
+The TTL is a positive integer in milliseconds measured by PostgreSQL from the
+key claim. The key belongs to the logical queue (normal and delayed share it)
+within the configured schema/prefix. Concurrent calls return the original
+message, including its ID, arguments and delay; a duplicate does not overwrite
+the task, emit another notification or run enqueue hooks again. Use the returned
+message when requesting Results. After TTL expires, the key can publish again.
+
+The same parameters work with `enqueue_in_transaction(..., connection=conn)`.
+A savepoint makes the key and task atomic when the caller catches an error.
+Outer rollback removes both; notifications become visible only after commit.
+As with ordinary transactional enqueue, hooks describe the SQL operation, not
+the final outer commit. Retry middleware continues to use ordinary enqueue.
+
+Queue purge does not release a live key: duplicates still return the original
+message even if its row/result has been removed. Deduplication retains the
+original message payload until the key is replaced or its expired row is
+removed. It prevents duplicate publication; workers retain at-least-once
+delivery, and actor side effects must remain idempotent. For workloads with
+many unique keys, remove expired deduplication rows periodically with SQL;
+only delete rows whose `expires_at <= clock_timestamp()`.

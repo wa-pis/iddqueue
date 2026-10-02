@@ -26,7 +26,7 @@ monitoring = ["dramatiq[prometheus]>=2.2.1,<3"]
 iddqueue = "iddqueue.cli:entrypoint"
 
 [tool.poetry]
-include = ["iddqueue/schema.sql", "iddqueue/coordination.sql"]
+include = ["iddqueue/schema.sql", "iddqueue/coordination.sql", "iddqueue/deduplication.sql"]
 
 [tool.poetry.group.dev.dependencies]
 pytest = ">=8"
