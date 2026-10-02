@@ -43,3 +43,25 @@
 - Публикация пакета и совместная работа старых и новых workers.
 
 Логи локальных тестов находились в /tmp; долговременными доказательствами служат тесты в репозитории и будущие результаты CI.
+
+
+## Custom CLI verification — 2026-10-02
+
+Задача 3.6 завершена отдельным passing integration scenario:
+`tests/func/test_cli.py::test_custom_schema_maintenance`.
+
+- CLI init создаёт отдельные schema/prefix с кавычками в identifiers.
+- stats подтверждает по одному queued/consumed/done/rejected сообщению.
+- recover --minage '1 hour' возвращает только выбранный consumed в queued.
+- purge --maxage '1 hour' удаляет два старых done/rejected сообщения.
+- flush удаляет два queued; финальный stats возвращает четыре нуля.
+- Сообщение consumed в контрольной схеме переживает все команды без изменений.
+- Тестовые схемы удаляются в finally; default область не затрагивается сценарием.
+
+Полный прогон на выделенном PostgreSQL 14.20 и Python 3.13.14:
+**64 passed in 32.51s**. Ruff, poetry check/build и strict OpenSpec validation
+успешны; исправления runtime не потребовались.
+
+Все независимые локальные задачи baseline завершены. GitHub owner/name,
+visibility и идентичность пакета ещё ожидают ответа пользователя. Удалённая
+матрица и публикация не заявляются выполненными; change не архивируется.
