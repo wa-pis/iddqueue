@@ -126,6 +126,19 @@ def execution_time():
     return time.time()
 
 
+@dramatiq.actor(store_results=True, max_retries=1, min_backoff=500, max_backoff=500)
+def retryable(marker):
+    conn = dramatiq_pg.utils.getconn(pool)
+    try:
+        with conn.transaction(), conn.cursor() as cursor:
+            cursor.execute("SELECT 1 FROM functest.witness WHERE payload->>'ready' = %s", (marker,))
+            ready = cursor.fetchone() is not None
+    finally:
+        pool.putconn(conn)
+    if not ready:
+        raise RuntimeError("dependency is not ready")
+    return marker
+
 def main():
     message = saver.send(wait=random.randint(0, 10), message="Saved.")
     for _ in range(10):

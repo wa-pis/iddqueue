@@ -15,6 +15,7 @@ from psycopg import Notify, sql
 from psycopg.pq import TransactionStatus
 from psycopg.types.json import Jsonb
 
+from .failures import FailureMetadata
 from .results import PostgresBackend
 from .utils import (
     QueryManager,
@@ -57,6 +58,7 @@ class PostgresBroker(Broker):
             self.backend = PostgresBackend(pool=self.pool, schema=schema, prefix=prefix)
             self.add_middleware(Results(backend=self.backend))
 
+        self.add_middleware(FailureMetadata())
         self.queries = QueryManager(QUERIES.queries, schema or "dramatiq", prefix or "")
 
     def close(self):

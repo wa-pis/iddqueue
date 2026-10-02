@@ -98,3 +98,19 @@ schema's prefixed ``coordination`` table.
 returns the number removed. Run periodically for bucket/window workloads.
 The backend does not retry counter mutations after an ambiguous disconnect;
 callers must not assume a failed request was rolled back.
+
+Failure diagnostics
+===================
+
+PostgresBroker installs FailureMetadata after its initial middleware so its
+``after_process_message`` hook runs before the default Retries hook. The last
+exception is stored in ``message.options.pg_failure`` with ``type``, ``text``
+(maximum 2,000 characters), UTC ``time`` and one-based ``attempt``. It is removed
+on success and persisted through the normal enqueue/ack/nack paths. No extra
+SQL writes or schema migration are needed. Diagnostic hook failures are logged
+by Dramatiq and do not replace the actor exception. Keep this hook after Retries
+in middleware registration order when customizing the middleware list.
+
+The CLI ``failed list/show`` displays rejected messages as JSON; ``retry ID``
+conditionally requeues a rejected row and clears its stale result. See README
+for filters, cursor pagination, payload opt-in and retry-cycle semantics.

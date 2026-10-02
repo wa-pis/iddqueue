@@ -19,3 +19,23 @@
 ## Migration Plan
 
 Выполнить tasks.md, повторить релевантные интеграционные проверки и сборку. Для изменения SQL подготовить явную миграцию существующей базы и обратимый путь до включения новой функции. Новые опциональные возможности включаются явно. После проверки синхронизировать delta spec и архивировать change.
+
+## Implementation Notes
+
+FailureMetadata сохраняет type/text/time/attempt в message.options.pg_failure;
+схема БД остаётся прежней. Hook зарегистрирован после исходных middleware,
+поэтому вызывается до стандартного Retries в обратном порядке after-hooks.
+Успех удаляет последнюю ошибку; штатные enqueue/ack/nack сохраняют сообщение.
+Текст ограничен 2000 символами; полная история попыток не хранится.
+
+CLI выводит JSON, фильтрует queue/actor, использует UUID cursor после последнего
+ID (50 строк по умолчанию, максимум 1000). Полный payload/traceback включается
+только через show --payload; неизвестные старые diagnostics остаются null.
+
+retry блокирует rejected-строку FOR UPDATE, проверяет worker advisory lock и
+условно переводит её в queued. Сбрасываются retries/traceback/requeue_timestamp/
+eta/pg_failure, result/result_ttl; очередь нормализуется из delayed в обычную.
+ID/аргументы/actor и остальные policy options сохраняются. NOTIFY по ID идёт в
+той же транзакции, поэтому конкурентные retry не дублируют переход.
+При ещё удерживаемом worker-lock требуется повторить команду после освобождения.
+Барьеры и уже выполненные downstream side effects не сбрасываются.

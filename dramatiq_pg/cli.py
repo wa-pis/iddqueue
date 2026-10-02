@@ -1,16 +1,22 @@
 import argparse
 import bdb
 import importlib.metadata
+import json
 import logging
 import os
 import pdb
 import sys
 from textwrap import dedent
+from uuid import UUID
 
+from dramatiq import Message
 from dramatiq.cli import LOGFORMAT, VERBOSITY
+from dramatiq.common import q_name
+from psycopg import sql
+from psycopg.types.json import Jsonb
 
 from .broker import QUERIES as BROKER_QUERIES
-from .broker import purge
+from .broker import message_lock, purge
 from .schema import generate_init_sql
 from .utils import QueryManager, make_pool, transaction
 
@@ -168,6 +174,22 @@ def make_argument_parser():
     subparser = subparsers.add_parser("stats")
     subparser.set_defaults(command=stats_command)
 
+    failed = subparsers.add_parser("failed")
+    operations = failed.add_subparsers()
+    listing = operations.add_parser("list")
+    listing.set_defaults(command=failed_list_command)
+    listing.add_argument("--queue")
+    listing.add_argument("--actor")
+    listing.add_argument("--limit", type=page_size, default=50)
+    listing.add_argument("--after", type=UUID)
+    show = operations.add_parser("show")
+    show.set_defaults(command=failed_show_command)
+    show.add_argument("message_id", type=UUID)
+    show.add_argument("--payload", action="store_true")
+    retry = subparsers.add_parser("retry")
+    retry.set_defaults(command=retry_command)
+    retry.add_argument("message_id", type=UUID)
+
     return parser
 
 
@@ -204,6 +226,87 @@ def stats_command(args):
 
     for state in "queued", "consumed", "done", "rejected":
         print(f"{state}: {stats.get(state, 0)}")
+
+
+def page_size(value):
+    value = int(value)
+    if not 1 <= value <= 1000:
+        raise argparse.ArgumentTypeError("limit must be between 1 and 1000")
+    return value
+
+
+def _table(args):
+    return sql.Identifier(args.schemaname, args.prefix + "queue")
+
+
+def _summary(row):
+    message_id, queue, state, actor, options = row
+    options = options or {}
+    failure = options.get("pg_failure")
+    return dict(message_id=str(message_id), queue=queue, state=state,
+                actor=actor, attempts=(failure or {}).get("attempt"),
+                retries=options.get("retries", 0), error=failure)
+
+
+def failed_list_command(args):
+    with transaction(args.pool) as curs:
+        curs.execute(sql.SQL(
+            "SELECT message_id, queue_name, state::text, message->>'actor_name', "
+            "message->'options' FROM {} WHERE state = 'rejected' "
+            "AND (%s::text IS NULL OR queue_name = %s) "
+            "AND (%s::text IS NULL OR message->>'actor_name' = %s) "
+            "AND (%s::uuid IS NULL OR message_id > %s) ORDER BY message_id LIMIT %s"
+        ).format(_table(args)), (args.queue, args.queue, args.actor, args.actor,
+                               args.after, args.after, args.limit + 1))
+        rows = curs.fetchall()
+    page = rows[:args.limit]
+    print(json.dumps(dict(items=[_summary(row) for row in page],
+                          next_after=str(page[-1][0]) if len(rows) > args.limit else None)))
+
+
+def failed_show_command(args):
+    with transaction(args.pool) as curs:
+        curs.execute(sql.SQL(
+            "SELECT message_id, queue_name, state::text, message->>'actor_name', "
+            "message->'options', message FROM {} WHERE message_id = %s AND state = 'rejected'"
+        ).format(_table(args)), (args.message_id,))
+        row = curs.fetchone()
+    if row is None:
+        logger.error("Rejected message not found: %s", args.message_id)
+        return 1
+    output = _summary(row[:5])
+    if args.payload:
+        output["message"] = row[5]
+    print(json.dumps(output))
+
+
+def retry_command(args):
+    with transaction(args.pool) as curs:
+        curs.execute(sql.SQL(
+            "SELECT message FROM {} WHERE message_id = %s AND state = 'rejected' FOR UPDATE"
+        ).format(_table(args)), (args.message_id,))
+        row = curs.fetchone()
+        if row is None:
+            logger.error("Retry refused: message is missing or not rejected")
+            return 1
+        payload = row[0]
+        message = Message(**payload)
+        curs.execute("SELECT pg_try_advisory_xact_lock(%s)", (message_lock(message),))
+        if not curs.fetchone()[0]:
+            logger.error("Retry refused: worker still holds the message lock")
+            return 1
+        for key in ("retries", "traceback", "requeue_timestamp", "eta", "pg_failure"):
+            payload["options"].pop(key, None)
+        payload["queue_name"] = q_name(payload["queue_name"])
+        curs.execute(sql.SQL(
+            "UPDATE {} SET state = 'queued', message = %s, queue_name = %s, "
+            "mtime = clock_timestamp(), result = NULL, result_ttl = NULL "
+            "WHERE message_id = %s AND state = 'rejected'"
+        ).format(_table(args)), (Jsonb(payload), payload["queue_name"], args.message_id))
+        curs.execute("SELECT pg_notify(%s, %s)",
+                     ("dramatiq." + payload["queue_name"] + ".enqueue",
+                      json.dumps({"message_id": str(args.message_id)})))
+    print(json.dumps(dict(message_id=str(args.message_id), state="queued")))
 
 
 QUERIES = QueryManager(

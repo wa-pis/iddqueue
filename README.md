@@ -245,3 +245,41 @@ a worker. PostgreSQL does not provide global priority ordering across workers
 or all queued messages. Ordinary groups need only Results; completion callbacks
 additionally require `GroupCallbacks` and the PostgreSQL coordination table
 shown above. Pipelines, retries and callbacks retain at-least-once delivery.
+
+### Inspect and retry failed tasks
+
+The broker records the last exception type, up to 2,000 characters of its text,
+UTC timestamp and attempt number in `message.options.pg_failure`. The standard
+Retries metadata remains available. Intermediate retries carry this metadata;
+a successful attempt removes the last error. Existing rejected rows may have
+no diagnostic metadata; no database migration is required.
+
+```sh
+dramatiq-pg failed list --queue default --actor send_receipt --limit 50
+dramatiq-pg failed list --queue default --after MESSAGE_ID
+dramatiq-pg failed show MESSAGE_ID
+dramatiq-pg failed show MESSAGE_ID --payload
+dramatiq-pg retry MESSAGE_ID
+```
+
+These commands produce JSON. `failed list` returns `items` and `next_after`;
+pass that cursor as `--after` with the same filters to continue. The default
+page size is 50, with a maximum of 1,000. Pages use UUID order; concurrently
+rejected tasks may require a fresh scan. `show` returns a nonzero exit code for
+missing or non-rejected messages. Arguments, full options and traceback are
+excluded unless `--payload` is explicitly requested. Exception text itself can
+contain application values.
+
+`retry` accepts only a rejected task whose worker has released its message lock.
+It atomically preserves ID, actor and arguments, clears the old result and
+retry-cycle fields (`retries`, `traceback`, `requeue_timestamp`, `eta`,
+`pg_failure`), and publishes immediately to the normal queue. Other options,
+including retry policy, remain unchanged. Refused retries return a nonzero exit
+code; if the worker is still finishing rejection, retry after it releases the
+lock. Concurrent retry requests allow only one transition to queued.
+
+Use `--schemaname` and `--prefix` before the command for customized tables.
+Diagnostic metadata is saved with queue state; tasks lost before acknowledgment
+may not have it. Purge removes rejected tasks according to existing retention.
+Only the latest error is retained. Retrying requires idempotent actors; it does
+not reverse prior side effects or reset barriers and downstream pipelines.

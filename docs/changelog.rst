@@ -4,6 +4,7 @@ Dramatiq-pg Changelog
 Unreleased
 ----------
 
+- Add last-error metadata, paginated failed-task inspection and targeted retry.
 
 - Verify pipelines, groups, AsyncIO actors, retry exhaustion callbacks and timedelta delays against PostgreSQL.
 
