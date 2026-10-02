@@ -18,6 +18,7 @@ from psycopg.types.json import Jsonb
 from .cancellation import cancel, cancellation_status
 from .control import QueueControl, allow_start, is_paused, set_paused
 from .failures import FailureMetadata
+from .history import AttemptHistory
 from .results import PostgresBackend
 from .utils import (
     QueryManager,
@@ -44,7 +45,7 @@ def purge(curs, max_age="30 days"):
 
 class PostgresBroker(Broker):
     def __init__(
-        self, *, pool=None, url="", results=True, schema=None, prefix=None, queue_control=False, **kw
+        self, *, pool=None, url="", results=True, schema=None, prefix=None, queue_control=False, attempt_history=False, **kw
     ):
         super().__init__(**kw)
         if pool is not None and url:
@@ -63,6 +64,8 @@ class PostgresBroker(Broker):
 
         self.add_middleware(FailureMetadata())
         self.queries = QueryManager(QUERIES.queries, schema or "dramatiq", prefix or "")
+        if attempt_history:
+            self.add_middleware(AttemptHistory())
         self.queue_control = queue_control
         if queue_control:
             self.add_middleware(QueueControl(), before=type(self.middleware[0]))

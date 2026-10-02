@@ -554,3 +554,34 @@ default middleware list; CurrentMessage is opt-in.
 The integration suite checks actual PostgreSQL queue states, Results and
 released advisory locks. Shutdown coverage runs the normal Dramatiq CLI in
 separate processes and sends SIGTERM; it verifies actor cleanup and completion.
+
+### Attempt history
+
+Run `iddqueue upgrade` in each schema/prefix before enabling
+`PostgresBroker(attempt_history=True)`. History is disabled by default.
+Each actor execution gets a separate UUID, including retries of the same
+message. Records contain actor/queue names, PostgreSQL start/finish times,
+`successful` or `failed`, duration, and error type/text (at most 2000 characters).
+Arguments, options and results are never stored in history. Exception text can
+still contain application data.
+
+```sh
+iddqueue history list MESSAGE_UUID --limit 50
+iddqueue history list MESSAGE_UUID --limit 50 --after ATTEMPT_UUID
+iddqueue history purge --maxage '30 days'
+# Global --schemaname / --prefix select the storage namespace.
+```
+
+Listing uses UUID cursor order, not chronological order; timestamps identify
+execution order. `next_after` is null on the last page. An attempt without a
+finish record is reported as `incomplete`: it may still be running, or the worker
+may have died. A later execution creates a new record and preserves that entry.
+Skips before actor execution (including pause/cancel/age expiry) create no record.
+History is diagnostic middleware, not an atomic audit of actor side effects:
+Dramatiq logs middleware database failures, and an unavailable database can leave
+gaps or incomplete entries.
+
+Retention is explicit: schedule `history purge` yourself with a positive
+PostgreSQL interval. It deletes attempts by start time, including old incomplete
+entries, independently of queued messages and Results. There is no automatic
+cleanup thread. Enabling history adds two database transactions per execution.

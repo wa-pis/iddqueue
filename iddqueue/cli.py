@@ -19,6 +19,7 @@ from .broker import QUERIES as BROKER_QUERIES
 from .broker import message_lock, purge
 from .cancellation import cancel, cancellation_status
 from .control import is_paused, set_paused
+from .history import list_attempts, purge_attempts
 from .metrics import queue_statistics
 from .schema import generate_init_sql, generate_upgrade_sql
 from .utils import QueryManager, make_pool, transaction
@@ -204,7 +205,28 @@ def make_argument_parser():
     retry.set_defaults(command=retry_command)
     retry.add_argument("message_id", type=UUID)
 
+    history = subparsers.add_parser("history")
+    operations = history.add_subparsers()
+    listing = operations.add_parser("list")
+    listing.set_defaults(command=history_list_command)
+    listing.add_argument("message_id", type=UUID)
+    listing.add_argument("--limit", type=page_size, default=50)
+    listing.add_argument("--after", type=UUID)
+    retention = operations.add_parser("purge")
+    retention.set_defaults(command=history_purge_command)
+    retention.add_argument("--maxage", default="30 days")
+
     return parser
+
+
+def history_list_command(args):
+    print(json.dumps(list_attempts(args.pool, args.message_id, schema=args.schemaname,
+                                   prefix=args.prefix, limit=args.limit, after=args.after)))
+
+
+def history_purge_command(args):
+    print(json.dumps(dict(deleted=purge_attempts(args.pool, args.maxage,
+                                               schema=args.schemaname, prefix=args.prefix))))
 
 
 def flush_command(args):

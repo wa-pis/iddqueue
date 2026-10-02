@@ -101,3 +101,29 @@ commit 2a0a2d1. Все шесть Python 3.10/3.13/3.14 × PostgreSQL 14/18 jobs
 Этап 4.5 завершён: https://github.com/wa-pis/iddqueue/actions/runs/37070389403,
 commit 063b559. Все шесть Python 3.10/3.13/3.14 × PostgreSQL 14/18 jobs success,
 включая build/license checker. Этапы 5–7 не начаты; общий change активен.
+
+
+# Evidence — этап 5, история попыток
+
+2026-10-03. Opt-in AttemptHistory, namespaced SQL resource/init/upgrade,
+CLI history list/purge; args/kwargs/options/results не сохраняются.
+
+Фактически выполнено:
+- Dedicated PostgreSQL 14.20/Python 3.13.14: **105 passed in 44.95s**.
+- Три новых integration tests: failed retry → successful, разные UUID,
+  длительность, error_type и ровно 2000 символов error_text; отсутствие payload.
+- CLI два cursor pages, terminal null cursor, retention старой попытки,
+  сохранение новой, Results и paused queued message.
+- Disabled history не пишет, тот же message UUID в другом prefix изолирован;
+  identifiers с кавычками, init и повторный upgrade; invalid limit/maxage rejected.
+- Реальный CLI spawn worker: incomplete → SIGKILL всей process group →
+  повтор с тем же message UUID → новая successful, исходная запись неизменна.
+- Первый тестовый вариант вызывал hooks вручную без регистрации actor/queue;
+  заменён исполнением настоящих Workers. Опечатка pause API исправлена.
+  Финальные targeted tests: 3 passed in 3.99s; полный suite прошёл.
+- Ruff, poetry check, strict OpenSpec, git diff --check: success.
+- Wheel/sdist build, LICENSE checker и наличие history.sql в обоих archives: success.
+- Системный poetry launcher не работал из-за libintl; тот же Poetry запускался
+  через рабочий .venv/bin/python -m poetry, включая poetry run pytest/Ruff.
+
+Этап 5.5 ожидает commit/push и фактический GitHub CI. Этапы 6–7 не начаты.

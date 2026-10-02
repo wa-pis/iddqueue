@@ -128,3 +128,18 @@ TimeLimit запускается штатным process_boot и прерывае
 ShutdownNotifications проверяется отдельным CLI процессом: started witness,
 SIGTERM, cleanup witness, normal result/done и освобождение lock.
 Runtime middleware не копируются и не переопределяются.
+
+
+## Этап 5 — фактический контракт истории
+
+PostgresBroker(attempt_history=True) добавляет lifecycle middleware последним:
+before_process после штатных проверок, after_process перед Retry/Results hooks.
+Отдельная таблица attempts не имеет FK на queue; UUID попытки находится только
+на MessageProxy, не в payload/options. Начало и окончание берутся из SQL clock,
+ошибка ограничена 2000 символами. Incomplete означает отсутствие окончания,
+включая ещё выполняющийся actor; точное время crash не известно.
+CLI history list MESSAGE_UUID использует keyset pagination по attempt_id UUID;
+временной порядок определяется timestamps. Положительный maxage у history purge
+удаляет по started_at, включая старые incomplete, независимо от queue/Results.
+Это diagnostic middleware: обычные ошибки hooks логируются Dramatiq, при отказе
+БД возможны пропуски; запись истории не является транзакцией side effects actor.
