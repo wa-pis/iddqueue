@@ -6,13 +6,13 @@ specs, design and tasks consistent with the user's agreed scope. Update task
 checkboxes after implementation and verification; record actual test coverage.
 Do not treat a planned task or a prepared CI workflow as completed execution.
 
-Baseline change: `openspec/changes/modernize-postgres-broker/`.
+Baseline change: `openspec/changes/archive/2026-10-02-modernize-postgres-broker/`.
 Feature roadmap and dependencies: `openspec/roadmap.md`. Before working on a
 feature, select its change explicitly and read its proposal, specs, design and
 tasks. Check roadmap and archived changes for completed features; unchecked
 tasks are not implementation evidence.
 The migration was implemented before OpenSpec adoption; its completed tasks
-record existing work. GitHub setup is still pending. Repository and package
+record existing work. GitHub setup is complete: wa-pis/iddqueue, private, main; six CI matrix jobs passed. Repository and package
 names must come from the user, rather than be inferred from the upstream name.
 
 Keep the implementation small: synchronous Psycopg 3, no ORM, session-bound
@@ -27,4 +27,4 @@ packaging changes. Validate OpenSpec with `openspec validate --all --strict`.
 Commit each completed feature separately after its required checks pass.
 Include its implementation, tests, documentation and OpenSpec artifacts in
 that commit. Do not accumulate completed features in the working tree.
-Keep commits local until GitHub destination and push scope are agreed.
+GitHub destination is agreed: wa-pis/iddqueue, main. Push completed, verified changes there; package publication requires a separate request.

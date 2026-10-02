@@ -12,11 +12,11 @@ context: |
   Delivery: at-least-once; задачи должны быть идемпотентными.
   Existing public API: PostgresBroker, PostgresBackend, generate_init_sql, iddqueue CLI.
   Local migration implemented before OpenSpec adoption on 2026-10-02.
-  Verified: 64 tests on Python 3.13.14/PostgreSQL 14.20, Ruff, wheel/sdist build and wheel installation.
-  GitHub CI prepared for Python 3.10/3.13/3.14 and PostgreSQL 14/18; matrix not yet executed remotely.
+  Verified: 65 tests on Python 3.13.14/PostgreSQL 14.20, Ruff, wheel/sdist build and wheel installation.
+  GitHub CI passed all six Python 3.10/3.13/3.14 and PostgreSQL 14/18 combinations; run 37057164073.
   GitHub: https://github.com/wa-pis/iddqueue, private, main; publication policy remains undecided.
   Preserve PostgreSQL license and original contributor credits.
-  Feature roadmap: openspec/roadmap.md; all six local feature changes implemented and archived; baseline GitHub setup pending.
+  Feature roadmap: openspec/roadmap.md; all six local feature changes implemented and archived; baseline and GitHub setup complete and archived.
   User authorized recording all discussed features in OpenSpec on 2026-10-02.
 rules:
   proposal:

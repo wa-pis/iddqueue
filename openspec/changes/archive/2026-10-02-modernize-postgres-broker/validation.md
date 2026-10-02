@@ -105,3 +105,12 @@ Run 37054623793: Python 3.14/PostgreSQL 14 success; Python 3.10/PostgreSQL 14
 упал в legacy test_recover, остальные отменены fail-fast. Test_recover
 изолирован от живых workers собственной схемой. После изменения полный suite:
 **65 passed in 32.45s**, Ruff/poetry check/strict OpenSpec успешны.
+
+## Финальная удалённая матрица
+
+https://github.com/wa-pis/iddqueue/actions/runs/37057164073 — success,
+commit 2a0e168. Все шесть комбинаций Python 3.10/3.13/3.14 × PostgreSQL 14/18
+успешно выполнили Ruff, wheel/sdist build, license checker, unit tests,
+инициализацию dedicated PostgreSQL и functional tests (65 tests суммарно).
+Задачи GitHub и обе CI-регрессии завершены; delta specs синхронизированы.
+PyPI publication не выполнялась.

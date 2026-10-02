@@ -1,10 +1,10 @@
 # План развития PostgreSQL-проекта
 
-Транзакционная отправка реализована и архивирована 2026-10-02 (38 тестов прошли). Координация PostgreSQL реализована и архивирована 2026-10-02 (45 тестов прошли). Совместимость middleware и композиции Dramatiq проверена и архивирована 2026-10-02 (51 тест прошёл). Диагностика ошибок и выборочный retry реализованы и архивированы 2026-10-02 (56 тестов прошли). Метрики очереди реализованы и архивированы 2026-10-02 (58 тестов прошли). Изоляция namespace реализована и архивирована 2026-10-02 (63 теста прошли). Все шесть запланированных локальных фич завершены; GitHub setup остаётся в baseline change. Выполненная миграция и оставшиеся шаги GitHub отражены отдельно в `modernize-postgres-broker`.
+Транзакционная отправка реализована и архивирована 2026-10-02 (38 тестов прошли). Координация PostgreSQL реализована и архивирована 2026-10-02 (45 тестов прошли). Совместимость middleware и композиции Dramatiq проверена и архивирована 2026-10-02 (51 тест прошёл). Диагностика ошибок и выборочный retry реализованы и архивированы 2026-10-02 (56 тестов прошли). Метрики очереди реализованы и архивированы 2026-10-02 (58 тестов прошли). Изоляция namespace реализована и архивирована 2026-10-02 (63 теста прошли). Все шесть запланированных локальных фич завершены; GitHub setup завершён: wa-pis/iddqueue, private, main; все шесть jobs run 37057164073 прошли. Выполненная миграция и оставшиеся шаги GitHub отражены отдельно в `modernize-postgres-broker`.
 
 | Порядок | Change | Результат | Зависимость |
 | --- | --- | --- | --- |
-| 0 | [modernize-postgres-broker](changes/modernize-postgres-broker/tasks.md) | Psycopg 3, Dramatiq 2.2.1, новый GitHub-проект и CI | Базовая работа |
+| 0 | [modernize-postgres-broker](changes/archive/2026-10-02-modernize-postgres-broker/tasks.md) | Psycopg 3, Dramatiq 2.2.1, новый GitHub-проект и CI | Базовая работа |
 | 1 | [transactional-enqueue](changes/archive/2026-10-02-transactional-enqueue/proposal.md) | Выполнено: бизнес-данные и задача в одной транзакции | Runtime миграции |
 | 2 | [postgres-coordination](changes/archive/2026-10-02-postgres-coordination/proposal.md) | Выполнено: лимиты, барьеры и group completion callbacks без Redis | Runtime миграции |
 | 3 | [dramatiq-feature-compatibility](changes/archive/2026-10-02-dramatiq-feature-compatibility/proposal.md) | Выполнено: pipelines, groups, async actors, retry exhaustion callback, timedelta | Runtime; group callbacks после coordination |
@@ -14,10 +14,13 @@
 
 Порядок рекомендованный: первый этап — транзакционная отправка и backend координации. Изоляцию namespace желательно включить до многопользовательского использования и согласовать до стабилизации схемы coordination. Возможности middleware проверяются через стандартные реализации Dramatiq, без собственного orchestration engine. Actor priority документируется как локальный порядок prefetched-сообщений worker; глобальный планировщик приоритетов не включён.
 
-Пользователь выбрал IDDQueue: репозиторий, distribution/import/CLI — iddqueue. GitHub: wa-pis/iddqueue, private; ожидается выполнение удалённого CI. Публикация в PyPI не входит в этот план без отдельного запроса.
+Пользователь выбрал IDDQueue: репозиторий, distribution/import/CLI — iddqueue. GitHub: wa-pis/iddqueue, private; удалённая матрица прошла. Публикация в PyPI не входит в этот план без отдельного запроса.
 
-CLI init/stats/purge/recover/flush на нестандартных schema/prefix проверены 2026-10-02: 64 теста прошли. Все независимые локальные задачи baseline завершены; задачи 5.1–5.5 ожидают настройки GitHub и запуска удалённого CI.
+CLI init/stats/purge/recover/flush на нестандартных schema/prefix проверены 2026-10-02: 64 теста прошли. Все независимые локальные задачи baseline завершены; задачи 5.1–5.5 завершены; baseline синхронизирован и архивирован.
 
 ## Сохранение лицензии форка
 
 [preserve-fork-license](changes/archive/2026-10-02-preserve-fork-license/proposal.md) — выполнено: сохранение полного LICENSE/copyright DALIBO в исходниках и wheel/sdist, README attribution и проверка упаковки в CI. LICENSE и метаданные в wheel/sdist проверены; отрицательные проверки успешны. Публикация не выполнена. Этот этап независим от решения об имени GitHub-проекта.
+
+CI-регрессии retry wakeup и изоляции recover test исправлены; локально 65 tests passed.
+Все текущие changes завершены и архивированы. Публикация пакета требует отдельного запроса.
