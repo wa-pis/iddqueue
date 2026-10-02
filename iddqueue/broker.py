@@ -2,6 +2,7 @@ import json
 import logging
 import time
 from hashlib import sha256
+from itertools import islice
 from queue import Empty, Queue
 from random import randint
 from textwrap import dedent
@@ -160,6 +161,70 @@ class PostgresBroker(Broker):
         self.emit_after("enqueue", message, delay)
         return message
 
+    def enqueue_many(self, messages, *, options=None):
+        """Atomically enqueue up to 1000 messages with aligned enqueue options."""
+        entries = self._batch_entries(messages, options)
+        if not entries:
+            return []
+        with transaction(self.pool) as curs:
+            returned, published = self._write_batch(curs, entries)
+        for message, delay in published:
+            self.emit_after("enqueue", message, delay)
+        return returned
+
+    def enqueue_many_in_transaction(self, messages, *, connection, options=None):
+        """Use a savepoint; never commit or retry the caller's transaction."""
+        if connection.info.transaction_status != TransactionStatus.INTRANS:
+            raise ValueError("enqueue_many_in_transaction requires an active transaction")
+        entries = self._batch_entries(messages, options)
+        if not entries:
+            return []
+        with transaction(connection) as curs:
+            returned, published = self._write_batch(curs, entries)
+            for message, delay in published:
+                self.emit_after("enqueue", message, delay)
+        return returned
+
+    @staticmethod
+    def _batch_entries(messages, options):
+        messages = list(islice(messages, 1001))
+        if len(messages) > 1000:
+            raise ValueError("batch limit is 1000 messages")
+        options = [{} for _ in messages] if options is None else list(islice(options, 1001))
+        if len(options) != len(messages):
+            raise ValueError("options must match messages")
+        allowed = {"delay", "deduplication_key", "deduplication_ttl"}
+        for option in options:
+            if not isinstance(option, dict) or option.keys() - allowed:
+                raise ValueError("invalid enqueue options")
+        return list(zip(messages, options))
+
+    def _write_batch(self, curs, entries):
+        returned, published = [], []
+        if all(o.get("deduplication_key") is None and o.get("deduplication_ttl") is None
+               for _, o in entries):
+            for message, option in entries:
+                delay = option.get("delay")
+                message = self._prepare_enqueue(message, delay)
+                returned.append(message)
+                published.append((message, delay))
+            # Psycopg executemany pipelines the existing per-message SQL.
+            curs.executemany(self.queries.ENQUEUE, [self._enqueue_params(m) for m in returned])
+        else:
+            for message, option in entries:
+                delay = option.get("delay")
+                if option.get("deduplication_key") is not None or option.get("deduplication_ttl") is not None:
+                    message, inserted = self._enqueue_deduplicated(
+                        curs, message, delay, option.get("deduplication_key"), option.get("deduplication_ttl"))
+                else:
+                    message = self._prepare_enqueue(message, delay)
+                    self._write_enqueue(curs, message)
+                    inserted = True
+                returned.append(message)
+                if inserted:
+                    published.append((message, delay))
+        return returned, published
+
     def _enqueue_deduplicated(self, curs, message, delay, key, ttl):
         if not isinstance(key, str) or not key:
             raise ValueError("deduplication_key must be a nonempty string")
@@ -199,16 +264,12 @@ class PostgresBroker(Broker):
         logger.debug(
             "Upserting %s in queue %s.", message.message_id, message.queue_name
         )
-        curs.execute(
-            self.queries.ENQUEUE,
-            (
-                message.queue_name,
-                message.message_id,
-                Jsonb(tidy4json(message)),
-                self.queries.channel(message.queue_name, "enqueue"),
-                message.message_id,
-            ),
-        )
+        curs.execute(self.queries.ENQUEUE, self._enqueue_params(message))
+
+    def _enqueue_params(self, message):
+        return (message.queue_name, message.message_id, Jsonb(tidy4json(message)),
+                self.queries.channel(message.queue_name, "enqueue"), message.message_id)
+
 
 
 class PostgresConsumer(Consumer):

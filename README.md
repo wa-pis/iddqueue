@@ -585,3 +585,34 @@ Retention is explicit: schedule `history purge` yourself with a positive
 PostgreSQL interval. It deletes attempts by start time, including old incomplete
 entries, independently of queued messages and Results. There is no automatic
 cleanup thread. Enabling history adds two database transactions per execution.
+
+### Atomic batch publishing
+
+```python
+messages = [first_actor.message(), second_actor.message()]
+options = [{}, {"delay": 1000, "deduplication_key": "second", "deduplication_ttl": 60000}]
+returned = broker.enqueue_many(messages, options=options)
+
+with connection.transaction():
+    # Business writes and the whole batch commit or roll back together.
+    returned = broker.enqueue_many_in_transaction(
+        messages, connection=connection, options=options)
+```
+
+The returned list follows input order; a deduplicated entry returns the original
+message. `options` is optional, with one dict per message; dict keys are the same
+`delay`, `deduplication_key`, `deduplication_ttl` keywords as `enqueue`. A batch is
+limited to 1000 messages; an empty batch performs no SQL. The external form
+requires an active transaction even for an empty batch and uses a savepoint,
+so a caught batch error leaves earlier caller writes intact. Neither batch API
+automatically retries a connection failure; the caller must handle an uncertain
+commit with idempotency/deduplication.
+
+Without deduplication, Psycopg `executemany` pipelines the existing per-message
+SQL in one transaction. Deduplicated/mixed batches reuse the normal key claim
+path in one transaction. All database writes and notifications roll back on any
+error; notifications become visible only after the outer commit. Enqueue hooks
+run once per published message; duplicates run none. Before hooks precede the
+writes, after hooks run after successful writes (and after commit for the owned
+transaction). External hooks describe the SQL operation and may run before the
+caller subsequently rolls back. Python hook side effects cannot be rolled back.

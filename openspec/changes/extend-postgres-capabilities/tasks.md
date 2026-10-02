@@ -40,10 +40,10 @@
 
 ## 6. Пакетная отправка
 
-- [ ] 6.1 Добавить batch API для собственной и внешней транзакции с savepoint, общими per-message hooks, delay и dedup поддержкой.
-- [ ] 6.2 Проверить all-or-nothing, caught exception во внешней транзакции, duplicates, empty/mixed queue batch, rollback и notifications after commit.
-- [ ] 6.3 Измерить SQL query count и время одиночной/пакетной отправки на фиксированной выборке; записать evidence без неподтверждённых performance claims.
-- [ ] 6.4 Обновить docs и evidence этапа; выполнить Ruff, полный tests/unit tests/func на выделенном PostgreSQL, poetry check, strict OpenSpec и build/license checker при изменении packaging/SQL resources.
+- [x] 6.1 Добавить batch API для собственной и внешней транзакции с savepoint, общими per-message hooks, delay и dedup поддержкой.
+- [x] 6.2 Проверить all-or-nothing, caught exception во внешней транзакции, duplicates, empty/mixed queue batch, rollback и notifications after commit.
+- [x] 6.3 Измерить SQL query count и время одиночной/пакетной отправки на фиксированной выборке; записать evidence без неподтверждённых performance claims.
+- [x] 6.4 Обновить docs и evidence этапа; выполнить Ruff, полный tests/unit tests/func на выделенном PostgreSQL, poetry check, strict OpenSpec и build/license checker при изменении packaging/SQL resources.
 - [ ] 6.5 После проверок зафиксировать этап отдельным commit и push в wa-pis/iddqueue main; проверить успешный GitHub CI и записать ссылку, не отмечая подготовленный workflow выполненным.
 
 ## 7. Периодический scheduler

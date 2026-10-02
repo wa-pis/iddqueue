@@ -143,3 +143,20 @@ CLI history list MESSAGE_UUID использует keyset pagination по attemp
 удаляет по started_at, включая старые incomplete, независимо от queue/Results.
 Это diagnostic middleware: обычные ошибки hooks логируются Dramatiq, при отказе
 БД возможны пропуски; запись истории не является транзакцией side effects actor.
+
+
+## Этап 6 — фактический контракт batch
+
+enqueue_many(messages, options=None) и enqueue_many_in_transaction(...,
+connection=...) принимают до 1000 сообщений и aligned dict options с delay,
+deduplication_key, deduplication_ttl. Возвращают input order, включая исходные
+messages для дублей. Empty не делает SQL; внешний вариант всё равно требует
+active transaction. Внешний вызов оборачивает весь пакет в savepoint; ошибок
+соединения автоматически не повторяет, caller сохраняет commit/rollback.
+Plain batch использует Psycopg executemany/pipeline существующего ENQUEUE:
+100 сообщений остаются 100 SQL enqueue statements, но один cursor вызов и
+одна transaction вместо 100. Mixed/dedup batch переиспользует обычный claim
+последовательно; performance улучшение для dedup не заявляется.
+After hooks выполняются только после успешного пакета (после commit для owned
+transaction); внешние hooks могут предшествовать последующему caller rollback.
+Python side effects hooks не атомарны с БД, как и при одиночной отправке.

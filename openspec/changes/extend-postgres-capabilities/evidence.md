@@ -129,3 +129,33 @@ CLI history list/purge; args/kwargs/options/results не сохраняются.
 Этап 5.5 завершён: https://github.com/wa-pis/iddqueue/actions/runs/37071887095,
 commit 9843f1f. Все шесть Python 3.10/3.13/3.14 × PostgreSQL 14/18 jobs success,
 включая build/LICENSE и crash test. Этапы 6–7 не начаты; общий change активен.
+
+
+# Evidence — этап 6, пакетная отправка
+
+2026-10-03. enqueue_many/enqueue_many_in_transaction, общий enqueue params,
+executemany для plain batch и сохранение dedup path для mixed batches.
+
+Фактически выполнено:
+- Dedicated PostgreSQL 14.20/Python 3.13.14: **113 passed in 42.11s**.
+- Восемь новых integration cases: commit/rollback с mixed queues/DQ/ETA,
+  notifications отсутствуют до commit, порядок returns и before/after hooks.
+- Plain SQL error и invalid dedup TTL откатывают весь пакет; внешняя transaction
+  остаётся пригодной, ранняя caller запись сохраняется, dedup keys откатились.
+- Повтор key внутри batch и в следующем вызове возвращает оригинал без hooks,
+  mixed ordinary message публикуется; schema/prefix с кавычками.
+- Empty без pool checkout; limit 1000, invalid options/count и active txn guard.
+- Ruff (включая benchmark script), poetry check, strict OpenSpec,
+  git diff --check: success. Packaging/SQL resources не менялись.
+
+Измерение: scripts/benchmark_batch.py, 100 сообщений по одному и одним пакетом,
+без dedup/Results, localhost dedicated PostgreSQL, один warmup и пять samples,
+один pool connection. Сохраняемый скрипт чистит собственную временную schema.
+Финальные samples ms: single [18.565, 18.118, 17.912, 18.251, 18.406],
+batch [1.843, 2.220, 1.761, 1.779, 1.889]. Медианы **18.251 / 1.843 ms**.
+Cursor enqueue calls **100 / 1**, SQL enqueue statements **100 / 100**,
+transactions **100 / 1**. Instrumentation исключает пустые health commands;
+BEGIN/COMMIT и wire round trips не подсчитывались. Результат одной машины,
+без утверждения такой же скорости в production или для dedup batches.
+
+Этап 6.5 ожидает commit/push и подтверждённый GitHub CI. Этап 7 не начат.
