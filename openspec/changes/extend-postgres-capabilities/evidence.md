@@ -98,4 +98,6 @@ commit 2a0a2d1. Все шесть Python 3.10/3.13/3.14 × PostgreSQL 14/18 jobs
 - Ruff, poetry check, strict OpenSpec, git diff --check: success.
 - Packaging/SQL resources не изменялись; локальная сборка отдельно не запускалась.
 
-Этап 4.5 ожидает удалённого CI; этапы 5–7 не начаты.
+Этап 4.5 завершён: https://github.com/wa-pis/iddqueue/actions/runs/37070389403,
+commit 063b559. Все шесть Python 3.10/3.13/3.14 × PostgreSQL 14/18 jobs success,
+включая build/license checker. Этапы 5–7 не начаты; общий change активен.
