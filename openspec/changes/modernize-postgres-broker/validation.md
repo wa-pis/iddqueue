@@ -84,3 +84,19 @@ Prometheus families переименованы в iddqueue_queue_*; README оп�
 
 Baseline остаётся активным: owner/visibility/origin/push и удалённая матрица
 не выполнены. Публикация в PyPI не выполнялась.
+
+## GitHub и retry race — 2026-10-02
+
+Пользователь предоставил https://github.com/wa-pis/iddqueue; API подтвердил
+PRIVATE и пустой репозиторий. Origin настроен через существующий SSH-доступ
+wa-pis; upstream сохранён. История отправлена в main, default branch main.
+HTTPS OAuth не имел workflow scope; SSH push успешно принят.
+Метаданные Repository/Issues обновлены; poetry check/build и license checker прошли.
+
+Run https://github.com/wa-pis/iddqueue/actions/runs/37054101038:
+5/6 jobs success; Python 3.14/PostgreSQL 18 — ResultTimeout в retry.
+Детерминированный test_retry_wakes_consumer_after_old_lock_release до fix:
+1 failed (retried is None). После fix полный suite: **65 passed in 33.62s**
+на Python 3.13.14/PostgreSQL 14.20. Ruff и strict OpenSpec прошли.
+Release очереди повторно уведомляет queued запись после старого session lock.
+Удалённая повторная матрица ещё ожидается; baseline пока не архивирован.

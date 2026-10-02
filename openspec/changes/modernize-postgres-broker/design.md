@@ -53,3 +53,12 @@ OpenSpec archives и upstream attribution сохраняют исходные и
 SQL schema dramatiq, wire channels и текущие данные не переименовываются.
 
 Метрики Prometheus переименованы в iddqueue_queue_*; dashboards требуют обновления.
+
+## Retry unlock race
+
+Run 37054101038: пять jobs прошли, Python 3.14/PostgreSQL 18 получил
+ResultTimeout в Prometheus retry scenario. Retry вернулся из DQ в обычную
+очередь до освобождения её старого advisory lock; все consumers пропустили
+NOTIFY. После освобождения lock SHALL отправляться повторное уведомление,
+если запись всё ещё queued в той же очереди. Payload содержит UUID;
+состояние читается из таблицы. Периодический recovery не заменяет wakeup.

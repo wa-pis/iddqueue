@@ -137,3 +137,29 @@ def test_external_pool_restores_autocommit_and_subscriptions():
                 assert curs.fetchall() == []
         finally:
             pool.putconn(conn)
+
+
+def test_retry_wakes_consumer_after_old_lock_release(pool, monkeypatch):
+    monkeypatch.setattr("iddqueue.broker.randint", lambda *args: 1)
+    broker = PostgresBroker(pool=pool, results=False)
+    queue = "retry-lock-" + uuid4().hex
+    owner = broker.consume(queue, timeout=20)
+    observer = broker.consume(queue, timeout=20)
+    task = Message(queue, "unused", (), {}, {})
+    try:
+        broker.enqueue(task)
+        claimed = next(owner)
+        assert claimed.message_id == task.message_id
+        broker.enqueue(task.copy(options={"retries": 1}))
+        assert next(observer) is None
+        owner.ack(claimed)
+        owner.purge_locks()
+        retried = next(observer)
+        assert retried.message_id == task.message_id
+        assert retried.options["retries"] == 1
+        observer.ack(retried)
+    finally:
+        owner.close()
+        observer.close()
+        with transaction(pool) as curs:
+            curs.execute("DELETE FROM dramatiq.queue WHERE message_id = %s", (task.message_id,))

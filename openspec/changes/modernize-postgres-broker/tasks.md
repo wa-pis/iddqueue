@@ -39,3 +39,8 @@
 
 - [x] 6.1 Переименовать distribution/import/CLI в iddqueue; обновить активные примеры, тесты и CI, сохранив LICENSE/upstream credits и SQL/wire namespace.
 - [x] 6.2 Проверить полный PostgreSQL suite, сборку, LICENSE в артефактах и установленный wheel с import/CLI iddqueue; закоммитить локально.
+
+## 7. Регрессия retry, обнаруженная удалённым CI
+
+- [x] 7.1 Воспроизвести детерминированно уведомление queued retry до освобождения session lock; после unlock повторно уведомить очередь, не ожидая случайного recovery scan.
+- [ ] 7.2 Выполнить локальные PostgreSQL tests и полную удалённую матрицу; записать evidence, отдельный commit.

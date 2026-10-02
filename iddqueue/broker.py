@@ -380,6 +380,12 @@ class PostgresConsumer(Consumer):
                     self.queries.RELEASE_ONE,
                     (lock,),
                 )
+                # Retry may be queued while this attempt still holds its lock.
+                curs.execute(
+                    self.queries.NOTIFY_UNLOCKED,
+                    (self.queries.channel(message.queue_name, "enqueue"),
+                     message.message_id, message.message_id, message.queue_name),
+                )
                 self.unlock_q.task_done()
 
     @raise_connection_error
@@ -443,6 +449,11 @@ QUERIES = QueryManager(
             AND pg_try_advisory_lock(%s);
         """
         ),
+        NOTIFY_UNLOCKED="""
+        SELECT pg_notify(%s, jsonb_build_object('message_id', %s::text)::text)
+        FROM {schema}.{tablename}
+        WHERE message_id = %s AND queue_name = %s AND state = 'queued';
+        """,
         RELEASE_ONE="""SELECT pg_advisory_unlock(%s)""",
         ENQUEUE=dedent(
             """\

@@ -62,3 +62,11 @@
 #### Scenario: Independent broker instances
 - **WHEN** созданы два брокера с разными схемами и префиксами таблиц
 - **THEN** настройка второго не меняет адресацию таблиц первого
+
+### Requirement: Retry wakeup after unlock
+Брокер SHALL повторно уведомлять очередь после освобождения session lock,
+если сообщение возвращено в queued в этой очереди.
+
+#### Scenario: Retry notification precedes unlock
+- **WHEN** consumers пропустили queued retry из-за старого session lock
+- **THEN** освобождение lock будит consumers, и retry доставляется без ожидания случайного recovery scan
