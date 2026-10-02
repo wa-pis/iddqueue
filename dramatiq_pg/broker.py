@@ -12,6 +12,7 @@ from dramatiq.errors import BrokerConnectionError
 from dramatiq.message import Message
 from dramatiq.results import Results
 from psycopg import Notify, sql
+from psycopg.pq import TransactionStatus
 from psycopg.types.json import Jsonb
 
 from .results import PostgresBackend
@@ -87,6 +88,21 @@ class PostgresBroker(Broker):
     def enqueue(self, message, *, delay=None):
         message = self._prepare_enqueue(message, delay)
         with transaction(self.pool) as curs:
+            self._write_enqueue(curs, message)
+        self.emit_after("enqueue", message, delay)
+        return message
+
+    def enqueue_in_transaction(self, message, *, connection, delay=None):
+        """Enqueue using the caller's active Psycopg transaction.
+
+        The caller owns commit, rollback and the connection. Enqueue hooks
+        describe the SQL operation, not the eventual transaction commit.
+        Errors propagate without retrying the caller's transaction.
+        """
+        if connection.info.transaction_status != TransactionStatus.INTRANS:
+            raise ValueError("enqueue_in_transaction requires an active transaction")
+        message = self._prepare_enqueue(message, delay)
+        with connection.cursor() as curs:
             self._write_enqueue(curs, message)
         self.emit_after("enqueue", message, delay)
         return message

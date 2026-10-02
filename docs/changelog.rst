@@ -6,6 +6,7 @@ Unreleased
 
 
 
+- Add enqueue_in_transaction for atomic publication with application data.
 
 - Require Python 3.10+, Dramatiq 2.2.1+ and Psycopg 3.3.6+.
 - Replace psycopg2 pools with lazy Psycopg 3 connection pools.

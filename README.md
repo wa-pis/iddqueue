@@ -107,3 +107,27 @@ Version 0.13 uses Psycopg 3 pools; Psycopg 2 pools are no longer supported.
 Broker-created pools open on first use and default to zero idle connections.
 Call `broker.close()` on shutdown. If you supply a pool, close it yourself
 and create it separately in each worker process.
+
+
+## Transactional publishing
+
+Use `enqueue_in_transaction` to publish a task atomically with application
+changes in the same PostgreSQL database:
+
+```python
+import psycopg
+
+with psycopg.connect(dsn) as connection:
+    with connection.transaction():
+        connection.execute("UPDATE orders SET status = %s WHERE id = %s",
+                           ("confirmed", order_id))
+        broker.enqueue_in_transaction(send_receipt.message(order_id),
+                                      connection=connection)
+```
+
+The connection must already have an active transaction. The broker does not
+commit, roll back, close, or retry that transaction. PostgreSQL makes the task
+and its notification visible on commit; rollback cancels both. `delay` is in
+milliseconds, measured from enqueue time. Enqueue middleware hooks run around
+the SQL operation: `after_enqueue` does not mean the outer transaction has
+committed. Workers still provide at-least-once delivery.

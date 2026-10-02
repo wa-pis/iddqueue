@@ -60,3 +60,19 @@ Postgres-backed implementation of result storage for Dramatiq.
 
 pool and url arguments have the same meaning and the same behaviour as for
 PostgresBroker.
+
+
+Transactional publishing
+========================
+
+``broker.enqueue_in_transaction(message, *, connection, delay=None)``
+requires a synchronous Psycopg 3 connection with an active transaction.
+It returns the enqueued message, including the delayed queue and eta when
+``delay`` is supplied in milliseconds. An idle connection raises
+``ValueError``; database errors propagate without automatic retries.
+
+The caller owns commit, rollback and the connection. The task and its
+notification become visible only when the caller commits. A rollback removes
+both the task and the caller's business changes, provided they use the same
+PostgreSQL database. Enqueue middleware hooks describe the SQL operation,
+not the eventual commit of the external transaction.
