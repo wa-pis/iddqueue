@@ -25,7 +25,7 @@ Documentation = "https://gitlab.com/dalibo/dramatiq-pg/blob/master/docs/index.rs
 dramatiq-pg = "dramatiq_pg.cli:entrypoint"
 
 [tool.poetry]
-include = ["dramatiq_pg/schema.sql"]
+include = ["dramatiq_pg/schema.sql", "dramatiq_pg/coordination.sql"]
 
 [tool.poetry.group.dev.dependencies]
 pytest = ">=8"

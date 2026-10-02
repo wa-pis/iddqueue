@@ -35,6 +35,7 @@ import sys
 import time
 
 import dramatiq.results
+from dramatiq.middleware import GroupCallbacks
 from psycopg.types.json import Jsonb
 
 import dramatiq_pg
@@ -47,6 +48,9 @@ pool = make_pool("application_name=dramatiq-pg")
 # PostgresBroker creates a ConnectionPool from URL, swallowing minconn
 # and maxconn query argument.
 dramatiq.set_broker(dramatiq_pg.PostgresBroker(pool=pool))
+dramatiq.get_broker().add_middleware(
+    GroupCallbacks(dramatiq_pg.PostgresRateLimiterBackend(pool=pool))
+)
 
 
 seed = int(os.environ.get("SEED", int(time.time())))

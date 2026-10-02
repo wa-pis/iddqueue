@@ -15,6 +15,7 @@ def process_psql_lines(raw_lines, schema, prefix):
             line.replace(':"schema"', schema)
             .replace(':"state"', statename)
             .replace(':"queue"', tablename)
+            .replace(':"coordination"', quote_ident(prefix + "coordination"))
         )
 
 
@@ -26,5 +27,12 @@ def generate_init_sql(schema="dramatiq", prefix=""):
     """
 
     path = os.path.dirname(__file__) + "/schema.sql"
+    with open(path) as fo:
+        return "\n".join(process_psql_lines(fo, schema, prefix)) + "\n" + generate_coordination_sql(schema, prefix)
+
+
+def generate_coordination_sql(schema="dramatiq", prefix=""):
+    """Idempotent upgrade for existing databases; leaves queue data intact."""
+    path = os.path.join(os.path.dirname(__file__), "coordination.sql")
     with open(path) as fo:
         return "\n".join(process_psql_lines(fo, schema, prefix))

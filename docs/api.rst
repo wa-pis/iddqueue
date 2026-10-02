@@ -76,3 +76,25 @@ notification become visible only when the caller commits. A rollback removes
 both the task and the caller's business changes, provided they use the same
 PostgreSQL database. Enqueue middleware hooks describe the SQL operation,
 not the eventual commit of the external transaction.
+
+PostgreSQL coordination
+=======================
+
+``PostgresRateLimiterBackend(url=None, pool=None, schema="dramatiq", prefix="")``
+implements Dramatiq's standard rate-limiter and barrier backend. ``add``,
+``incr``, ``decr`` and ``incr_and_sum`` use transaction-scoped advisory locks;
+``incr_and_sum`` accepts a callable returning the current window's keys.
+TTL and wait timeouts are milliseconds. ``wait(key, None)`` waits without a
+deadline; events are durable until their TTL expires. Notifications carry no
+state and waiters always re-read the table.
+
+``generate_coordination_sql(schema="dramatiq", prefix="")`` returns an
+idempotent migration for existing installations. It does not alter the queue.
+``generate_init_sql`` includes the same table for fresh installations.
+To reverse the migration, disable coordination users and drop only the
+schema's prefixed ``coordination`` table.
+
+``purge()`` deletes rows whose counter and event TTLs have both expired and
+returns the number removed. Run periodically for bucket/window workloads.
+The backend does not retry counter mutations after an ambiguous disconnect;
+callers must not assume a failed request was rolled back.

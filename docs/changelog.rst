@@ -6,6 +6,8 @@ Unreleased
 
 
 
+- Add PostgreSQL rate limits, durable barriers and standard GroupCallbacks support.
+- Add an idempotent coordination-table migration and expiry cleanup.
 - Add enqueue_in_transaction for atomic publication with application data.
 
 - Require Python 3.10+, Dramatiq 2.2.1+ and Psycopg 3.3.6+.

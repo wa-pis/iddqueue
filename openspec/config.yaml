@@ -8,15 +8,15 @@ context: |
   Scope: синхронный PostgreSQL broker и Results backend для Dramatiq; без ORM.
   Stack: Python >=3.10,<4; Dramatiq >=2.2.1,<3; Psycopg >=3.3.6,<4;
     psycopg-pool >=3.3.3,<4; Tenacity >=9,<10; Poetry.
-  Storage: JSONB, LISTEN/NOTIFY, session advisory locks, одна таблица очереди.
+  Storage: JSONB, LISTEN/NOTIFY, session advisory locks, таблица очереди и отдельная таблица координации.
   Delivery: at-least-once; задачи должны быть идемпотентными.
   Existing public API: PostgresBroker, PostgresBackend, generate_init_sql, dramatiq-pg CLI.
   Local migration implemented before OpenSpec adoption on 2026-10-02.
-  Verified: 38 tests on Python 3.13.14/PostgreSQL 14.20, Ruff, wheel/sdist build and wheel installation.
+  Verified: 45 tests on Python 3.13.14/PostgreSQL 14.20, Ruff, wheel/sdist build and wheel installation.
   GitHub CI prepared for Python 3.10/3.13/3.14 and PostgreSQL 14/18; matrix not yet executed remotely.
   GitHub owner, repository name, package identity and publication policy remain undecided.
   Preserve PostgreSQL license and original contributor credits.
-  Feature roadmap: openspec/roadmap.md; completed local features: transactional-enqueue; other features planned.
+  Feature roadmap: openspec/roadmap.md; completed local features: transactional-enqueue, postgres-coordination; other features planned.
   User authorized recording all discussed features in OpenSpec on 2026-10-02.
 rules:
   proposal:

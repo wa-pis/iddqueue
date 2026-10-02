@@ -131,3 +131,45 @@ and its notification visible on commit; rollback cancels both. `delay` is in
 milliseconds, measured from enqueue time. Enqueue middleware hooks run around
 the SQL operation: `after_enqueue` does not mean the outer transaction has
 committed. Workers still provide at-least-once delivery.
+
+### PostgreSQL limiters and group callbacks
+
+Existing installations must add the coordination table before enabling this
+backend. Fresh `dramatiq-pg init` installations include it:
+
+```python
+import psycopg
+from dramatiq_pg import generate_coordination_sql
+
+with psycopg.connect("postgresql://localhost/app") as connection:
+    connection.execute(generate_coordination_sql(schema="dramatiq", prefix=""))
+```
+
+The upgrade is idempotent and preserves queue data. To reverse it, first stop
+users of the coordination backend, then drop only `dramatiq.coordination`
+(adjust schema and prefix when customized).
+
+```python
+from dramatiq.middleware import GroupCallbacks
+from dramatiq.rate_limits import ConcurrentRateLimiter
+from dramatiq_pg import PostgresRateLimiterBackend
+
+limits = PostgresRateLimiterBackend(pool=broker.pool)
+broker.add_middleware(GroupCallbacks(limits, barrier_ttl=900_000))
+
+with ConcurrentRateLimiter(limits, "external-api", limit=5).acquire():
+    call_external_api()
+```
+
+The backend also supports `BucketRateLimiter`, `WindowRateLimiter` and `Barrier`.
+Durations are milliseconds, except Dramatiq's sliding `window` in seconds.
+Use unique UUID barrier keys. Events survive missed notifications until their
+TTL expires. `wait` holds one pool connection; size the pool for simultaneous
+waiters and publishers. Schedule `limits.purge()` periodically to remove
+expired coordination rows. `close()` closes only a pool owned by the backend.
+
+Choose a TTL longer than the longest operation: an expired concurrency slot
+can be acquired while its original task is still running. Standard
+`GroupCallbacks` counts successful deliveries; repeated deliveries can contribute
+again and callbacks are not guaranteed exactly once. A group with failed tasks
+may never reach its barrier, and expired group state cannot reconstruct progress.
