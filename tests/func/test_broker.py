@@ -1,6 +1,6 @@
 import signal
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 from random import randint
 
 import pytest
@@ -76,26 +76,26 @@ def test_nack(listener, pgconn, witness, worker):
 @pytest.mark.timeout(8)
 def test_delay(listener, pgconn, worker):
     with listener:
-        queue_time = datetime.utcnow()
+        queue_time = datetime.now(timezone.utc)
         writer.send("no delay")
         writer.send_with_options(args=("delayed",), delay=1000)
         listener.wait()
-        immediate_delta = datetime.utcnow() - queue_time
+        immediate_delta = datetime.now(timezone.utc) - queue_time
         listener.wait()
-        delayed_delta = datetime.utcnow() - queue_time
+        delayed_delta = datetime.now(timezone.utc) - queue_time
 
     assert immediate_delta.total_seconds() < 1
     assert delayed_delta.total_seconds() > 1
 
     with listener:
-        queue_time = datetime.utcnow()
+        queue_time = datetime.now(timezone.utc)
         # Dramatiq worker loops each second. Thus, delaying 2s ensure the
         # message wont be processed before SIGHUP.
         writer.send_with_options(args=("requeued",), delay=2000)
         # SIGHUP triggers requeue, restart and recover.
         worker.proc.send_signal(signal.SIGHUP)
         listener.wait()
-        delayed_delta = datetime.utcnow() - queue_time
+        delayed_delta = datetime.now(timezone.utc) - queue_time
 
     assert delayed_delta.total_seconds() > 1
 

@@ -11,7 +11,7 @@ you're almost done with Dramatiq-pg and can use Dramatiq as usual.
 
 :pool:
 
-   A psycopg2 pool object. Should be ThreadedConnectionPool for thread safety.
+   A psycopg pool object. Should be ConnectionPool for thread safety.
 
 :url:
 

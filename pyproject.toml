@@ -1,34 +1,48 @@
-[tool.poetry]
+[project]
 name = "dramatiq-pg"
-version = "0.11.0"
+version = "0.13.0"
 description = "Postgres Broker for Dramatiq Task Queue"
-authors = ["Étienne BERSAC"]
-homepage = "https://gitlab.com/dalibo/dramatiq-pg"
-documentation = "https://gitlab.com/dalibo/dramatiq-pg/blob/master/docs/index.rst"
+authors = [{name = "Étienne BERSAC"}]
 license = "PostgreSQL"
 readme = "README.md"
+requires-python = ">=3.10,<4"
 keywords = ["postgres", "task queue", "dramatiq"]
-include = ["dramatiq-pg/schema.sql"]
+dependencies = [
+    "dramatiq>=2.2.1,<3",
+    "psycopg>=3.3.6,<4",
+    "psycopg-pool>=3.3.3,<4",
+    "tenacity>=9,<10",
+]
 
-[tool.poetry.dependencies]
-python = "^3.6"
-dramatiq = "^1.5"
-tenacity = ">=8,<10"
+[project.optional-dependencies]
+binary = ["psycopg[binary]>=3.3.6,<4"]
 
-[tool.poetry.dev-dependencies]
-flake8 = "^3.7"
-pytest = "^6"
-pytest-timeout = "^2"
-dramatiq = {version = "^1.5",extras = ["watch"]}
-sh = "^1.12"
-pytest-mock = "^1.10"
-psycopg2-binary = "^2.8"
-docutils = "^0.15.2"
-pygments = "^2.4.2"
+[project.urls]
+Homepage = "https://gitlab.com/dalibo/dramatiq-pg"
+Documentation = "https://gitlab.com/dalibo/dramatiq-pg/blob/master/docs/index.rst"
 
-[tool.poetry.scripts]
-dramatiq-pg = 'dramatiq_pg.cli:entrypoint'
+[project.scripts]
+dramatiq-pg = "dramatiq_pg.cli:entrypoint"
+
+[tool.poetry]
+include = ["dramatiq_pg/schema.sql"]
+
+[tool.poetry.group.dev.dependencies]
+pytest = ">=8"
+pytest-timeout = ">=2"
+pytest-mock = ">=3"
+dramatiq = {version = ">=2.2.1,<3", extras = ["watch"]}
+psycopg = {version = ">=3.3.6,<4", extras = ["binary"]}
+docutils = ">=0.21"
+pygments = ">=2"
+ruff = ">=0.9"
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = ["poetry-core>=2.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]

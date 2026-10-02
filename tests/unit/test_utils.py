@@ -3,46 +3,25 @@ import pytest
 from dramatiq_pg.utils import make_pool
 
 
-class TestMakePool:
-    @pytest.fixture
-    def tp(self, mocker):
-        tp = mocker.patch('dramatiq_pg.utils.ThreadedConnectionPool')
-        yield tp
-        tp.reset_mock()
-
-    def test_empty(self, tp):
-        pool = make_pool("")
-
-        assert 16 == pool.minconn
-
-    def test_keyword(self, tp):
-        pool = make_pool("dbname=toto")
-
-        call = tp.mock_calls[0]
-        assert "dbname=toto" in call[1][2]
-        assert 16 == pool.minconn
-
-    def test_url_param(self, tp):
-        pool = make_pool("postgresql:///?minconn=4")
-
-        call = tp.mock_calls[0]
-        assert "minconn" not in call[1][2]
-        assert 4 == pool.minconn
-
-    def test_min_max(self, tp):
-        pool = make_pool("postgresql://host/?minconn=4&maxconn=10")
-
-        call = tp.mock_calls[0]
-        assert "maxconn" not in call[1][2]
-        assert 4 == pool.minconn
-
-    def test_dict(self, tp):
-        pool = make_pool({"host": "hostname", "minconn": 10})
-
-        call = tp.mock_calls[0]
-        assert "host" in call.kwargs
-        assert call.kwargs["host"] == "hostname"
-        assert 10 == pool.minconn
+@pytest.mark.parametrize(
+    "url, min_size, max_size",
+    [
+        ("", 0, 16),
+        ("dbname=toto", 0, 16),
+        ("postgresql:///?minconn=4", 4, 16),
+        ("postgresql://host/?minconn=4&maxconn=10", 4, 10),
+        ({"host": "hostname", "minconn": 10}, 10, 16),
+    ],
+)
+def test_make_pool(url, min_size, max_size):
+    pool = make_pool(url)
+    assert pool.closed
+    assert pool.min_size == min_size
+    assert pool.max_size == max_size
+    assert "minconn" not in pool.conninfo
+    assert "maxconn" not in pool.conninfo
+    assert pool.kwargs["autocommit"] is True
+    pool.close()
 
 
 def test_quote_ident():
@@ -50,4 +29,4 @@ def test_quote_ident():
 
     assert '"table"' == quote_ident("table")
     assert '"with space"' == quote_ident("with space")
-    assert '"with""quote"' == quote_ident("with\"quote")
+    assert '"with""quote"' == quote_ident('with"quote')

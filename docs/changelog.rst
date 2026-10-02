@@ -4,6 +4,17 @@ Dramatiq-pg Changelog
 Unreleased
 ----------
 
+
+
+
+- Require Python 3.10+, Dramatiq 2.2.1+ and Psycopg 3.3.6+.
+- Replace psycopg2 pools with lazy Psycopg 3 connection pools.
+- Preserve pooled sessions when committing and rolling back transactions.
+- Release consumer subscriptions and advisory locks on shutdown.
+- Isolate SQL configuration between broker and result-backend instances.
+- Respect result TTL and millisecond timeouts; support large result payloads.
+- Use timezone-aware timestamps and remove obsolete WITHOUT OIDS syntax.
+- Add GitHub Actions testing against PostgreSQL 14 and 18.
 - Workaround payloads bigger than 8Kb
 
 
@@ -66,8 +77,8 @@ Release 2019-11-04.
   anymore.
 - More reliability: connection lost are handled everywhere, retrying on network
   failure is enabled.
-- Allows to use psycopg2-binary wheel. You must install psycopg2 or
-  psycopg2-binary yourself.
+- Allows to use psycopg[binary] wheel. You must install psycopg or
+  psycopg[binary] yourself.
 - By default, connection pool tries to reuse all connections.
 - Configure connection string of CLI.
 - dramatiq.queue table definition has been reviewed for optimisation. Changes

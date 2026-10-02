@@ -5,12 +5,8 @@
 
 import logging
 import sys
-from warnings import filterwarnings
 
-filterwarnings("ignore", message="The psycopg2 wheel package will be renamed")  # noqa
-
-import psycopg2
-
+import psycopg
 
 def main():
     logging.basicConfig(format="%(levelname)1.1s: %(message)s")
@@ -25,7 +21,7 @@ def main():
 
 
 def psql(sql):
-    conn = psycopg2.connect("")
+    conn = psycopg.connect("")
     with conn:
         with conn.cursor() as curs:
             try:

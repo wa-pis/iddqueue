@@ -1,18 +1,16 @@
 import functools
 import json
 import logging
-import select
-from contextlib import ExitStack, contextmanager, nullcontext
+from contextlib import ExitStack, contextmanager
 from urllib.parse import parse_qsl, urlparse
 
 import tenacity
 from dramatiq import Message, MessageProxy, get_encoder
-from dramatiq.errors import ConnectionError
-from psycopg2 import InterfaceError, OperationalError, __libpq_version__
-from psycopg2.errors import AdminShutdown, DatabaseError
-from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
-from psycopg2.extensions import quote_ident as pq_quote_ident
-from psycopg2.pool import PoolError, ThreadedConnectionPool
+from dramatiq.errors import BrokerConnectionError
+from psycopg import InterfaceError, OperationalError, sql
+from psycopg.conninfo import conninfo_to_dict, make_conninfo
+from psycopg.errors import AdminShutdown
+from psycopg_pool import ConnectionPool
 
 logger = logging.getLogger(__name__)
 
@@ -26,11 +24,7 @@ DISCONNECT_ERRORS = (
 
 retry_pg = tenacity.retry(
     retry=tenacity.retry_if_exception_type(
-        DISCONNECT_ERRORS
-        + (
-            ConnectionError,
-            DatabaseError,
-        )
+        DISCONNECT_ERRORS + (BrokerConnectionError,)
     ),
     reraise=True,
     wait=tenacity.wait_random_exponential(multiplier=1, max=30),
@@ -41,7 +35,7 @@ retry_pg = tenacity.retry(
 
 def check_conn(conn):
     try:
-        conn.poll()
+        ConnectionPool.check_connection(conn)
     except DISCONNECT_ERRORS as e:
         if not conn.closed:
             logger.debug("Closing connexion due to error: %s", e)
@@ -49,96 +43,66 @@ def check_conn(conn):
                 conn.close()
             except Exception as close_e:
                 logger.debug("Failed to close connexion: %s", close_e)
-        raise ConnectionError(str(e)) from None
+        raise BrokerConnectionError(str(e)) from None
     return conn
 
 
 @retry_pg
 def getconn(pool):
     # Get a reliable connection to Postgres.
+    if pool.closed:
+        pool.open()
     conn = pool.getconn()
     try:
         check_conn(conn)
-    except ConnectionError:
+    except BrokerConnectionError:
         pool.putconn(conn)
         raise  # Let tenacity control retry.
     return conn
 
 
-@retry_pg
 def make_pool(url, maxconn=16):
     if isinstance(url, str):
-        parts = urlparse(url)
-        kwargs = dict(parse_qsl(parts.query))
-        parts = parts._replace(query="")
-        conninfo = parts.geturl()
+        if "://" in url:
+            parts = urlparse(url)
+            kwargs = dict(parse_qsl(parts.query))
+            conninfo = url.split("?", 1)[0]
+            pool_options = {
+                key: kwargs.pop(key) for key in ("minconn", "maxconn") if key in kwargs
+            }
+            kwargs = conninfo_to_dict(conninfo, **kwargs)
+            kwargs.update(pool_options)
+        else:
+            kwargs = conninfo_to_dict(url)
     else:
-        conninfo = ""
         kwargs = dict(url)
 
+    maxconn = int(kwargs.pop("maxconn", maxconn))
+    minconn = int(kwargs.pop("minconn", 0))
     kwargs.setdefault("application_name", "dramatiq-pg")
     kwargs.setdefault("keepalives", "1")
     kwargs.setdefault("keepalives_count", "2")
     kwargs.setdefault("keepalives_idle", "5")
     kwargs.setdefault("keepalives_interval", "2")
-
-    if __libpq_version__ >= 120000:
-        kwargs.setdefault("tcp_user_timeout", "10000")
-
-    maxconn = int(kwargs.pop("maxconn", maxconn))
-    minconn = int(kwargs.pop("minconn", maxconn))  # Default to maxconn.
-
-    pool = ThreadedConnectionPool(0, maxconn, conninfo, **kwargs)
-    pool.minconn = minconn
-    return pool
-
-
-@contextmanager
-def pool_sanitizer(pool):
-    # When a connection is broken, other connection in the pool are likely
-    # broken as well. This context manager walk unused connection in the pool
-    # to check their health and immediatly clean unusable connections. This
-    # avoid exhausting retry attempts by looping on broken connections in the
-    # pool.
-
-    try:
-        yield pool
-    except DISCONNECT_ERRORS:
-        for _ in range(pool.minconn):
-            try:
-                conn = pool.getconn()
-            except PoolError:
-                # Pool exhausted. Other connection will be handled by their
-                # holder.
-                break
-
-            # The following statement serves 2 purposes:
-            # 1. Removes all subscriptions in case they were somehow leaked to
-            # the pool (they shouldn't be since `unlisten_all` is used to clear
-            # subscriptions).
-            # 2. Checks if the connection is still alive.
-            try:
-                with conn.cursor() as cur:
-                    cur.execute("UNLISTEN *")
-            except DISCONNECT_ERRORS as e:
-                logger.debug("Bad connection detected: %s", e)
-                if not conn.closed:
-                    conn.close()
-            pool.putconn(conn)
-
-        # Re raise original error for business or retry logic.
-        raise
+    return ConnectionPool(
+        make_conninfo(**kwargs),
+        min_size=minconn,
+        max_size=maxconn,
+        kwargs={"autocommit": True},
+        open=False,
+        check=ConnectionPool.check_connection,
+    )
 
 
 def raise_connection_error(fn):
-    # Raises Dramatiq connection error on Psycopg2 error
+    # Raises Dramatiq connection error on Psycopg error
 
     @functools.wraps(fn)
     def wrapper(*a, **kw):
         try:
             return fn(*a, **kw)
-        except OperationalError as e:
-            raise ConnectionError(str(e))
+        except DISCONNECT_ERRORS as e:
+            raise BrokerConnectionError(str(e))
 
     return wrapper
 
@@ -150,50 +114,45 @@ def quote_ident(raw):
 
 def unlisten_all(conn):
     if not conn.closed:
-        conn.notifies = []
         try:
-            cur = conn.cursor()
-            cur.execute("UNLISTEN *")
+            with conn.cursor() as cur:
+                cur.execute("UNLISTEN *")
+            # Discard notifications buffered before UNLISTEN.
+            list(conn.notifies(timeout=0))
         except DISCONNECT_ERRORS:
-            pass
+            conn.close()
 
 
 @contextmanager
 def transaction(conn_or_pool, listen=None):
-    # Manage the connection, transaction and cursor from a connection pool.
-    new_conn = hasattr(conn_or_pool, "getconn")
     with ExitStack() as defer:
-        if new_conn:
-            defer.enter_context(pool_sanitizer(conn_or_pool))
+        if hasattr(conn_or_pool, "getconn"):
             conn = getconn(conn_or_pool)
             defer.callback(conn_or_pool.putconn, conn)
         else:
             conn = conn_or_pool
 
         if listen:
-            # This is for NOTIFY consistency, according to psycopg2 doc.
-            conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
-            maybe_transaction_context = nullcontext()
+            autocommit = conn.autocommit
+            conn.autocommit = True
+            try:
+                with conn.cursor() as curs:
+                    curs.execute(sql.SQL("LISTEN {}").format(sql.Identifier(listen)))
+                    try:
+                        yield curs
+                    finally:
+                        unlisten_all(conn)
+            finally:
+                if not conn.closed:
+                    conn.autocommit = autocommit
         else:
-            maybe_transaction_context = conn
-
-        with maybe_transaction_context:
-            with conn.cursor() as curs:
-                if listen:
-                    channel = pq_quote_ident(listen, conn)
-                    curs.execute(f"LISTEN {channel};")
-                    defer.callback(unlisten_all, conn)
+            with conn.transaction(), conn.cursor() as curs:
                 yield curs
 
 
 def wait_for_notifies(conn, timeout=1):
-    rlist, *_ = select.select([conn], [], [], timeout)
-    check_conn(conn)  # Pools connection and notifies on the way.
-    notifies = conn.notifies[:]
-    if notifies:
-        logger.debug("Received %d Postgres notifies.", len(conn.notifies))
-        conn.notifies[:] = []
-    return notifies
+    # Receive one batch without waiting for the entire timeout after a notify.
+    return list(conn.notifies(timeout=timeout, stop_after=1))
 
 
 class QueryManager:
@@ -204,14 +163,15 @@ class QueryManager:
         self.build_queries(schema, prefix)
 
     def build_queries(self, schema=None, prefix=None):
-        if not (schema or prefix):
-            return
+        schema = self.schema if schema is None else schema
+        prefix = self.prefix if prefix is None else prefix
+        self.schema, self.prefix = schema, prefix
 
-        for name, sql in self.queries.items():
+        for name, query in self.queries.items():
             setattr(
                 self,
                 name,
-                sql.format(
+                query.format(
                     schema=quote_ident(schema),
                     tablename=quote_ident(prefix + "queue"),
                 ),

@@ -16,12 +16,12 @@ CREATE TABLE :"schema".:"queue"(
   message_id uuid PRIMARY KEY,
   queue_name TEXT NOT NULL DEFAULT 'default',
   "state" :"schema".:"state",
-  mtime TIMESTAMP WITH TIME ZONE DEFAULT (NOW() AT TIME ZONE 'UTC'),
+  mtime TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   -- message as encoded by dramatiq.
   message JSONB,
   "result" JSONB,
   result_ttl  TIMESTAMP WITH TIME ZONE
-) WITHOUT OIDS;
+);
 
 -- Index state and mtime together to speed up deletion. This can also speed up
 -- statistics when VACUUM ANALYZE is recent enough.

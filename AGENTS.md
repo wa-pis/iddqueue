@@ -1,0 +1,25 @@
+# Project workflow
+
+Use OpenSpec for project planning and changes. Read `openspec/config.yaml` and
+relevant specs/change artifacts before implementation. Keep proposal, delta
+specs, design and tasks consistent with the user's agreed scope. Update task
+checkboxes after implementation and verification; record actual test coverage.
+Do not treat a planned task or a prepared CI workflow as completed execution.
+
+Baseline change: `openspec/changes/modernize-postgres-broker/`.
+Feature roadmap and dependencies: `openspec/roadmap.md`. Before working on a
+feature, select its change explicitly and read its proposal, specs, design and
+tasks. Check roadmap and archived changes for completed features; unchecked
+tasks are not implementation evidence.
+The migration was implemented before OpenSpec adoption; its completed tasks
+record existing work. GitHub setup is still pending. Repository and package
+names must come from the user, rather than be inferred from the upstream name.
+
+Keep the implementation small: synchronous Psycopg 3, no ORM, session-bound
+advisory locks and LISTEN/NOTIFY. Preserve the upstream license and credits.
+Use a dedicated PostgreSQL instance for functional tests: the suite terminates
+connections and crashes/restarts its workers.
+
+After changes, run the relevant checks: `poetry run ruff check dramatiq_pg tests/unit tests/func example.py`, `poetry run pytest tests/unit tests/func`
+(with a prepared test database), `poetry check`, and `poetry build` when
+packaging changes. Validate OpenSpec with `openspec validate --all --strict`.

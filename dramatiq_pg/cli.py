@@ -1,10 +1,10 @@
 import argparse
 import bdb
+import importlib.metadata
 import logging
 import os
 import pdb
 import sys
-import importlib.metadata
 from textwrap import dedent
 
 from dramatiq.cli import LOGFORMAT, VERBOSITY
@@ -68,19 +68,20 @@ def main():
         return 1
 
     args.pool = make_pool(args.url, maxconn=1)
-
     try:
-        with transaction(args.pool) as curs:
-            curs.connection.poll()
-    except Exception as e:
-        logger.error("Failed to connect: %s.", e)
-        return 1
+        try:
+            with transaction(args.pool) as curs:
+                curs.execute("SELECT 1")
+        except Exception as e:
+            logger.error("Failed to connect: %s.", e)
+            return 1
 
-    kw = dict(schema=args.schemaname, prefix=args.prefix)
-    BROKER_QUERIES.build_queries(**kw)
-    QUERIES.build_queries(**kw)
-
-    return args.command(args)
+        kw = dict(schema=args.schemaname, prefix=args.prefix)
+        BROKER_QUERIES.build_queries(**kw)
+        QUERIES.build_queries(**kw)
+        return args.command(args)
+    finally:
+        args.pool.close()
 
 
 def make_argument_parser():
@@ -116,8 +117,7 @@ def make_argument_parser():
         default="dramatiq",
         metavar="SCHEMA",
         help=(
-            "Alternative database schema for Dramatiq-pg DDL."
-            ' Default is "%(default)s".'
+            'Alternative database schema for Dramatiq-pg DDL. Default is "%(default)s".'
         ),
     )
     parser.add_argument(
@@ -213,7 +213,7 @@ QUERIES = QueryManager(
     UPDATE {schema}.{tablename}
     SET state = 'queued'
     WHERE state = 'consumed'
-        AND mtime < (NOW() AT TIME ZONE 'UTC') - interval %s;
+        AND mtime < NOW() - %s::interval;
     """
         ),
         STATS=dedent(

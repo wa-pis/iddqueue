@@ -45,19 +45,21 @@ Connection Configuration
 ========================
 
 The ``PostgresBroker`` class accepts either a ``pool`` or an ``url`` argument.
-The ``pool`` is a psycopg2 connection pool object.
+The ``pool`` is a psycopg connection pool object.
 
 ::
 
    from dramatiq_pg import PostgresBroker
-   from psycopg2.pool import ThreadedConnectionPool
+   from psycopg_pool import ConnectionPool
 
-   broker = PostgresBroker(pool=ThreadedConnectionPool(8, 8, "")
+   pool = ConnectionPool("", min_size=0, max_size=8,
+                         kwargs={"autocommit": True}, open=False)
+   broker = PostgresBroker(pool=pool)
 
 
-The ``url`` argument is a psycopg2-compatible `connection string
-<http://initd.org/psycopg/docs/module.html#psycopg2.connect>`_, also called
-*dsn*. Internally, ``PostgresBroker`` creates a ``ThreadedConnectionPool``. You
+The ``url`` argument is a psycopg-compatible `connection string
+<https://www.psycopg.org/psycopg3/docs/api/connections.html>`_, also called
+*dsn*. Internally, ``PostgresBroker`` creates a ``ConnectionPool``. You
 can customize de size of the pool by setting ``minconn`` and ``maxconn`` query
 parameters. ``PostgresBroker`` reads ``minconn`` and ``maxconn`` only from URL,
 not from keyword/value connection string.
@@ -66,14 +68,14 @@ not from keyword/value connection string.
 
    from dramatiq_pg import PostgresBroker
 
-   broker = PostgresBroker(url="postgresql://user:password@host/dbname?minconn=8&maxconn=8)
+   broker = PostgresBroker(url="postgresql://user:password@host/dbname?minconn=8&maxconn=8")
 
-``maxconn`` defaults to 16. ``minconn`` defaults to the value of ``maxconn``.
-Dramatiq-pg initialize connection pool from url in a special way: the pool
-always begins with 0 connection, even if minconn is positive. However, the pool
-will keep unused connection opened until the minimum number of connection is
-reached. Thus starting all Dramatiq processes won't trigger a huge connection
-demand on Postgres server.
+``maxconn`` defaults to 16 and ``minconn`` defaults to 0. The pool opens
+on first use, so constructing the broker doesn't connect to PostgreSQL or
+start background threads. Create pools separately in each worker process;
+do not share an opened pool across a process fork. Call ``broker.close()``
+to close a pool created by the broker. For a supplied pool, its owner must
+close it.
 
 
 Result Storage

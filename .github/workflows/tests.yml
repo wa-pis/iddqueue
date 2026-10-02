@@ -1,0 +1,37 @@
+name: Tests
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ['3.10', '3.13', '3.14']
+        postgres: ['14', '18']
+    services:
+      postgres:
+        image: postgres:${{ matrix.postgres }}
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      PGHOST: localhost
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGDATABASE: postgres
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: pip install poetry
+      - run: poetry install --extras binary
+      - run: poetry run ruff check dramatiq_pg tests/unit tests/func example.py
+      - run: poetry run pytest tests/unit
+      - run: poetry run dramatiq-pg init
+      - run: poetry run python tests/pypsql < tests/func/schema.sql
+      - run: poetry run pytest tests/func

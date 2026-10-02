@@ -6,10 +6,11 @@
 #
 
 import logging
+import time
 from textwrap import dedent
 
 from dramatiq.results import ResultBackend, ResultMissing, ResultTimeout
-from psycopg2.extras import Json
+from psycopg.types.json import Jsonb
 
 from .utils import (
     QueryManager,
@@ -27,13 +28,16 @@ class PostgresBackend(ResultBackend):
     def __init__(self, *, url=None, pool=None, schema=None, prefix=None, **kw):
         super().__init__(**kw)
 
-        if url:
-            self.pool = make_pool(url)
-        else:
-            # Receive a pool object to have an I/O less __init__.
-            self.pool = pool
+        if pool is not None and url:
+            raise ValueError("You can't set both pool and URL!")
+        self._owns_pool = pool is None
+        self.pool = make_pool(url or "") if pool is None else pool
 
-        QUERIES.build_queries(schema, prefix)
+        self.queries = QueryManager(QUERIES.queries, schema or "dramatiq", prefix or "")
+
+    def close(self):
+        if self._owns_pool:
+            self.pool.close()
 
     def build_message_key(self, message):
         # Just use message_id, it's UNIQUE in table.
@@ -43,39 +47,31 @@ class PostgresBackend(ResultBackend):
     def get_result(self, message, *, block=False, timeout=None):
         key = self.build_message_key(message)
 
-        # Ensure a timeout is set.
-        timeout = (timeout or 300_000) // 1000
+        timeout = 300_000 if timeout is None else timeout
+        deadline = time.monotonic() + timeout / 1000
         channel = f"dramatiq.{key}.results"
         with transaction(self.pool, listen=channel) as curs:
-            # First, search result in table.
-            curs.execute(QUERIES.GET, (key,))
-            if curs.rowcount:
-                (result,) = curs.fetchone()
-                return self.unwrap_result(result)
-            elif not block:
-                raise ResultMissing(message)
-
-            # From here, we are in blocking mode.
-            logger.debug("Waiting for result of %s.", key)
-            notifies = wait_for_notifies(curs.connection, timeout=timeout)
-
-        if not notifies:
-            raise ResultTimeout(message)
-        (notify,) = notifies
-        # Don't query database, use NOTIFY payload.
-        decoded = self.encoder.decode(notify.payload.encode("utf-8"))
-
-        return self.unwrap_result(decoded)
+            while True:
+                curs.execute(self.queries.GET, (key,))
+                row = curs.fetchone()
+                if row is not None:
+                    return self.unwrap_result(row[0])
+                if not block:
+                    raise ResultMissing(message)
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    raise ResultTimeout(message)
+                wait_for_notifies(curs.connection, timeout=remaining)
 
     @retry_pg
     def _store(self, key, result, ttl):
         with transaction(self.pool) as curs:
             logger.debug("Storing result for %s.", key)
             curs.execute(
-                QUERIES.STORE,
+                self.queries.STORE,
                 (
                     key,
-                    Json(tidy4json(result)),
+                    Jsonb(tidy4json(result)),
                     f"{ttl} ms",
                 ),
             )
@@ -89,7 +85,8 @@ QUERIES = QueryManager(
             """\
     SELECT result
         FROM {schema}.{tablename}
-        WHERE message_id = %s AND result IS NOT NULL;
+        WHERE message_id = %s AND result IS NOT NULL
+          AND result_ttl > NOW();
     """
         ),
         STORE=dedent(
@@ -98,15 +95,15 @@ QUERIES = QueryManager(
         INSERT INTO {schema}.{tablename}
                     (queue_name, message_id, "state", result, result_ttl)
             VALUES ('__RQ__', %s, 'done',
-                    %s, (NOW() AT TIME ZONE 'UTC') + interval %s)
+                    %s, NOW() + %s::interval)
         ON CONFLICT (message_id)
-        DO UPDATE SET mtime = (NOW() AT TIME ZONE 'UTC'),
+        DO UPDATE SET mtime = NOW(),
                         result = EXCLUDED.result,
                         result_ttl = EXCLUDED.result_ttl
         RETURNING queue_name, message_id, result
     )
     SELECT
-        pg_notify('dramatiq.' || message_id || '.results', result::text)
+        pg_notify('dramatiq.' || message_id || '.results', message_id::text)
     FROM stored;
     """
         ),

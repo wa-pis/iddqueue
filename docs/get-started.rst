@@ -4,7 +4,7 @@
 
 - Install dramatiq-pg package from PyPI::
 
-     $ pip install dramatiq-pg
+     $ pip install "dramatiq-pg[binary]"
 
 - Apply dramatiq\_pg/schema.sql file in your database::
 
@@ -14,7 +14,6 @@
   pool::
 
       import dramatiq
-      import psycopg2.pool
       from dramatiq_pg import PostgresBroker
 
       dramatiq.set_broker(PostgresBroker(url="postgresql:///?maxconn=10"))

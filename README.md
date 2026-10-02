@@ -24,9 +24,9 @@ assumptions for recovering after a crash.
 
 - Install dramatiq-pg package from PyPI:
   ``` console
-  $ pip install dramatiq-pg psycopg2-binary
+  $ pip install "dramatiq-pg[binary]"
   ```
-  Ensure you have either psycopg2 or psycopg2-binary installed.
+  Requires Python 3.10+, Dramatiq 2.2.1+ and Psycopg 3.3.6+.
 - Init database schema with `init` command.
   ``` console
   $ dramatiq-pg init
@@ -36,10 +36,9 @@ assumptions for recovering after a crash.
   pool:
   ``` python
   import dramatiq
-  import psycopg2.pool
   from dramatiq_pg import PostgresBroker
 
-  dramatiq.set_broker(PostgresBroker(i))
+  dramatiq.set_broker(PostgresBroker(url="postgresql://localhost/postgres"))
 
   @dramatiq.actor
   def myactor():
@@ -89,3 +88,22 @@ Thanks to all contributors :
 
 
 The logo is a creation of [Damien CAZEILS](http://www.damiencazeils.com/)
+
+
+## Development
+
+```console
+poetry install --extras binary
+poetry run dramatiq-pg init
+poetry run python tests/pypsql < tests/func/schema.sql
+poetry run pytest tests/unit tests/func
+```
+
+Configure the test database with `PGHOST`, `PGPORT`, `PGUSER`, `PGPASSWORD`
+and `PGDATABASE`. Tests terminate database connections and restart workers;
+use a dedicated test database. `docker-compose.yml` provides PostgreSQL 18.
+
+Version 0.13 uses Psycopg 3 pools; Psycopg 2 pools are no longer supported.
+Broker-created pools open on first use and default to zero idle connections.
+Call `broker.close()` on shutdown. If you supply a pool, close it yourself
+and create it separately in each worker process.

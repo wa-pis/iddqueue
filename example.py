@@ -35,18 +35,16 @@ import sys
 import time
 
 import dramatiq.results
-import psycopg2.pool
-from psycopg2.extras import Json
+from psycopg.types.json import Jsonb
 
 import dramatiq_pg
+from dramatiq_pg.utils import make_pool
 
 logger = logging.getLogger(__name__)
-# Empty connstring let's you configure psycogp2 using PG* env vars.
-pool = psycopg2.pool.ThreadedConnectionPool(
-    16, 16, "application_name=dramatiq-pg"
-)
+# Empty connstring let's you configure psycopg using PG* env vars.
+pool = make_pool("application_name=dramatiq-pg")
 # PostgresBroker accepts either pool= or url=. URL is a libpq connstring.
-# PostgresBroker creates a ThreadedConnectionPool from URL, swallowing minconn
+# PostgresBroker creates a ConnectionPool from URL, swallowing minconn
 # and maxconn query argument.
 dramatiq.set_broker(dramatiq_pg.PostgresBroker(pool=pool))
 
@@ -69,13 +67,13 @@ def sleeper(param):
 
 @dramatiq.actor
 def writer(*args, **kwargs):
-    conn = pool.getconn()
+    conn = dramatiq_pg.utils.getconn(pool)
     insert = (
         "INSERT INTO functest.witness (payload) VALUES (%s::jsonb);",
-        (Json(dict(args=args, kwargs=kwargs)),),
+        (Jsonb(dict(args=args, kwargs=kwargs)),),
     )
     try:
-        with conn:
+        with conn.transaction():
             with conn.cursor() as curs:
                 logger.info("Inserting args in witness table.")
                 curs.execute(*insert)
@@ -99,6 +97,7 @@ def failing(always=True, message="Forged failure", wait=0):
 def rejecting(message="Rejecting"):
     writer(message=message)
     raise Exception(message)
+
 
 
 def main():

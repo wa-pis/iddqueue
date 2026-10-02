@@ -1,6 +1,0 @@
-class AdminShutdown(Exception):
-    ...
-
-
-class DatabaseError(Exception):
-    ...

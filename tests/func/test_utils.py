@@ -1,13 +1,14 @@
-from example import pool
 from dramatiq_pg.utils import (
+    getconn,
     transaction,
     wait_for_notifies,
 )
+from example import pool
 
 
 def test_subscription_isolation(pgconn):
     """Ensure that subscriptions don't leak."""
-    conn = pool.getconn()
+    conn = getconn(pool)
 
     channel_1_name = "channel_1"
     channel_2_name = "channel_2"
@@ -39,3 +40,5 @@ def test_subscription_isolation(pgconn):
     assert channels_2 == [channel_2_name]
     assert [n.channel for n in notifies_1] == [channel_1_name]
     assert [n.channel for n in notifies_2] == [channel_2_name]
+
+    pool.putconn(conn)

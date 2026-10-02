@@ -8,11 +8,11 @@ from textwrap import dedent
 
 from dramatiq.broker import Broker, Consumer, MessageProxy
 from dramatiq.common import compute_backoff, current_millis, dq_name
-from dramatiq.errors import ConnectionError
+from dramatiq.errors import BrokerConnectionError
 from dramatiq.message import Message
 from dramatiq.results import Results
-from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT, Notify, quote_ident
-from psycopg2.extras import Json
+from psycopg import Notify, sql
+from psycopg.types.json import Jsonb
 
 from .results import PostgresBackend
 from .utils import (
@@ -39,32 +39,28 @@ def purge(curs, max_age="30 days"):
 
 class PostgresBroker(Broker):
     def __init__(
-        self,
-        *,
-        pool=None,
-        url="",
-        results=True,
-        schema=None,
-        prefix=None,
-        **kw
+        self, *, pool=None, url="", results=True, schema=None, prefix=None, **kw
     ):
-        super(PostgresBroker, self).__init__(**kw)
-        if pool and url:
+        super().__init__(**kw)
+        if pool is not None and url:
             raise ValueError("You can't set both pool and URL!")
 
-        if not pool:
+        if pool is None:
             self.pool = make_pool(url)
         else:
             # Receive a pool object to have an I/O less __init__.
             self.pool = pool
+        self._owns_pool = pool is None
         self.backend = None
         if results:
-            self.backend = PostgresBackend(
-                pool=self.pool, schema=schema, prefix=prefix
-            )
+            self.backend = PostgresBackend(pool=self.pool, schema=schema, prefix=prefix)
             self.add_middleware(Results(backend=self.backend))
 
-        QUERIES.build_queries(schema, prefix)
+        self.queries = QueryManager(QUERIES.queries, schema or "dramatiq", prefix or "")
+
+    def close(self):
+        if self._owns_pool:
+            self.pool.close()
 
     def consume(self, queue_name, prefetch=1, timeout=30000):
         return PostgresConsumer(
@@ -72,6 +68,7 @@ class PostgresBroker(Broker):
             queue_name=queue_name,
             prefetch=prefetch,
             timeout=timeout,
+            queries=self.queries,
         )
 
     def declare_queue(self, queue_name):
@@ -88,37 +85,43 @@ class PostgresBroker(Broker):
 
     @retry_pg
     def enqueue(self, message, *, delay=None):
+        message = self._prepare_enqueue(message, delay)
+        with transaction(self.pool) as curs:
+            self._write_enqueue(curs, message)
+        self.emit_after("enqueue", message, delay)
+        return message
+
+    def _prepare_enqueue(self, message, delay):
         self.emit_before("enqueue", message, delay)
         if delay:
             message = message.copy(queue_name=dq_name(message.queue_name))
             message.options["eta"] = current_millis() + delay
+        return message
 
-        q = message.queue_name
-        insert = (
-            QUERIES.ENQUEUE,
+    def _write_enqueue(self, curs, message):
+        logger.debug(
+            "Upserting %s in queue %s.", message.message_id, message.queue_name
+        )
+        curs.execute(
+            self.queries.ENQUEUE,
             (
-                q,
+                message.queue_name,
                 message.message_id,
-                Json(tidy4json(message)),
+                Jsonb(tidy4json(message)),
                 message.message_id,
             ),
         )
 
-        logger.debug("Upserting %s in queue %s.", message.message_id, q)
-        with transaction(self.pool) as curs:
-            curs.execute(*insert)
-        self.emit_after("enqueue", message, delay)
-        return message
-
 
 class PostgresConsumer(Consumer):
-    def __init__(self, *, pool, queue_name, prefetch, timeout, **kw):
+    def __init__(self, *, pool, queue_name, prefetch, timeout, queries=None, **kw):
+        self.queries = queries or QUERIES
         self._consume_conn = None
         self._listen_conn = None
         self.notifies = []
         self.pool = pool
         self.queue_name = queue_name
-        self.timeout = timeout // 1000
+        self.timeout = timeout / 1000
         self.unlock_q = Queue()
         self.in_processing = set()
         self.prefetch = prefetch
@@ -141,13 +144,9 @@ class PostgresConsumer(Consumer):
         processing = len(self.in_processing)
         if processing >= self.prefetch:
             # Wait and don't consume the message, other worker will be faster
-            self.misses, backoff_ms = compute_backoff(
-                self.misses, max_backoff=1000
-            )
+            self.misses, backoff_ms = compute_backoff(self.misses, max_backoff=1000)
             logger.debug(
-                f"Too many messages in processing:"
-                f" {processing}"
-                f" sleeping {backoff_ms}"
+                f"Too many messages in processing: {processing} sleeping {backoff_ms}"
             )
             time.sleep(backoff_ms / 1000)
             return None
@@ -169,9 +168,7 @@ class PostgresConsumer(Consumer):
                 full_payload = notify.payload
             else:
                 truncated_payload = json.loads(notify.payload)
-                full_payload = self.fetch_by_id(
-                    truncated_payload["message_id"]
-                )
+                full_payload = self.fetch_by_id(truncated_payload["message_id"])
             message = Message.decode(full_payload.encode("utf-8"))
             if self.consume_one(message):
                 self.in_processing.add(message.message_id)
@@ -195,16 +192,14 @@ class PostgresConsumer(Consumer):
         with transaction(self.pool) as curs:
             channel = f"dramatiq.{message.queue_name}.ack"
             payload = tidy4json(message)
-            logger.debug(
-                "Notifying %s for ACK %s.", channel, message.message_id
-            )
+            logger.debug("Notifying %s for ACK %s.", channel, message.message_id)
             # dramatiq always ack a message, even if it has been requeued by
             # the Retries middleware. Thus, only update message in state
             # `consumed`.
             curs.execute(
-                QUERIES.ACK,
+                self.queries.ACK,
                 (
-                    Json(payload),
+                    Jsonb(payload),
                     message.message_id,
                     message.queue_name,
                     channel,
@@ -222,24 +217,26 @@ class PostgresConsumer(Consumer):
             return
         logger.debug("Randomly triggering garbage collector.")
         with transaction(self._consume_conn) as curs:
-            deleted = purge(curs)
+            curs.execute(self.queries.PURGE, ("30 days",))
+            deleted = curs.rowcount
         logger.info("Purged %d messages in all queues.", deleted)
 
     def close(self):
-        if self._listen_conn:
-            self.pool.putconn(self._listen_conn)
-            self._listen_conn = None
-
-        if self._consume_conn:
-            self.pool.putconn(self._consume_conn)
-            self._consume_conn = None
+        # Closing the sessions releases subscriptions and all advisory locks,
+        # including after a disconnect or a partially completed shutdown.
+        for name in ("_listen_conn", "_consume_conn"):
+            conn = getattr(self, name)
+            if conn is not None:
+                conn.close()
+                self.pool.putconn(conn)
+                setattr(self, name, None)
 
     def get_consume_conn(self):
         # Ensure connection used for message consumption is steady.
         if self._consume_conn is not None:
             try:
                 check_conn(self._consume_conn)
-            except ConnectionError:
+            except BrokerConnectionError:
                 logger.info("Connection closed. Reconnecting...")
                 self.pool.putconn(self._consume_conn)
                 self._consume_conn = None
@@ -256,18 +253,18 @@ class PostgresConsumer(Consumer):
         if self._listen_conn is not None:
             try:
                 return check_conn(self._listen_conn)
-            except ConnectionError:
+            except BrokerConnectionError:
                 logger.info("Connection closed. Reconnecting...")
                 self.pool.putconn(self._listen_conn)
                 self._listen_conn = None
 
         self._listen_conn = conn = getconn(self.pool)
-        # This is for NOTIFY consistency, according to psycopg2 doc.
-        conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
-        channel = quote_ident(f"dramatiq.{self.queue_name}.enqueue", conn)
+        # This is for NOTIFY consistency, according to Psycopg documentation.
+        conn.autocommit = True
+        channel = sql.Identifier(f"dramatiq.{self.queue_name}.enqueue")
         with conn.cursor() as curs:
             logger.debug("Listening on channel %s.", channel)
-            curs.execute(f"LISTEN {channel};")
+            curs.execute(sql.SQL("LISTEN {}").format(channel))
         return self._listen_conn
 
     @raise_connection_error
@@ -279,18 +276,16 @@ class PostgresConsumer(Consumer):
         # Race to process message.
         with transaction(self.get_consume_conn()) as curs:
             lock = message_lock(message)
-            curs.execute(QUERIES.CONSUME_ONE, (message.message_id, lock))
+            curs.execute(self.queries.CONSUME_ONE, (message.message_id, lock))
             # If no row was updated, this mean another worker has consumed it.
             successfully_consumed = curs.rowcount == 1
 
             if successfully_consumed:
-                logger.info(
-                    "Consumed %s@%s.", message.message_id, message.queue_name
-                )
+                logger.info("Consumed %s@%s.", message.message_id, message.queue_name)
             else:
                 # Release the lock in case lock acquisition took place before
                 # other clauses failed.
-                curs.execute(QUERIES.RELEASE_ONE, (lock,))
+                curs.execute(self.queries.RELEASE_ONE, (lock,))
 
             return successfully_consumed
 
@@ -301,14 +296,12 @@ class PostgresConsumer(Consumer):
         with transaction(self.pool) as curs:
             # Use the same channel as ack. Actually means done.
             channel = f"dramatiq.{message.queue_name}.ack"
-            logger.debug(
-                "Notifying %s for NACK %s.", channel, message.message_id
-            )
+            logger.debug("Notifying %s for NACK %s.", channel, message.message_id)
             payload = tidy4json(message)
             curs.execute(
-                QUERIES.NACK,
+                self.queries.NACK,
                 (
-                    Json(payload),
+                    Jsonb(payload),
                     message.message_id,
                     message.queue_name,
                     channel,
@@ -328,7 +321,7 @@ class PostgresConsumer(Consumer):
         # Get or open connection.
         conn = self.get_consume_conn()
         with transaction(conn) as curs:
-            curs.execute(QUERIES.FETCH_BY_ID, (message_id,))
+            curs.execute(self.queries.FETCH_BY_ID, (message_id,))
             return curs.fetchone()[0]
 
     @raise_connection_error
@@ -341,14 +334,12 @@ class PostgresConsumer(Consumer):
         # notifies.
         channel = f"dramatiq.{self.queue_name}.enqueue"
         with transaction(conn) as curs:
-            curs.execute(QUERIES.FETCH_PENDING, (self.queue_name,))
+            curs.execute(self.queries.FETCH_PENDING, (self.queue_name,))
             return [Notify(pid=0, channel=channel, payload=r[0]) for r in curs]
 
     @raise_connection_error
     def poll_for_notify(self):
-        self.notifies += wait_for_notifies(
-            self.get_listen_conn(), self.timeout
-        )
+        self.notifies += wait_for_notifies(self.get_listen_conn(), self.timeout)
 
     @raise_connection_error
     def purge_locks(self):
@@ -366,7 +357,7 @@ class PostgresConsumer(Consumer):
                     lock,
                 )
                 curs.execute(
-                    QUERIES.RELEASE_ONE,
+                    self.queries.RELEASE_ONE,
                     (lock,),
                 )
                 self.unlock_q.task_done()
@@ -379,9 +370,7 @@ class PostgresConsumer(Consumer):
 
         logger.debug("Batch update of messages for requeue.")
         with transaction(self.get_consume_conn()) as curs:
-            curs.execute(
-                QUERIES.REQUEUE, (tuple(m.message_id for m in messages),)
-            )
+            curs.execute(self.queries.REQUEUE, ([str(m.message_id) for m in messages],))
             # We don't bother about locks, because requeue occurs on worker
             # stop.
 
@@ -415,7 +404,7 @@ QUERIES = QueryManager(
         SELECT
             pg_notify(%s,
                 CASE WHEN octet_length(message::text) >= 8000
-                THEN jsonb_build_object('message_id', %s)::text
+                THEN jsonb_build_object('message_id', %s::text)::text
                 ELSE message::text
                 END
             )
@@ -426,7 +415,7 @@ QUERIES = QueryManager(
             """\
         UPDATE {schema}.{tablename}
             SET "state" = 'consumed',
-                mtime = (NOW() AT TIME ZONE 'UTC')
+                mtime = NOW()
             WHERE message_id = %s
             AND state IN ('queued', 'consumed')
             AND pg_try_advisory_lock(%s);
@@ -449,7 +438,7 @@ QUERIES = QueryManager(
         SELECT
             pg_notify('dramatiq.' || queue_name || '.enqueue',
                 CASE WHEN octet_length(message::text) >= 8000
-                THEN jsonb_build_object('message_id', %s)::text
+                THEN jsonb_build_object('message_id', %s::text)::text
                 ELSE message::text
                 END
             )
@@ -484,7 +473,7 @@ QUERIES = QueryManager(
         SELECT
             pg_notify(%s,
                 CASE WHEN octet_length(message::text) >= 8000
-                THEN jsonb_build_object('message_id', %s)::text
+                THEN jsonb_build_object('message_id', %s::text)::text
                 ELSE message::text
                 END
             )
@@ -495,14 +484,14 @@ QUERIES = QueryManager(
             """\
         DELETE FROM {schema}.{tablename}
         WHERE "state" IN ('done', 'rejected')
-        AND mtime <= (NOW() - interval %s);
+        AND mtime <= (NOW() - %s::interval);
         """
         ),
         REQUEUE=dedent(
             """\
         UPDATE {schema}.{tablename}
             SET state = 'queued'
-        WHERE message_id IN %s;
+        WHERE message_id = ANY(%s::uuid[]);
         """
         ),
     )
