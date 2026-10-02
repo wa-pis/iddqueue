@@ -70,4 +70,6 @@ cancelled tombstone. Stats/collector включают cancelled; purge учит�
 - Wheel/sdist build и LICENSE checker: success; cancellation.sql включён в package.
 - Existing database upgrade выполнен CLI до запуска нового runtime.
 
-Этап 3.5 ожидает удалённого CI; этапы 4–7 не начаты.
+Этап 3.5 завершён: https://github.com/wa-pis/iddqueue/actions/runs/37069326903,
+commit 2a0a2d1. Все шесть Python 3.10/3.13/3.14 × PostgreSQL 14/18 jobs success.
+Этапы 4–7 не начаты; общий change остаётся активным.
