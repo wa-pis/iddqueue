@@ -188,5 +188,15 @@ CLI schedule create/list/disable и scheduler --once/foreground.
 - Ruff, poetry check, strict OpenSpec, git diff --check: success.
 - Wheel/sdist build, LICENSE checker, scheduler.sql в обоих archives: success.
 
-Этап 7.5 ожидает отдельный commit/push и GitHub CI. Финальный sync/archive
-выполнится после подтверждения CI; prepared matrix не считается выполненной.
+Этап 7.5 завершён: https://github.com/wa-pis/iddqueue/actions/runs/37073608454,
+commit 7f3ea69. Все шесть Python 3.10/3.13/3.14 × PostgreSQL 14/18 jobs success,
+включая scheduler process/crash scenarios и build/LICENSE.
+
+# Завершение общего change
+
+Все семь этапов реализованы отдельными feature commits с full local suite и
+фактической успешной CI matrix; PyPI publication не выполнялась. Шесть новых
+main specs созданы, remaining middleware requirement добавлен с сохранением
+прежних pipelines/groups/AsyncIO/retry exhaustion/timedelta requirements.
+Все семь delta bodies сверены с main specs; strict OpenSpec: 17 passed.
+Change архивирован 2026-10-03 после CI; roadmap/config отражают завершение.

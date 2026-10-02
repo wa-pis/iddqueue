@@ -28,9 +28,9 @@ CI-регрессии retry wakeup и изоляции recover test исправ
 
 ## Следующая очередь работ — 2026-10-03
 
-[extend-postgres-capabilities](changes/extend-postgres-capabilities/proposal.md) —
-этап 1 завершён (80 tests passed, все шесть CI jobs run 37063065568 success); этап 2 завершён (87 tests passed, шесть CI jobs run 37065548460 success); этап 3 завершён (97 tests passed, шесть CI jobs run 37069326903 success); этап 4 завершён (102 tests passed, шесть CI jobs run 37070389403 success); этап 5 завершён (105 tests passed, шесть CI jobs run 37071887095 success); этап 6 завершён (113 tests passed, шесть CI jobs run 37072742814 success); этап 7 реализован локально (120 tests passed), GitHub CI ожидается. Proposal, design, семь delta specs и
-[tasks](changes/extend-postgres-capabilities/tasks.md) описывают этапы.
+[extend-postgres-capabilities](changes/archive/2026-10-03-extend-postgres-capabilities/proposal.md) —
+этап 1 завершён (80 tests passed, все шесть CI jobs run 37063065568 success); этап 2 завершён (87 tests passed, шесть CI jobs run 37065548460 success); этап 3 завершён (97 tests passed, шесть CI jobs run 37069326903 success); этап 4 завершён (102 tests passed, шесть CI jobs run 37070389403 success); этап 5 завершён (105 tests passed, шесть CI jobs run 37071887095 success); этап 6 завершён (113 tests passed, шесть CI jobs run 37072742814 success); этап 7 завершён (120 tests passed, шесть CI jobs run 37073608454 success). Proposal, design, семь delta specs и
+[tasks](changes/archive/2026-10-03-extend-postgres-capabilities/tasks.md) описывают этапы.
 Каждая фича выполняется последовательно и фиксируется отдельным commit.
 
 | Этап | Возможность | Зависимость |
@@ -46,4 +46,8 @@ CI-регрессии retry wakeup и изоляции recover test исправ
 Новые возможности являются расширениями IDDQueue. Этап 4 проверяет встроенные
 middleware Dramatiq. Fixed interval scheduler не включает cron/calendar.
 Дедупликация подавляет публикацию и не обещает exactly-once execution.
-Heartbeat после подготовки плана авторизовал переход к apply; работа выполняется последовательно.
+Heartbeat после подготовки плана авторизовал apply, sync и archive; все семь
+этапов выполнены последовательно и отправлены в main отдельными commits.
+Main specs синхронизированы, change архивирован 2026-10-03. Активных этапов этого
+roadmap не осталось; новая функциональность требует отдельного OpenSpec change.
+Публикация пакета не выполнялась и требует отдельного запроса.

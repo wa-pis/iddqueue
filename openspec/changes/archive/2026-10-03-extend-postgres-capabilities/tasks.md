@@ -52,9 +52,9 @@
 - [x] 7.2 Отправлять due occurrences и продвигать next_run одной транзакцией с SKIP LOCKED и dedup occurrence key; PostgreSQL clock, UTC, coalesce.
 - [x] 7.3 Проверить два scheduler процесса, crash before/after commit, missed intervals, disabled schedule, paused destination и namespace isolation.
 - [x] 7.4 Обновить docs и evidence этапа; выполнить Ruff, полный tests/unit tests/func на выделенном PostgreSQL, poetry check, strict OpenSpec и build/license checker при изменении packaging/SQL resources.
-- [ ] 7.5 После проверок зафиксировать этап отдельным commit и push в wa-pis/iddqueue main; проверить успешный GitHub CI и записать ссылку, не отмечая подготовленный workflow выполненным.
+- [x] 7.5 После проверок зафиксировать этап отдельным commit и push в wa-pis/iddqueue main; проверить успешный GitHub CI и записать ссылку, не отмечая подготовленный workflow выполненным.
 
 ## 8. Завершение
 
-- [ ] 8.1 Сверить code, docs и все delta specs с подтверждёнными сценариями; синхронизировать main specs без потери прежних требований.
-- [ ] 8.2 Проверить завершение всех этапов/CI, обновить roadmap, архивировать change и выполнить openspec validate --all --strict.
+- [x] 8.1 Сверить code, docs и все delta specs с подтверждёнными сценариями; синхронизировать main specs без потери прежних требований.
+- [x] 8.2 Проверить завершение всех этапов/CI, обновить roadmap, архивировать change и выполнить openspec validate --all --strict.
