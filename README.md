@@ -524,3 +524,33 @@ returned result. If a requested task retries, the next start gate cancels that
 attempt. Do not reset cancellation by reusing its UUID; publish a new message
 for a fresh execution. Deduplication may return a cancelled original until its
 key TTL expires. At-least-once side effects still require idempotency.
+
+### Standard middleware compatibility
+
+IDDQueue uses Dramatiq's standard middleware implementations. AgeLimit,
+TimeLimit, ShutdownNotifications and Callbacks are included in Dramatiq's
+default middleware list; CurrentMessage is opt-in.
+
+- Set actor/message `max_age` in milliseconds to reject expired messages.
+  Age is measured from the original message timestamp, including retries.
+  The actor is skipped, the row becomes rejected, its lock is released, and
+  stored Results report the skip as a failure.
+- Set `time_limit` in milliseconds to interrupt a CPU-bound actor on supported
+  CPython. The exception follows the ordinary retry budget and Results path.
+  This is not a hard wall-clock deadline: interrupts wait for Python/GIL
+  execution and cannot cancel blocking system calls.
+- Set `notify_shutdown=True` to receive `Shutdown` during worker shutdown.
+  Catch it for cleanup. Returning completes normally; raising it follows
+  ordinary failure/retry handling. Cleanup must remain idempotent.
+- `on_success` sends `(original_message_dict, result)` to a callback actor.
+  `on_failure` sends `(original_message_dict, {"type": ..., "message": ...})`
+  on **each failed attempt**, including attempts that will retry.
+  Use `on_retry_exhausted` for a callback specifically on exhausted retries.
+  Callback side effects are subject to at-least-once delivery.
+- Add `CurrentMessage()` to access the current message ID/options from an
+  actor. Its context is cleared after processing, including actor failures;
+  calls outside actor processing return `None`.
+
+The integration suite checks actual PostgreSQL queue states, Results and
+released advisory locks. Shutdown coverage runs the normal Dramatiq CLI in
+separate processes and sends SIGTERM; it verifies actor cleanup and completion.

@@ -36,7 +36,7 @@ import sys
 import time
 
 import dramatiq.results
-from dramatiq.middleware import AsyncIO, GroupCallbacks
+from dramatiq.middleware import AsyncIO, GroupCallbacks, Shutdown
 from psycopg.types.json import Jsonb
 
 import iddqueue
@@ -142,6 +142,25 @@ def retryable(marker):
     if not ready:
         raise RuntimeError("dependency is not ready")
     return marker
+
+
+@dramatiq.actor(store_results=True, max_retries=0, notify_shutdown=True,
+                queue_name=os.environ.get("EXAMPLE_QUEUE", "default"))
+def shutdown_probe(marker):
+    try:
+        with iddqueue.utils.transaction(pool) as cursor:
+            cursor.execute("INSERT INTO functest.witness (payload) VALUES (%s)",
+                           (Jsonb({"shutdown_started": marker}),))
+        deadline = time.monotonic() + 15
+        while time.monotonic() < deadline:
+            time.sleep(0.01)
+        return "not interrupted"
+    except Shutdown:
+        with iddqueue.utils.transaction(pool) as cursor:
+            cursor.execute("INSERT INTO functest.witness (payload) VALUES (%s)",
+                           (Jsonb({"shutdown_cleanup": marker}),))
+        return "shutdown"
+
 
 def main():
     message = saver.send(wait=random.randint(0, 10), message="Saved.")

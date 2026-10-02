@@ -24,10 +24,10 @@
 
 ## 4. Остальные middleware Dramatiq
 
-- [ ] 4.1 Добавить integration scenarios AgeLimit, CPython TimeLimit, ShutdownNotifications, success/failure Callbacks и CurrentMessage.
-- [ ] 4.2 Проверить состояния очереди, retry budget, Results и освобождение locks после skip/interruption; изолировать test workers/queues.
-- [ ] 4.3 Документировать ограничения interrupts и контракты callbacks/CurrentMessage без собственного middleware clone.
-- [ ] 4.4 Обновить docs и evidence этапа; выполнить Ruff, полный tests/unit tests/func на выделенном PostgreSQL, poetry check, strict OpenSpec и build/license checker при изменении packaging/SQL resources.
+- [x] 4.1 Добавить integration scenarios AgeLimit, CPython TimeLimit, ShutdownNotifications, success/failure Callbacks и CurrentMessage.
+- [x] 4.2 Проверить состояния очереди, retry budget, Results и освобождение locks после skip/interruption; изолировать test workers/queues.
+- [x] 4.3 Документировать ограничения interrupts и контракты callbacks/CurrentMessage без собственного middleware clone.
+- [x] 4.4 Обновить docs и evidence этапа; выполнить Ruff, полный tests/unit tests/func на выделенном PostgreSQL, poetry check, strict OpenSpec и build/license checker при изменении packaging/SQL resources.
 - [ ] 4.5 После проверок зафиксировать этап отдельным commit и push в wa-pis/iddqueue main; проверить успешный GitHub CI и записать ссылку, не отмечая подготовленный workflow выполненным.
 
 ## 5. История попыток

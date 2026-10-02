@@ -116,3 +116,15 @@ Cancel до разрешения старта записывает cancelled и 
 cancelled. Все workers должны включать queue_control для prefetched protection.
 Cancelled сохраняется до purge; ResultCancelled наследует ResultFailure.
 Upgrade enum/columns выполняется при остановленных workers до нового runtime.
+
+
+## Этап 4 — фактический контракт middleware
+
+Стандартный Callbacks.on_failure вызывается на каждой неудачной попытке, а не
+только при exhausted retries; проверяются обе попытки и success payload.
+CurrentMessage проверяется на одной worker thread после failure и success.
+TimeLimit запускается штатным process_boot и прерывает CPU-bound Python actor;
+обычный Worker проверяет два attempts/Results/rejected/lock release.
+ShutdownNotifications проверяется отдельным CLI процессом: started witness,
+SIGTERM, cleanup witness, normal result/done и освобождение lock.
+Runtime middleware не копируются и не переопределяются.

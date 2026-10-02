@@ -23,3 +23,8 @@
 #### Scenario: Current message
 - **WHEN** actor использует CurrentMessage
 - **THEN** виден правильный message_id/options; контекст не переходит соседней задаче
+
+
+#### Scenario: Failure callback during retry
+- **WHEN** actor падает и стандартный Retries назначает повтор
+- **THEN** on_failure получает callback для этой попытки; on_retry_exhausted остаётся отдельным terminal callback
