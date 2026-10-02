@@ -36,7 +36,7 @@
 
 ## Open Questions
 
-- Владелец и видимость GitHub-репозитория iddqueue.
+- GitHub согласован ссылкой пользователя: wa-pis/iddqueue, private (проверено API).
 - Идентичность согласована: distribution/import/CLI/repository iddqueue.
 - Нужна ли публикация в PyPI и какой будет релизная политика.
 
@@ -46,7 +46,8 @@
 
 Пользователь согласовал IDDQueue: distribution/repository name iddqueue,
 Python import iddqueue, CLI iddqueue. Dramatiq Harbor/Helm не используются.
-GitHub owner и visibility ещё не определены; origin/push не выполняются.
+GitHub: https://github.com/wa-pis/iddqueue, private; пользователь предоставил URL.
+Пустой репозиторий используется с веткой main; upstream сохраняется.
 Локальное переименование выполняется независимо от GitHub setup. Исторические
 OpenSpec archives и upstream attribution сохраняют исходные имена.
 SQL schema dramatiq, wire channels и текущие данные не переименовываются.

@@ -64,7 +64,8 @@ IDDQueue has not been verified.
 
 ## Support
 
-The new GitHub issue tracker will be linked after repository setup.
+Report issues in [wa-pis/iddqueue](https://github.com/wa-pis/iddqueue/issues).
+The repository is currently private; access is required.
 IDDQueue is available under the PostgreSQL licence.
 
 

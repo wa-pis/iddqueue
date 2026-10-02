@@ -14,6 +14,10 @@ dependencies = [
     "tenacity>=9,<10",
 ]
 
+[project.urls]
+Repository = "https://github.com/wa-pis/iddqueue"
+Issues = "https://github.com/wa-pis/iddqueue/issues"
+
 [project.optional-dependencies]
 binary = ["psycopg[binary]>=3.3.6,<4"]
 monitoring = ["dramatiq[prometheus]>=2.2.1,<3"]

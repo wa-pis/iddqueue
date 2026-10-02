@@ -14,7 +14,7 @@ context: |
   Local migration implemented before OpenSpec adoption on 2026-10-02.
   Verified: 64 tests on Python 3.13.14/PostgreSQL 14.20, Ruff, wheel/sdist build and wheel installation.
   GitHub CI prepared for Python 3.10/3.13/3.14 and PostgreSQL 14/18; matrix not yet executed remotely.
-  GitHub owner, visibility and publication policy remain undecided; identity iddqueue agreed.
+  GitHub: https://github.com/wa-pis/iddqueue, private, main; publication policy remains undecided.
   Preserve PostgreSQL license and original contributor credits.
   Feature roadmap: openspec/roadmap.md; all six local feature changes implemented and archived; baseline GitHub setup pending.
   User authorized recording all discussed features in OpenSpec on 2026-10-02.
