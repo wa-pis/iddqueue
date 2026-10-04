@@ -120,5 +120,6 @@ Signed ade489b, actual CI 37234026977 6/6; архив 2026-10-05.
 
 ## Сайт документации
 
-[publish-documentation-site](changes/publish-documentation-site/proposal.md): MkDocs/readthedocs,
-пошаговые UI/CLI guides, strict CI и GitHub Pages; реализация и remote проверки выполняются.
+[publish-documentation-site](changes/archive/2026-10-05-publish-documentation-site/proposal.md): MkDocs/readthedocs,
+пошаговые UI/CLI guides, strict CI и GitHub Pages опубликованы. Signed 46cf6bb; Tests
+37237297166 6/6, Documentation 37237297097 success; public site/search проверены. Архив 2026-10-05.
