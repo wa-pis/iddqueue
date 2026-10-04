@@ -33,3 +33,16 @@ SHA256 sdist: faad3b5066a864f97d9415d1773743f8e967854a2b54518b4bb0f651e937ba8a.
 
 Фактические remote CI и workflow_dispatch ещё не выполнены; 1.1/1.6 остаются
 открытыми до наблюдаемого результата. Этап документации пока не реализован.
+
+### Фактический первый CI и исправление launcher
+
+Commit 450bae3b0e58f3fe0511d8ba52b871dab499ebc2 отправлен в main.
+Ручной run https://github.com/wa-pis/iddqueue/actions/runs/37192850689:
+все шесть jobs выполнились, но завершились failure: `python -m poetry`
+в project venv не находил Poetry, установленный отдельно на runner.
+Исправлено на вызов Poetry executable (`POETRY`, default poetry).
+Локальный повтор scripts/check_release.sh с POETRY=/tmp/iddqueue-poetry
+(wrapper запускает локальный доступный Poetry module вместо сломанного
+Homebrew launcher): 131 passed in 45.58s, все остальные checks success.
+Проверялось дерево на 450bae3 с изменением launcher; hashes артефактов те же.
+Рабочий failed run не считается успешным evidence; 1.1/1.6 ещё открыты.

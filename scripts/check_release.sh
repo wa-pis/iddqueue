@@ -7,18 +7,19 @@ cd "$(dirname "$0")/.."
 : "${PGHOST:?Set PGHOST for the dedicated test instance}"
 : "${PGDATABASE:?Set PGDATABASE for the dedicated test database}"
 PYTHON=${PYTHON:-python}
+POETRY=${POETRY:-poetry}
 "$PYTHON" - <<'PY'
 import psycopg
 with psycopg.connect("") as conn:
     for table in ("dramatiq.queue", "functest.witness"):
         assert conn.execute("SELECT to_regclass(%s)", (table,)).fetchone()[0], f"Prepare test table {table}"
 PY
-"$PYTHON" -m poetry check
-"$PYTHON" -m poetry run ruff check iddqueue tests/unit tests/func example.py scripts
-"$PYTHON" -m poetry run pytest tests/unit tests/func
+"$POETRY" check
+"$POETRY" run ruff check iddqueue tests/unit tests/func example.py scripts
+"$POETRY" run pytest tests/unit tests/func
 "$PYTHON" scripts/check_docs.py
 openspec validate --all --strict
-"$PYTHON" -m poetry build
+"$POETRY" build
 # Select this distribution only; unrelated historical artifacts may exist in dist/.
 "$PYTHON" scripts/check_license.py dist/iddqueue-*.whl dist/iddqueue-*.tar.gz
 "$PYTHON" scripts/check_package.py dist/iddqueue-*.whl
