@@ -8,5 +8,5 @@
 ## 2. Завершение
 
 - [x] 2.1 Обновить docs о NOTIFY hints/claim и evidence с commit/repro/test results; проверить docs соответствуют коду без новых exactly-once promises.
-- [ ] 2.2 Commit/push исправления отдельно в wa-pis/iddqueue main, подтвердить каждый CI job и записать run URL.
-- [ ] 2.3 Sync main spec, обновить roadmap/config и архивировать change после проверок; выполнить openspec validate --all --strict и проверить чистый working tree после final commit/push.
+- [x] 2.2 Commit/push исправления отдельно в wa-pis/iddqueue main, подтвердить каждый CI job и записать run URL.
+- [x] 2.3 Sync main spec, обновить roadmap/config и архивировать change после проверок; выполнить openspec validate --all --strict и проверить чистый working tree после final commit/push.

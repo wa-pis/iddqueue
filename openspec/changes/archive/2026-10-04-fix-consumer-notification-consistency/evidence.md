@@ -15,7 +15,10 @@ Test instrumentation переключена с fetch_by_id на authoritative co
 CONSUME_ONE фильтрует queue и RETURNING message; consumer читает hint JSON
 один раз, payload notification не исполняет. Удалены неиспользуемые FETCH_BY_ID
 SQL/helper; unlock drain перенесён перед prefetch guard. Wire formats сохранены,
-новых dependencies/migrations нет. Исправление уменьшает production broker на
-16 строк по git diff; экономия не получена сокращением контрактов.
+новых dependencies/migrations нет. Отдельная fetch_by_id ветка убрана,
+контракты/проверки сохранены.
 
-Commit/push, GitHub CI и финальный sync/archive ещё ожидаются.
+Commit 3c9b459 отправлен в main. Все шесть jobs CI прошли:
+https://github.com/wa-pis/iddqueue/actions/runs/37192114318.
+Spec синхронизирован; change архивирован 2026-10-04. Checks после archive
+записаны в итоговом выводе; следующая работа — maintenance practices.
