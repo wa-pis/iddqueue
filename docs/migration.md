@@ -17,7 +17,9 @@ assume the CLI can select any table independently of the prefix.
 Use Python 3.10+ and a supported PostgreSQL version (CI checks 14 and 18).
 Create a separate environment for IDDQueue; Dramatiq changes from the upstream
 1.x dependency range to 2.x. Review your actors/middleware and Dramatiq's own
-upgrade requirements. Compatibility of `django-dramatiq-pg` is unverified.
+upgrade requirements. The legacy [django-dramatiq-pg](https://github.com/uptick/django-dramatiq-pg/)
+integration was archived on September 3, 2024 and is read-only. Compatibility
+with IDDQueue is unverified; this migration guide does not establish Django support.
 
 Make a database backup and retain the complete old environment/configuration.
 For example, using libpq environment variables for the intended database:

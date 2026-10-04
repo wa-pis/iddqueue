@@ -60,8 +60,8 @@ future upstream revision. Both projects provide a PostgreSQL Dramatiq broker.
 
 See [migration from dramatiq-pg](docs/migration.md) for dependency, pool,
 import, CLI and database changes, including backup and rollback. No throughput
-advantage is claimed here. The 0.13.0rc1 prerelease is available on PyPI; the upstream Django
-integration has not been verified with IDDQueue.
+advantage is claimed here. The 0.13.0rc1 prerelease is available on PyPI; the legacy Django
+integration is archived and has not been verified with IDDQueue.
 
 ## Installation
 
@@ -96,9 +96,10 @@ The CLI tool `iddqueue` manages queues and failed tasks. See `--help`.
 
 ## Integration
 
-The upstream [django-dramatiq-pg](https://github.com/uptick/django-dramatiq-pg/)
-integration by Curtis Maloney targets the original package. Compatibility with
-IDDQueue has not been verified.
+The legacy [django-dramatiq-pg](https://github.com/uptick/django-dramatiq-pg/)
+Django integration was archived on September 3, 2024 and is read-only.
+This link is historical context; compatibility with IDDQueue is unverified.
+IDDQueue does not currently provide a tested Django integration.
 
 ## Support
 
