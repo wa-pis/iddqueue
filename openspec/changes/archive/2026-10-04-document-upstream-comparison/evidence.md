@@ -34,3 +34,11 @@ LICENSE/credits не изменены.
   без venv PATH: 17 failed/19 errors из-за отсутствия CLI/worker executable;
   повторный запуск использует venv PATH. Эти попытки не считаются passing.
 - Полный повторный tests/unit tests/func: 131 passed in 45.38s.
+
+## GitHub
+
+Реализация 5dcc142fb96b06a68dfc4269a6d983723eef6f0a отправлена в main.
+Run https://github.com/wa-pis/iddqueue/actions/runs/37224331994: success,
+все шесть jobs success; установленный wheel/quickstart/build/LICENSE checks
+в CI выполнены. Runtime не изменён. Публикация не выполнялась.
+GitHub отдельно сообщил open low Pygments ReDoS advisory; dependency fix вне scope.

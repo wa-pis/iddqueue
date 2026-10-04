@@ -8,4 +8,4 @@
 
 - [x] 2.1 Выполнить доступные docs/link checks, Ruff, poetry check и openspec validate --all --strict; записать команды и фактические результаты в evidence.md.
 - [x] 2.2 Проверить описанные команды миграции на выделенном PostgreSQL с изолированными fixture-данными из upstream, затем tests/unit tests/func; доказать сохранность queued tasks/results и корректный rollback, ограничения отразить в инструкции.
-- [ ] 2.3 После проверок архивировать docs-only change, обновить roadmap, отдельным commit отправить в wa-pis/iddqueue main и проверить фактический CI; публикацию не выполнять.
+- [x] 2.3 После проверок архивировать docs-only change, обновить roadmap, отдельным commit отправить в wa-pis/iddqueue main и проверить фактический CI; публикацию не выполнять.

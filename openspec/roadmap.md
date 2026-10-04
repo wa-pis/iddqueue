@@ -2,7 +2,7 @@
 
 ## Документация перехода — 2026-10-04
 
-[document-upstream-comparison](changes/document-upstream-comparison/proposal.md): план подготовлен; заметная ссылка на upstream, проверяемая таблица различий и инструкция миграции/rollback. Реализация и проверки pending; см. tasks.md. Runtime и публикация вне scope.
+[document-upstream-comparison](changes/archive/2026-10-04-document-upstream-comparison/proposal.md): выполнено: ссылка upstream, таблица различий и инструкция migration/rollback. Upstream fixtures upgrade/backup restore проверены; 131 tests passed; CI 37224331994 6/6 success. Change архивирован; runtime и публикация вне scope.
 
 Транзакционная отправка реализована и архивирована 2026-10-02 (38 тестов прошли). Координация PostgreSQL реализована и архивирована 2026-10-02 (45 тестов прошли). Совместимость middleware и композиции Dramatiq проверена и архивирована 2026-10-02 (51 тест прошёл). Диагностика ошибок и выборочный retry реализованы и архивированы 2026-10-02 (56 тестов прошли). Метрики очереди реализованы и архивированы 2026-10-02 (58 тестов прошли). Изоляция namespace реализована и архивирована 2026-10-02 (63 теста прошли). Все шесть запланированных локальных фич завершены; GitHub setup завершён: wa-pis/iddqueue, private, main; все шесть jobs run 37057164073 прошли. Выполненная миграция и оставшиеся шаги GitHub отражены отдельно в `modernize-postgres-broker`.
 
