@@ -35,7 +35,7 @@ and delayed queues. Transactional enqueue uses a caller-owned active Psycopg
 transaction in the same database as business writes. Commit makes tasks and
 notifications visible; rollback removes both. Hooks describe SQL execution,
 not the eventual external commit. The broker does not commit or retry your
-transaction. See `transactional examples <../README.md#transactional-publishing>`_.
+transaction. See `transactional examples <recipes.md#transactional-publishing>`_.
 
 Deduplication accepts a key and positive integer TTL in milliseconds. Keys are
 scoped to logical queue and storage area; concurrent duplicates return the
@@ -47,7 +47,7 @@ Batch enqueue accepts up to 1000 messages and an optional per-message options
 list (delay/deduplication_key/deduplication_ttl). It preserves input order and
 commits atomically. External batches use a savepoint in an active transaction;
 no batch API automatically retries an ambiguous disconnect. Detailed
-`batch and dedup examples <../README.md>`_ remain in README.
+`batch and dedup examples <recipes.md>`_ remain in README.
 
 Execution controls
 ==================
@@ -89,5 +89,5 @@ PostgresScheduler persists fixed intervals, polls due rows and atomically
 publishes/advances each occurrence. Multiple schedulers share work using row
 locks. Missed intervals coalesce into one task; no cron/calendar or full replay.
 Pausing a destination still allows publication. Disable preserves queued tasks.
-Examples, CLI flags and detailed limitations: `README <../README.md>`_ and
+Examples, CLI flags and detailed limitations: `recipes <recipes.md>`_ and
 `API Reference <api.rst>`_.

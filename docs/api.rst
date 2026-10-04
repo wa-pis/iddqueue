@@ -129,7 +129,7 @@ by Dramatiq and do not replace the actor exception. Keep this hook after Retries
 in middleware registration order when customizing the middleware list.
 
 The CLI ``failed list/show`` displays rejected messages as JSON; ``retry ID``
-conditionally requeues a rejected row and clears its stale result. See README
+conditionally requeues a rejected row and clears its stale result. See the recipes
 for filters, cursor pagination, payload opt-in and retry-cycle semantics.
 
 
@@ -191,6 +191,6 @@ synchronous Psycopg connection; apply with participants stopped.
 ``disable(name)`` and ``tick(*, limit=100)``. start_at must include a timezone.
 Creation returns a schedule UUID string; tick returns published Messages.
 Fixed intervals, coalescing and transactional boundaries are documented in
-`User Guide <user-guide.rst>`_ and `README <../README.md>`_.
+`User Guide <user-guide.rst>`_ and `recipes <recipes.md>`_.
 
 CLI contracts and API stability: `SUPPORT <../SUPPORT.md>`_.

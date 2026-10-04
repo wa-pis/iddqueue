@@ -111,3 +111,9 @@ Signed commit ef611d2, actual CI 37233116835 6/6; архив 2026-10-05.
 [reconcile-current-documentation](changes/archive/2026-10-05-reconcile-current-documentation/proposal.md):
 current RC/install/status, API/migration limits и historical/performance context
 исправлены; local docs/Ruff/lock/OpenSpec passed; signed d793ea8, CI 37233573387 6/6, архив 2026-10-05.
+
+## Корневой README
+
+[refresh-root-readme](changes/refresh-root-readme/proposal.md): короткий обзор и
+проверенный quickstart, recipes отдельно; local docs/example/build/LICENSE passed.
+Actual CI перед архивированием.

@@ -19,6 +19,7 @@ Contents
 - `Migration from dramatiq-pg <migration.md>`_
 - `FastAPI integration <fastapi.md>`_
 - `User Guide <user-guide.rst>`_
+- `Detailed recipes <recipes.md>`_
 - `API Reference <api.rst>`_
 - `Deployment Guide <deployment-guide.rst>`_
 - `Compatibility and support <../SUPPORT.md>`_
