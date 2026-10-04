@@ -87,3 +87,10 @@ actual evidence, sync/archive. При отсутствии доступной р
 с отправкой через thread, отдельный worker, acceptance на PostgreSQL и документация
 ограничения async-транзакций. Зависит от существующего broker; runtime API и схема
 не меняются. [Задачи](changes/archive/2026-10-04-document-fastapi-integration/tasks.md).
+
+## Release candidate — 2026-10-04
+
+[prepare-rc-release](changes/prepare-rc-release/proposal.md): подготовлен план
+0.13.0rc1; metadata/build ещё не изменены. Точные artifacts, release notes,
+миграция, dev Pygments advisory, полный gate и actual CI перед передачей RC.
+Tag/release/package upload — отдельный шаг. [Задачи](changes/prepare-rc-release/tasks.md).

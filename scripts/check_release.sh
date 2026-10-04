@@ -16,21 +16,24 @@ with psycopg.connect("") as conn:
     for table in ("dramatiq.queue", "functest.witness"):
         assert conn.execute("SELECT to_regclass(%s)", (table,)).fetchone()[0], f"Prepare test table {table}"
 PY
-"$UV" pip check
+"$UV" pip check --python "$("$UV" run --no-sync python -c 'import sys; print(sys.executable)')"
 "$UV" run --no-sync ruff check iddqueue tests/unit tests/func example.py scripts docs/quickstart.py examples
 "$UV" run --no-sync pytest tests/unit tests/func
 "$PYTHON" scripts/check_docs.py
 openspec validate --all --strict
-"$UV" build
-# Select this distribution only; unrelated historical artifacts may exist in dist/.
-"$PYTHON" scripts/check_license.py dist/iddqueue-*.whl dist/iddqueue-*.tar.gz
-"$PYTHON" scripts/check_package.py --quickstart dist/iddqueue-*.whl
+VERSION=$("$UV" run --no-sync python -c 'from importlib.metadata import version; print(version("iddqueue"))')
+BUILD_DIR="dist/$VERSION"
+"$UV" build --out-dir "$BUILD_DIR"
+"$PYTHON" scripts/check_license.py "$BUILD_DIR/iddqueue-$VERSION-py3-none-any.whl" "$BUILD_DIR/iddqueue-$VERSION.tar.gz"
+"$PYTHON" scripts/check_package.py --quickstart --expected-version "$VERSION" "$BUILD_DIR/iddqueue-$VERSION-py3-none-any.whl"
+export IDDQUEUE_BUILD_DIR="$BUILD_DIR"
 "$PYTHON" - <<'PY'
 import hashlib
+import os
 import subprocess
 from pathlib import Path
 print("Checked commit:", subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip())
 print("Working tree:", subprocess.check_output(["git", "status", "--short"], text=True).strip() or "clean")
-for path in sorted(Path("dist").glob("iddqueue-*")):
+for path in sorted(Path(os.environ["IDDQUEUE_BUILD_DIR"]).glob("iddqueue-*")):
     print("SHA256:", hashlib.sha256(path.read_bytes()).hexdigest(), path)
 PY

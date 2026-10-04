@@ -20,6 +20,8 @@ root = pathlib.Path(sys.prefix).resolve()
 assert root in pathlib.Path(iddqueue.__file__).resolve().parents, iddqueue.__file__
 assert metadata.metadata("iddqueue")["License-Expression"] == "PostgreSQL"
 version = metadata.version("iddqueue")
+if sys.argv[2]:
+    assert version == sys.argv[2], (version, sys.argv[2])
 cli = root / "bin" / "iddqueue"
 assert subprocess.check_output([str(cli), "--version"], text=True).strip() == version
 subprocess.run([str(cli), "--help"], check=True, stdout=subprocess.DEVNULL)
@@ -39,6 +41,7 @@ print("Installed wheel verified:", version, sys.argv[1], iddqueue.__file__)
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("wheel", type=Path)
+    parser.add_argument("--expected-version", default="", help="Require this installed metadata/CLI version")
     parser.add_argument("--quickstart", action="store_true", help="Run docs example on dedicated PostgreSQL")
     args = parser.parse_args()
     wheel = args.wheel.resolve(strict=True)
@@ -52,7 +55,7 @@ def main():
             python = root / "venv/bin/python"
             target = str(wheel) + ("[monitoring]" if profile == "monitoring" else "")
             subprocess.run([str(python), "-m", "pip", "install", target], cwd=root, env=env, check=True)
-            subprocess.run([str(python), "-I", "-c", SMOKE, profile], cwd=root, env=env, check=True)
+            subprocess.run([str(python), "-I", "-c", SMOKE, profile, args.expected_version], cwd=root, env=env, check=True)
             if args.quickstart and profile == "base":
                 example = Path(__file__).resolve().parents[1] / "docs/quickstart.py"
                 subprocess.run([str(python), "-I", str(example)], cwd=root, env=env, check=True)

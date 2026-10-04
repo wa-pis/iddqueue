@@ -23,6 +23,7 @@ Contents
 - `Deployment Guide <deployment-guide.rst>`_
 - `Compatibility and support <../SUPPORT.md>`_
 - `Contributing <../CONTRIBUTING.md>`_
+- `0.13.0rc1 candidate notes <rc-0.13.0rc1.md>`_
 - `Release checks <release.md>`_
 - `IDDQueue changelog <../CHANGELOG.md>`_
 - `Historical upstream changelog <changelog.rst>`_

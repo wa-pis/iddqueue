@@ -8,7 +8,8 @@ package publication is pending and requires a separate explicit request.
    [support policy](../SUPPORT.md). Preserve license and credits.
 2. Install dev dependencies, configure a dedicated PostgreSQL with PG* variables
    and prepare fresh storage as in [CONTRIBUTING](../CONTRIBUTING.md).
-3. Run the same entrypoint as CI:
+3. Run the same entrypoint as CI (artifacts go to `dist/<package-version>/`,
+   selected by exact filename so older builds cannot enter acceptance):
 
 ```sh
 export IDDQUEUE_TEST_DATABASE=dedicated
@@ -58,3 +59,5 @@ Publication: not performed / separately authorized action and result
 Hashes identify a build, not an assurance that an arbitrary later build is equal.
 The readiness procedure stops here. Version changes, release tags, package upload
 and repository settings are separate actions, never implied by passing checks.
+
+Current candidate: [0.13.0rc1 notes](rc-0.13.0rc1.md).

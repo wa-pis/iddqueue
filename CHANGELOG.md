@@ -5,6 +5,10 @@ remain preserved with upstream credits. Unreleased entries are not publication.
 
 ## Unreleased
 
+No additional changes.
+
+## 0.13.0rc1 — release candidate (not published)
+
 - Send only message IDs in enqueue/ACK/NACK notifications to prevent task-payload disclosure to other database roles. Update all publishers/workers; no DDL change.
 
 ### Added
