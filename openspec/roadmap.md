@@ -93,3 +93,9 @@ actual evidence, sync/archive. При отсутствии доступной р
 [prepare-rc-release](changes/archive/2026-10-05-prepare-rc-release/proposal.md): 0.13.0rc1 подготовлен, 147 tests passed, candidate CI 37230705441 и archive CI 37230962005: 6/6; архив 2026-10-05. Точные artifacts, release notes,
 миграция, dev Pygments advisory, полный gate и actual CI перед передачей RC.
 Tag/release/package upload — отдельный шаг. [Задачи](changes/archive/2026-10-05-prepare-rc-release/tasks.md).
+
+## Публикация RC
+
+[publish-rc-release](changes/publish-rc-release/proposal.md): GitHub prerelease
+v0.13.0rc1 опубликован, remote hashes проверены. PyPI ожидает authentication;
+обе операции разрешены пользователем. Активный change не архивирован.
