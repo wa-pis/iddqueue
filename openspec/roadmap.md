@@ -2,7 +2,7 @@
 
 ## Tooling — 2026-10-04
 
-[migrate-to-uv](changes/migrate-to-uv/proposal.md): план перехода Poetry → uv, lock/dev groups/build/CI/release gate/docs. Реализация pending; runtime и публикация вне scope.
+[migrate-to-uv](changes/archive/2026-10-04-migrate-to-uv/proposal.md): выполнен переход Poetry → uv, lock/dev groups/build/CI/release gate/docs. Версии зависимостей сохранены; 143 tests passed, installed wheel/quickstart/LICENSE passed, CI 37228008729 6/6 success. Main spec synced; change архивирован. Runtime и публикация вне scope.
 
 ## Security remediation — 2026-10-04
 

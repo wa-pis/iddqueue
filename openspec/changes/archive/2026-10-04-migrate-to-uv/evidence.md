@@ -22,7 +22,7 @@ https://docs.astral.sh/uv/guides/integration/github/.
 - Stale metadata в /tmp/iddqueue-uv-stale (tenacity>=9.1.3):
   uv lock --check exit 1, needs update; исходный lock не изменён.
 - Full release gate на dedicated PG14.20 127.0.0.1:55432: exit 0; 143 tests passed in 43.39s, Ruff/docs/lock/dependency checks, OpenSpec 19/19, build/LICENSE, installed-wheel base/monitoring (7 SQL resources), quickstart actor result=5 и cleanup passed.
-- CI: pending. Публикация не выполнялась.
+- Tests CI b75ed80: https://github.com/wa-pis/iddqueue/actions/runs/37228008729 — success, все шесть jobs success. Dependency Graph 37228013893 отдельно success, не заменяет Tests matrix. Публикация не выполнялась.
 
 SHA256 wheel: 97619dac6940dd21bde6fdaeefface98b445f1a8c567121a3a9a3fec74676359.
 SHA256 sdist: 9aa3a7f8516718f80c59c8baf4dd1ca80fefee7863649b3ddf62ec5454f85e84.

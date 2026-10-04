@@ -11,5 +11,5 @@
 ## 3. Verification and delivery
 
 - [x] 3.1 Выполнить полный release gate на выделенном PostgreSQL: tests/unit tests/func, Ruff, docs, strict OpenSpec, lock check, build/LICENSE и base/monitoring installed-wheel/quickstart; записать фактические результаты evidence.
-- [ ] 3.2 Создать отдельный commit перехода, push main и проверить все шесть CI jobs success.
-- [ ] 3.3 Синхронизировать main spec, архивировать change, обновить roadmap/evidence, commit/push и проверить final HEAD CI; ничего не публиковать.
+- [x] 3.2 Создать отдельный commit перехода, push main и проверить все шесть CI jobs success.
+- [x] 3.3 Синхронизировать main spec, архивировать change, обновить roadmap/evidence, commit/push и проверить final HEAD CI; ничего не публиковать.
