@@ -5,6 +5,8 @@ remain preserved with upstream credits. Unreleased entries are not publication.
 
 ## Unreleased
 
+- Send only message IDs in enqueue/ACK/NACK notifications to prevent task-payload disclosure to other database roles. Update all publishers/workers; no DDL change.
+
 ### Added
 
 - PostgreSQL transactional enqueue and atomic batches (up to 1000 messages).

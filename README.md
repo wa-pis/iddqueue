@@ -30,6 +30,10 @@ the `iddqueue_queue_` prefix; update dashboards. Renaming alone does not rename 
 also changes storage and, for non-default namespaces, channels and lock domains;
 follow the migration guide.
 
+Task notifications contain only message IDs; authorized consumers fetch payloads
+from SQL. See [notification upgrade guidance](docs/migration.md#security-and-limits)
+when replacing an earlier revision; update all publishers and workers.
+
 ## Compared with dramatiq-pg
 
 Baseline: [dramatiq-pg 0.12.0](https://pypi.org/project/dramatiq-pg/0.12.0/),

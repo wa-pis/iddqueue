@@ -1,5 +1,9 @@
 # План развития PostgreSQL-проекта
 
+## Security remediation — 2026-10-04
+
+[fix-notification-payload-disclosure](changes/fix-notification-payload-disclosure/proposal.md): план исправления medium CWE-200 Codex Security; ID-only ENQUEUE/ACK/NACK, restricted-role regression, обновление migration guidance. Реализация pending, публикация вне scope.
+
 ## Документация перехода — 2026-10-04
 
 [document-upstream-comparison](changes/archive/2026-10-04-document-upstream-comparison/proposal.md): выполнено: ссылка upstream, таблица различий и инструкция migration/rollback. Upstream fixtures upgrade/backup restore проверены; 131 tests passed; CI 37224331994 6/6 success. Change архивирован; runtime и публикация вне scope.

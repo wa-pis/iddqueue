@@ -116,12 +116,14 @@ if traffic has resumed. There is no automatic reverse migration or replay.
 ## Security and limits
 
 Schema/prefix separation is storage routing, not tenant authorization. Use
-PostgreSQL roles and deployment controls. There is a known notification
-confidentiality issue in the current version: small task messages are sent in
-full through database-wide `NOTIFY`, so another role connected to the same
-database can receive them without queue-table access. Separate table grants
-alone do not protect those payloads; use a dedicated trusted database until
-the ID-only notification fix is implemented.
+PostgreSQL roles and deployment controls. Task notifications now contain only `message_id`; arguments/options remain in
+SQL storage. Update **every producer, scheduler and worker**, including ACK/NACK
+publishers, to the fixed revision before considering the disclosure closed.
+No DDL migration is required for this fix. Legacy full hints are still accepted,
+but old publishers continue exposing data while running. Custom LISTEN clients
+must fetch task content from authorized SQL storage by ID. UUIDs and activity
+timing remain visible to listeners in the same database. Rolling back to an
+unfixed revision restores the disclosure.
 
 Deduplication suppresses publication, not repeated execution. Cancellation is
 cooperative after task start. The scheduler supports fixed intervals, not cron;

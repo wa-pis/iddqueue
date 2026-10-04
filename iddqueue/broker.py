@@ -576,10 +576,7 @@ QUERIES = QueryManager(
         )
         SELECT
             pg_notify(%s,
-                CASE WHEN octet_length(message::text) >= 8000
-                THEN jsonb_build_object('message_id', %s::text)::text
-                ELSE message::text
-                END
+                jsonb_build_object('message_id', %s::text)::text
             )
         FROM updated;
         """
@@ -622,10 +619,7 @@ QUERIES = QueryManager(
         )
         SELECT
             pg_notify(%s,
-                CASE WHEN octet_length(message::text) >= 8000
-                THEN jsonb_build_object('message_id', %s::text)::text
-                ELSE message::text
-                END
+                jsonb_build_object('message_id', %s::text)::text
             )
         FROM enqueued;
         """
@@ -650,10 +644,7 @@ QUERIES = QueryManager(
         )
         SELECT
             pg_notify(%s,
-                CASE WHEN octet_length(message::text) >= 8000
-                THEN jsonb_build_object('message_id', %s::text)::text
-                ELSE message::text
-                END
+                jsonb_build_object('message_id', %s::text)::text
             )
         FROM updated;
         """
