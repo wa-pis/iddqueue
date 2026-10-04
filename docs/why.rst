@@ -1,109 +1,53 @@
-================
- Why Postgres ?
-================
+==============
+Why PostgreSQL
+==============
 
-Using Postgres as a message broker may look odd. There is some reason to use
-Postgres as a message broker and some to use something else. This page gives a
-few elements to make the best choice.
+IDDQueue stores Dramatiq tasks and results in PostgreSQL. If an application
+already operates PostgreSQL, this can avoid a separate broker service while
+supporting transactional publication alongside business writes.
 
-Let's start with some generalities. Webservice delegating tasks to background
-service is far from new as a software architecture pattern. We can resume the
-requirements as :
+How it works
+============
 
-- Send message asynchronously from webservice to backoffice.
-- Retrieve message from backoffice process.
-- Send back the result of backoffice for webservice.
+Messages are durable JSONB rows. LISTEN/NOTIFY wakes consumers; notifications
+contain IDs, not task payloads. Consumers read authoritative rows and claim work
+using session advisory locks. Startup and idle scans recover work when wakeups
+are missed. PostgreSQL notifications themselves are not durable task storage.
 
-Most applications in such architecture use a relationnal database and Postgres
-is the best open-source choice. The simplest solution is to put messages in a
-table and start a backoffice process with a cron. The backoffice eats messages
-from the table, do the work and store the result in the same database.
+Tasks and results share the queue table; coordination, deduplication, queue
+control, attempt history and schedules have separate tables. Optional features
+can add SQL operations. Result storage and retention also affect the workload.
+See the `user guide <user-guide.rst>`_ for behavior and limits.
 
+Trade-offs
+==========
 
-From cron to message queue
-==========================
+Database CPU, connections, WAL, indexes, autovacuum and storage are shared with
+other application workloads. Size pools across all producer/worker processes,
+retain sessions for LISTEN/NOTIFY and advisory locks, and measure interference
+with business queries. A separate broker can be appropriate when operational
+isolation or workload characteristics require it.
 
-What if you want a faster processing of background task? Here comes message
-queueing and its dedicated protocol: Advanced Message Queue protocol.
+Delivery remains at least once; database persistence does not provide
+exactly-once actor side effects. Actors must be idempotent. Failover/session loss
+can lead to recovery and repeated execution. PgBouncer transaction pooling is
+unsuitable for the session-bound consumer design.
 
-The AMQP protocol is dedicated to just this: emit unstructured message in a
-queue and deliver it to one consumer as soon as possible. RabbitMQ is the most
-common open-source AMQP server.
+Transactional enqueue uses the caller's synchronous Psycopg connection; it
+makes the task and business writes visible together on commit. Publishing from
+an independent pool is not atomic with a separate application transaction.
+See `deployment guidance <deployment-guide.rst>`_.
 
-However, AMQP does not provide a way to send back an unstructured message from
-backoffice to webservice. The trends is to use a key-value store like REDIS or
-Memcached. This lead to a rather complex architecture: a webservice, a database,
-a message broker, a backoffice and a key-value store. Using REDIS as a message
-broker is now common, it allows to avoid RabbitMQ which is quite heavy.
+Performance evidence
+====================
 
+No current IDDQueue throughput or latency advantage over other brokers has been
+established. Historical dramatiq-pg laptop figures are not benchmarks of this
+Psycopg 3 implementation. Measure your own payload sizes, actor duration,
+concurrency, database topology and retention policy before sizing deployment.
 
-Consolidating Infrastructure
-============================
-
-In this complex architecture, the database is always the first foundation of the
-app. The thing is that Postgres can check almost all of the feature list of both
-message broker and key-value store:
-
-- Storing unstructured message, thanks to JSON.
-- Instant asynchronous multicast notifaction, thanks to ``LISTEN`` and ``NOTIFY``.
-- Ensuring persistence, that's the base of Postgres job.
-- Ensuring reliability, Postgres MVCC and HA should do the job.
-
-Thus there is no limitation to using Postgres as both a message broker and a
-key-value store. The single limitation is to have a transparent implementation
-of this pattern for various distributed task system. Dramatiq-pg offer an
-implementation for Postgres.
-
-Actually, Skype initiated an extension to Postgres for managing queues: `PgQ
-<https://github.com/pgq/>`_. It's rather inactive as a project but may fit your
-needs. Dramatiq-pg does not (yet) implement a Dramatiq broker backed by PgQ.
-
-
-Performance
-===========
-
-The cost of emitting and processing a message delivered by Postgres is directly
-bound to the cost of an INSERT or UPDATE in a single table with a few indexes.
-Emitting a message costs one INSERT. Consuming and acknowledging a message each
-costs one UPDATE. From time to time, you have a DELETE to purge old processed
-messages. The cost of NOTIFY is light compared to the cost of INSERT, but
-increases with the number of LISTEN. Storing result costs one UPDATE too.
-
-For the curiousity, I measured the message rate that Postgres could handle on my
-laptop. My laptop is a Thinkpad x260 with a i5 processor @ 2.3GHz, 2 cores, 2
-threads per cores. It has 16Go of RAM and a 250Go **crypted** SSD. I run a
-vanilla Postgres in a docker container, unoptimized. The test app has a noop
-task with a single parameter, so the message size is quite small. Postgres,
-emitter and worker runs on the same host, at the same time. Here are the key
-metrics:
-
-- Message emission rate: 203 message per seconds.
-- Message processing rate: 96 message per seconds.
-
-The difference between emission an processing is consistent with the cost of
-INSERT/UPDATE. Processing costs twice as emitting as it implies two UPDATE while
-emitting implies one INSERT.
-
-Dramatiq-pg ships a perf.py script to measure the performance of you Postgres
-instance and perfagg.py scripts to aggregate metrics. Knowing this metrics will
-help you decide if Postgres fit your requirements.
-
-There is more performance to measure like latency which depends on your network.
-Also, the performance may change depending on the size of messages, the
-replication setup, etc.
-
-For an (unfair) idea of comparison, `RabbitMQ reaches thousands of message per
-seconds
-<https://www.rabbitmq.com/blog/2012/04/25/rabbitmq-performance-measurements-part-2/>`_
-with a totally different stack: baremetal, bigiron, no disk encryption, etc.
-
-
-Choosing the best option
-========================
-
-You have to balance between complexity of your infrastructure, the
-multiplications of skills needed and the performance you need to fit your
-application usage and workflow.
-
-Overall, Postgres as a broker seems fair for simple application with low message
-rate, few queues and a dedicated Postgres cluster.
+The inherited `perf.py <../tests/perf.py>`_ and
+`perfagg.py <../tests/perfagg.py>`_ scripts are exploratory tools, outside the
+current acceptance suite. They are not a validated performance guarantee or a
+required development check; review their setup before running them on a
+separate test database.

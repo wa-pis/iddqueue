@@ -17,11 +17,11 @@ and a separate worker example.
 - PostgreSQL storage: one queue/results table plus optional feature tables, no ORM.
 - Stores message payload and results as native JSONb.
 - Uses LISTEN/NOTIFY for wakeups, plus startup/idle recovery scans.
-- Implements delayed task.
-- Reliable thanks to Postgres MVCC.
-- Self-healing: automatic purge of old messages. Automatic recovery after
-  crash.
-- Utility CLI for maintainance: flush, purge, stats, etc.
+- Supports delayed tasks.
+- Persists tasks in PostgreSQL; session locks coordinate at-least-once delivery.
+- Recovers abandoned tasks after session loss; idle cleanup is probabilistic.
+  Schedule explicit retention maintenance when timing matters.
+- Utility CLI for maintenance: flush, purge, stats, etc.
 
 Note that dramatiq assumes tasks are idempotent. This broker makes the same
 assumptions for recovering after a crash.
@@ -40,10 +40,10 @@ when replacing an earlier revision; update all publishers and workers.
 ## Compared with dramatiq-pg
 
 Baseline: [dramatiq-pg 0.12.0](https://pypi.org/project/dramatiq-pg/0.12.0/),
-compared with IDDQueue 0.13.0. This describes the published version, not every
+compared with the published IDDQueue 0.13.0rc1 prerelease. This describes the published version, not every
 future upstream revision. Both projects provide a PostgreSQL Dramatiq broker.
 
-| Area | dramatiq-pg 0.12.0 | IDDQueue 0.13.0 / practical benefit |
+| Area | dramatiq-pg 0.12.0 | IDDQueue 0.13.0rc1 / practical benefit |
 | --- | --- | --- |
 | Core storage and delivery | JSONB tasks/results, delayed tasks, LISTEN/NOTIFY, advisory locks, recovery and maintenance CLI | Preserved; at-least-once delivery still requires idempotent actors |
 | Runtime | Python >=3.6,<4; Dramatiq >=1.5,<2; Psycopg 2 | Python >=3.10,<4; Dramatiq >=2.2.1,<3; synchronous Psycopg 3 and psycopg-pool |
@@ -67,6 +67,7 @@ integration is archived and has not been verified with IDDQueue.
 
 - Install the published release candidate:
   ``` console
+  $ uv venv
   $ uv pip install "iddqueue[binary]==0.13.0rc1"
   ```
   Requires Python 3.10+, Dramatiq 2.2.1+ and Psycopg 3.3.6+.
@@ -411,7 +412,8 @@ Different queue names alone do not isolate results with identical UUIDs.
 
 The default area (`dramatiq`, empty prefix) retains existing short channel names
 and message locks. Other areas use stable hashed channels bounded to 63 bytes;
-long default queue names also use bounded channels. No schema migration is needed.
+long default queue names also use bounded channels. Namespace isolation alone
+requires no DDL; upgrading from dramatiq-pg still requires the migration guide.
 
 Before upgrading non-default areas (or long default queue names), stop producers,
 drain or gracefully stop every worker using that area, and stop result waiters.

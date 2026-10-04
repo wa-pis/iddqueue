@@ -1,31 +1,16 @@
 Dramatiq-pg Changelog
 =====================
 
+Historical upstream snapshot
+----------------------------
+
+The entries below preserve dramatiq-pg's original changelog at upstream commit
+80b1a490d0a494925a9f8be399a11b38cee5480a. Its Unreleased heading reflects that
+snapshot; current IDDQueue releases are in `CHANGELOG.md <../CHANGELOG.md>`_.
+
 Unreleased
 ----------
 
-- Isolate notification channels and message locks by schema/prefix.
-- Reject string namespace-prefix result keys; retain UUID result identity.
-
-- Add per-queue ready/scheduled backlog and optional PostgreSQL Prometheus metrics.
-- Reset enqueue timestamps when requeuing a new attempt.
-
-- Add last-error metadata, paginated failed-task inspection and targeted retry.
-
-- Verify pipelines, groups, AsyncIO actors, retry exhaustion callbacks and timedelta delays against PostgreSQL.
-
-- Add PostgreSQL rate limits, durable barriers and standard GroupCallbacks support.
-- Add an idempotent coordination-table migration and expiry cleanup.
-- Add enqueue_in_transaction for atomic publication with application data.
-
-- Require Python 3.10+, Dramatiq 2.2.1+ and Psycopg 3.3.6+.
-- Replace psycopg2 pools with lazy Psycopg 3 connection pools.
-- Preserve pooled sessions when committing and rolling back transactions.
-- Release consumer subscriptions and advisory locks on shutdown.
-- Isolate SQL configuration between broker and result-backend instances.
-- Respect result TTL and millisecond timeouts; support large result payloads.
-- Use timezone-aware timestamps and remove obsolete WITHOUT OIDS syntax.
-- Add GitHub Actions testing against PostgreSQL 14 and 18.
 - Workaround payloads bigger than 8Kb
 
 
@@ -58,7 +43,7 @@ Version 0.9.0
 Released 2020-10-02.
 
 - Allow to customize schema and table names.
-- Provide ``iddqueue init`` helper command.
+- Provide ``dramatiq-pg init`` helper command.
 - Correctly clear the advisory locks. Contribution from `@CaselIT`_.
 - Use loose constraint on tenacity. By `@rouge8`_.
 
@@ -88,8 +73,8 @@ Release 2019-11-04.
   anymore.
 - More reliability: connection lost are handled everywhere, retrying on network
   failure is enabled.
-- Allows to use psycopg[binary] wheel. You must install psycopg or
-  psycopg[binary] yourself.
+- Allows to use psycopg2-binary wheel. You must install psycopg2 or
+  psycopg2-binary yourself.
 - By default, connection pool tries to reuse all connections.
 - Configure connection string of CLI.
 - dramatiq.queue table definition has been reviewed for optimisation. Changes

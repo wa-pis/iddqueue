@@ -61,4 +61,4 @@ Hashes identify a build, not an assurance that an arbitrary later build is equal
 The readiness procedure stops here. Version changes, release tags, package upload
 and repository settings are separate actions, never implied by passing checks.
 
-Current candidate: [0.13.0rc1 notes](rc-0.13.0rc1.md).
+Published release candidate: [0.13.0rc1 notes](rc-0.13.0rc1.md).

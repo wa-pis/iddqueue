@@ -105,3 +105,9 @@ v0.13.0rc1 опубликован, remote hashes проверены. PyPI 0.13.0
 [clean-legacy-repository](changes/archive/2026-10-05-clean-legacy-repository/proposal.md): obsolete
 Poetry runner/config/assets удалены, docs/dev setup обновлены; 147 tests passed.
 Signed commit ef611d2, actual CI 37233116835 6/6; архив 2026-10-05.
+
+## Актуализация документации
+
+[reconcile-current-documentation](changes/reconcile-current-documentation/proposal.md):
+current RC/install/status, API/migration limits и historical/performance context
+исправлены; local docs/Ruff/lock/OpenSpec passed, actual CI перед архивированием.

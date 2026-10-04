@@ -24,7 +24,23 @@ you're almost done with IDDQueue and can use Dramatiq as usual.
 
    a boolean indicating whether to initialize a result backend. Default is True.
 
-Defining both pool and url raises a ValueError.
+A truthy url together with pool raises ValueError. Create an injected pool
+with autocommit enabled; the caller owns its lifecycle.
+
+:schema / prefix:
+
+   Select PostgreSQL storage (defaults: dramatiq / empty prefix); initialize or
+   upgrade that namespace before use. They also select notification/lock domains.
+
+:queue_control:
+
+   Opt into pause/cancellation checks. Enable on every participating worker.
+
+:attempt_history:
+
+   Opt into diagnostic execution records; requires the attempts table.
+
+Both feature tables are included by current init/upgrade commands.
 
 **Attributes**
 
@@ -145,7 +161,9 @@ instructions to use schema/prefix; keys remain message UUIDs. ``namespace`` from
 the Dramatiq Results base class is logical metadata, not a SQL storage boundary.
 Custom coordination backends and collectors must match the broker's storage
 area. Upgrade all producers, workers and result waiters together after stopping
-the old processes. Table layout and stored UUIDs are unchanged.
+the old processes. Namespace isolation itself does not rewrite stored UUIDs or tables.
+The complete upgrade from dramatiq-pg adds columns/enum values and feature
+tables; follow the `migration guide <migration.md>`_.
 
 Extended broker API
 ===================

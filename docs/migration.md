@@ -1,7 +1,7 @@
 # Migrating from dramatiq-pg
 
 This guide covers [dramatiq-pg 0.12.0](https://pypi.org/project/dramatiq-pg/0.12.0/)
-to IDDQueue 0.13.0. See the [comparison](../README.md#compared-with-dramatiq-pg).
+to the published IDDQueue 0.13.0rc1 prerelease. See the [comparison](../README.md#compared-with-dramatiq-pg).
 The original [DALIBO project](https://gitlab.com/dalibo/dramatiq-pg), credits and
 [PostgreSQL license](../LICENSE) remain acknowledged.
 
@@ -41,11 +41,11 @@ on PostgreSQL 14/18, remove that obsolete clause from the upstream DDL only.
 
 ## Change the application environment
 
-Build/install the local wheel; IDDQueue is not yet published to PyPI:
+Install the published release candidate in a fresh environment:
 
 ```console
-uv build
-pip install "dist/iddqueue-0.13.0-py3-none-any.whl[binary]"
+uv venv
+uv pip install "iddqueue[binary]==0.13.0rc1"
 iddqueue --version
 ```
 

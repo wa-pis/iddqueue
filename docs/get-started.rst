@@ -4,6 +4,7 @@ Get Started
 
 Install the published release candidate::
 
+    uv venv
     uv pip install "iddqueue[binary]==0.13.0rc1"
 
 The binary extra supplies libpq through Psycopg's binary distribution. Base

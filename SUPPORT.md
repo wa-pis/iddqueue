@@ -37,6 +37,6 @@ cancellation of started actors is cooperative; history is diagnostic;
 scheduler coalesces missed fixed intervals. These limits are part of the API.
 
 Report reproducible issues via [GitHub](https://github.com/wa-pis/iddqueue/issues)
-(repository access required), including versions, namespace/configuration,
+(public repository), including versions, namespace/configuration,
 expected/actual behavior and sanitized reproduction. Maintainer support has no
 response-time SLA. Upstream integrations need separate compatibility validation.
