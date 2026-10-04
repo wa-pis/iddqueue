@@ -15,9 +15,9 @@
 - [x] 2.4 Добавить CONTRIBUTING, короткие PR и bug/feature issue templates; проверить ссылки и наличие reproduction/expected behavior/validation без доменных security approvals соседнего проекта.
 - [x] 2.5 Добавить пользовательский CHANGELOG Unreleased и краткие правила его ведения; сохранить исторический upstream changelog, сверить новые entries с реализованными фичами, исключить internal-only bookkeeping.
 - [x] 2.6 Добавить release guide и evidence format с commit, checks, CI URLs и artifact hashes; проверить команды и явно отделить готовность от неавторизованных tag/upload/publication.
-- [ ] 2.7 Выполнить полный release checks entrypoint и strict OpenSpec, обновить evidence; commit этапа отдельно, push в main и записать подтверждённый GitHub CI.
+- [x] 2.7 Выполнить полный release checks entrypoint и strict OpenSpec, обновить evidence; commit этапа отдельно, push в main и записать подтверждённый GitHub CI.
 
 ## 3. Завершение
 
-- [ ] 3.1 Сверить все requirements/scenarios с code/docs и actual evidence; синхронизировать project-maintenance main spec и проверить openspec validate --all --strict.
-- [ ] 3.2 Обновить roadmap/config по фактическим результатам, архивировать завершённый change после CI; проверить отсутствие незавершённых tasks, strict OpenSpec и чистый working tree после финального commit/push.
+- [x] 3.1 Сверить все requirements/scenarios с code/docs и actual evidence; синхронизировать project-maintenance main spec и проверить openspec validate --all --strict.
+- [x] 3.2 Обновить roadmap/config по фактическим результатам, архивировать завершённый change после CI; проверить отсутствие незавершённых tasks, strict OpenSpec и чистый working tree после финального commit/push.

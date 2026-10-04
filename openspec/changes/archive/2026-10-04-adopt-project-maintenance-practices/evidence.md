@@ -141,3 +141,45 @@ Wheel SHA256: f63047b7f8a4bf8dff918875dfc49a2ac63a5754d2fd5d7798360036226bc294.
 Sdist SHA256: 1ae829f617886104d38f3261ca33fc89dfac1a1f202c45d30ae9140b3944df3b.
 CI последнего stage-1 evidence commit 4a4eff4 завершился success.
 2.7 остаётся открытым до фактической проверки CI этапа 2.
+
+### Stage 2 CI подтверждён
+
+423ad24e0577c057a69b97cc54ef84f0c8321dbf в main; run
+https://github.com/wa-pis/iddqueue/actions/runs/37196894638 — success.
+В каждом job: 131 tests passed, installed base/monitoring profiles и quickstart
+(шесть таблиц, enqueue, result=5, schema cleanup) success. Checked commit
+в логах совпадает с head SHA; wheel/sdist hashes совпадают с локальным build.
+
+| Job | Result | URL |
+| --- | --- | --- |
+| test (3.14, 14) | success | https://github.com/wa-pis/iddqueue/actions/runs/37196894638/job/111420544952 |
+| test (3.14, 18) | success | https://github.com/wa-pis/iddqueue/actions/runs/37196894638/job/111420545076 |
+| test (3.13, 14) | success | https://github.com/wa-pis/iddqueue/actions/runs/37196894638/job/111420545082 |
+| test (3.13, 18) | success | https://github.com/wa-pis/iddqueue/actions/runs/37196894638/job/111420545111 |
+| test (3.10, 18) | success | https://github.com/wa-pis/iddqueue/actions/runs/37196894638/job/111420545124 |
+| test (3.10, 14) | success | https://github.com/wa-pis/iddqueue/actions/runs/37196894638/job/111420545148 |
+
+## Requirement/scenario coverage
+
+- Observable continuous checks: Tests matrix/manual ref, timeout/concurrency;
+  failed job isolation в 37193234339, successful manual 37193025467.
+- Installed distribution acceptance: check_package base/monitoring, metadata/CLI/
+  seven resources; negative missing scheduler.sql и LICENSE checks этапа 1.
+- Current user documentation: docs/README, check_docs; negative RST/file links;
+  executable quickstart positive и wrong-result negative с cleanup.
+- Compatibility/contribution: SUPPORT ranges/matrix/API/CLI/SQL/migrations,
+  CONTRIBUTING/PR/issues; сверены с pyproject, exports и CLI; links checked.
+- Release readiness: единый check_release, prerequisite/error failures и полный
+  positive execution, user CHANGELOG, release evidence guide; tags/upload не выполнялись.
+
+Новый main spec project-maintenance содержит те же пять требований и все
+сценарии delta, Purpose сохранён; посторонние main specs не менялись.
+
+## Завершение
+
+project-maintenance синхронизирован (five requirements/all scenarios, no delta
+headers), change перемещён в archive/2026-10-04-adopt-project-maintenance-practices.
+После перемещения strict OpenSpec 18/18, docs/local links и diff checks прошли.
+Roadmap/config обновлены по фактическим результатам; implementation CI 37196894638
+6/6. Все 15 задач завершены; финальный commit сохраняет sync/archive/evidence.
+Публикации/tag нет. Новые задачи не добавлены.

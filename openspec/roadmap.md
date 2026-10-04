@@ -60,9 +60,9 @@ roadmap не осталось; новая функциональность тр�
 | Приоритет | Change | Состояние | Проверка |
 | --- | --- | --- | --- |
 | 1 | [fix-consumer-notification-consistency](changes/archive/2026-10-04-fix-consumer-notification-consistency/proposal.md) | R1–R4 исправлены; 130 tests passed; CI 37192114318 6/6 | [review/repro](changes/archive/2026-10-04-fix-consumer-notification-consistency/review.md), затем regressions/full suite/CI |
-| 2 | [adopt-project-maintenance-practices](changes/adopt-project-maintenance-practices/proposal.md) | Этап 1 завершён: 131 tests, CI 37193574361 6/6; docs/policies следующие | CI/package checks подтверждены; далее docs/policies и installed quickstart |
+| 2 | [adopt-project-maintenance-practices](changes/archive/2026-10-04-adopt-project-maintenance-practices/proposal.md) | Оба этапа завершены: 131 tests, CI 37196894638 6/6; main spec синхронизирован, архив 2026-10-04 | CI/package/docs checks, policies и installed quickstart подтверждены |
 
-Consumer исправлен и архивирован 2026-10-04. adopt-project-maintenance-practices: CI/проверки поставки завершены; следующий этап — документация и правила сопровождения.
+Consumer исправлен и архивирован 2026-10-04. adopt-project-maintenance-practices завершён и архивирован 2026-10-04: CI, docs, policies и installed quickstart проверены. Доступных задач roadmap не осталось.
 Docs/CI долги не дублируются в runtime change. Использовать Ponytail и Caveman,
 не сокращая контракты/проверки. После каждого change — separate commit/push,
 actual evidence, sync/archive. При отсутствии доступной работы автоматизация
