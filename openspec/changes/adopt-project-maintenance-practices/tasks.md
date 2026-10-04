@@ -5,7 +5,7 @@
 - [x] 1.3 Добавить строгую проверку RST и локальных ссылок, адаптировать docs/Makefile к установленному docutils; проверить диагностируемый malformed RST и broken link на временных fixtures, не меняя user docs ради прохождения.
 - [x] 1.4 Добавить общий release checks entrypoint, вызывающий существующие Ruff/tests/build/LICENSE, package и docs checks; проверить ненулевой exit при ошибке/prerequisite и успешный полный запуск с dedicated PostgreSQL.
 - [x] 1.5 Интегрировать проверки в CI; выполнить poetry check/build, Ruff, tests/unit tests/func на dedicated PostgreSQL и openspec validate --all --strict; записать фактические результаты, commit и artifact hashes в evidence.
-- [ ] 1.6 Зафиксировать этап отдельным commit, push в wa-pis/iddqueue main; записать URL и успешный результат каждого CI job, не считать подготовленный workflow выполненным.
+- [x] 1.6 Зафиксировать этап отдельным commit, push в wa-pis/iddqueue main; записать URL и успешный результат каждого CI job, не считать подготовленный workflow выполненным.
 
 ## 2. Документация и правила сопровождения
 

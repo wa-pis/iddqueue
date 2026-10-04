@@ -86,3 +86,23 @@ test_durable_events. Runtime не изменён. 1.6 повторно откр�
 check success (131 tests), Ruff/docs/strict OpenSpec/Poetry/build/LICENSE,
 base и monitoring wheel acceptance прошли; hashes wheel/sdist прежние.
 Точный test duration записан ниже после чтения полного лога.
+
+### Завершение этапа 1 после исправления timing tests
+
+Полный локальный повтор: 131 passed in 42.38s (дерево на 91a5694 с
+исправлением coordination tests), все release checks прошли.
+Commit 6d13891cdd20e1f90158e3307d18698cbe595c00 отправлен в main.
+Run https://github.com/wa-pis/iddqueue/actions/runs/37193574361 — success,
+шесть обязательных jobs success. Ручной dispatch уже подтверждён run
+37193025467, failure isolation наблюдался в 37193234339 (5 success / 1 failure).
+
+| Job | Result | URL |
+| --- | --- | --- |
+| test (3.13, 18) | success | https://github.com/wa-pis/iddqueue/actions/runs/37193574361/job/111410660603 |
+| test (3.10, 18) | success | https://github.com/wa-pis/iddqueue/actions/runs/37193574361/job/111410660746 |
+| test (3.14, 18) | success | https://github.com/wa-pis/iddqueue/actions/runs/37193574361/job/111410660752 |
+| test (3.10, 14) | success | https://github.com/wa-pis/iddqueue/actions/runs/37193574361/job/111410660803 |
+| test (3.13, 14) | success | https://github.com/wa-pis/iddqueue/actions/runs/37193574361/job/111410660817 |
+| test (3.14, 14) | success | https://github.com/wa-pis/iddqueue/actions/runs/37193574361/job/111410660854 |
+
+Tasks 1.1–1.6 завершены. Stage 2/3 открыты; sync/archive ещё не выполнялись.
