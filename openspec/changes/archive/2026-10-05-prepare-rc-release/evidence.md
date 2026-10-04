@@ -34,3 +34,18 @@ Candidate SHA: 4e808632f920390100658b091bac2ab97a55eb2a.
 Advisory #2 повторно прочитан после push: open/fixed_at=null. Это remote bookkeeping state, не доказательство отсутствия патча: uv.lock и чистое окружение содержат Pygments 2.21.0 >= patched 2.20.0. Не выполнялось dismiss/manual close.
 
 Handoff: dist/0.13.0rc1/iddqueue-0.13.0rc1-py3-none-any.whl и dist/0.13.0rc1/iddqueue-0.13.0rc1.tar.gz; release notes docs/rc-0.13.0rc1.md. Tag/GitHub release/PyPI/TestPyPI не выполнены; следующий шаг требует выбранного пользователем канала.
+
+## Archive and handoff
+
+Archive SHA d1ffe6e55fd0279131b74be74af87b42030119ab. Strict OpenSpec 18/18.
+[Tests 37230962005](https://github.com/wa-pis/iddqueue/actions/runs/37230962005): completed/success, 6/6.
+
+- [3.10 / PG18](https://github.com/wa-pis/iddqueue/actions/runs/37230962005/job/111520293363): success.
+- [3.14 / PG18](https://github.com/wa-pis/iddqueue/actions/runs/37230962005/job/111520293474): success.
+- [3.10 / PG14](https://github.com/wa-pis/iddqueue/actions/runs/37230962005/job/111520293486): success.
+- [3.13 / PG18](https://github.com/wa-pis/iddqueue/actions/runs/37230962005/job/111520293502): success.
+- [3.13 / PG14](https://github.com/wa-pis/iddqueue/actions/runs/37230962005/job/111520293524): success.
+- [3.14 / PG14](https://github.com/wa-pis/iddqueue/actions/runs/37230962005/job/111520293544): success.
+
+GitHub advisory #2 фактически state=fixed, fixed_at=2026-10-04T20:06:37Z при финальном readback; предыдущий open state выше оставлен как хронология проверки.
+Локальный handoff: dist/0.13.0rc1/SHA256SUMS, wheel/sdist и docs/rc-0.13.0rc1.md. Все подготовительные задачи завершены; публикация отсутствует. Последующий evidence-only commit не меняет проверенный package candidate.

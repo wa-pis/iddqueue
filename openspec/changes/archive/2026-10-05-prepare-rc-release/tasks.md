@@ -13,5 +13,5 @@
 ## 3. Кандидат и завершение подготовки
 
 - [x] 3.1 Сделать отдельный commit/push RC preparation в wa-pis/iddqueue main, проверить clean tree и actual Tests CI 6/6 для точного SHA; записать URLs/results.
-- [ ] 3.2 После подтверждения проверок архивировать change, обновить roadmap/evidence и выполнить strict OpenSpec; commit/push и проверить archive CI отдельно.
-- [ ] 3.3 Передать пользователю подготовленную версию, candidate SHA, paths/checksums и release notes; явно указать, что tag/GitHub release/PyPI/TestPyPI ещё не выполнены и требуют отдельного запроса с каналом.
+- [x] 3.2 После подтверждения проверок архивировать change, обновить roadmap/evidence и выполнить strict OpenSpec; commit/push и проверить archive CI отдельно.
+- [x] 3.3 Передать пользователю подготовленную версию, candidate SHA, paths/checksums и release notes; явно указать, что tag/GitHub release/PyPI/TestPyPI ещё не выполнены и требуют отдельного запроса с каналом.
