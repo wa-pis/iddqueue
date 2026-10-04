@@ -15,14 +15,14 @@ with psycopg.connect("") as conn:
         assert conn.execute("SELECT to_regclass(%s)", (table,)).fetchone()[0], f"Prepare test table {table}"
 PY
 "$POETRY" check
-"$POETRY" run ruff check iddqueue tests/unit tests/func example.py scripts
+"$POETRY" run ruff check iddqueue tests/unit tests/func example.py scripts docs/quickstart.py
 "$POETRY" run pytest tests/unit tests/func
 "$PYTHON" scripts/check_docs.py
 openspec validate --all --strict
 "$POETRY" build
 # Select this distribution only; unrelated historical artifacts may exist in dist/.
 "$PYTHON" scripts/check_license.py dist/iddqueue-*.whl dist/iddqueue-*.tar.gz
-"$PYTHON" scripts/check_package.py dist/iddqueue-*.whl
+"$PYTHON" scripts/check_package.py --quickstart dist/iddqueue-*.whl
 "$PYTHON" - <<'PY'
 import hashlib
 import subprocess

@@ -1,42 +1,32 @@
-=============
- Dramatiq-pg
-=============
+========
+IDDQueue
+========
 
-Welcome to Dramatiq-pg documentation. Dramatiq-pg is a broker implementation of
-Dramatiq_ backed by Postgres_ RDBMS. Dramatiq-pg is licensed under the
-`PostgreSQL license`_.
+IDDQueue provides a synchronous PostgreSQL broker and Results backend for
+`Dramatiq <https://dramatiq.io/>`_. It uses Psycopg 3, JSONB, LISTEN/NOTIFY and
+session advisory locks, without an ORM or a separate broker service.
+Delivery is at least once: actors and callbacks must be idempotent.
 
-Features
---------
-
-- Super simple deployment: Single table, no ORM.
-- Stores message payload and results as native JSONb.
-- Uses LISTEN/NOTIFY to keep worker sync. No polling.
-- Implements delayed task.
-- Reliable thanks to Postgres MVCC.
-- Self-healing: automatic purge of old messages. Automatic recovery after
-  crash.
-- Utility CLI for maintainance: flush, purge, stats, etc.
-
+One queue table stores messages and results; coordination, deduplication,
+queue control, attempts and schedules use separate tables. Notifications wake
+workers, which claim authoritative rows; startup and idle recovery also scan
+storage. Fixed interval scheduling polls due rows.
 
 Contents
---------
+========
 
 - `Get Started <get-started.rst>`_
 - `User Guide <user-guide.rst>`_
-- `Deployment Guide <deployment-guide.rst>`_
 - `API Reference <api.rst>`_
-- `Why Postgres ? <why.rst>`_
-- `Changelog <./changelog.rst>`_
+- `Deployment Guide <deployment-guide.rst>`_
+- `Compatibility and support <../SUPPORT.md>`_
+- `Contributing <../CONTRIBUTING.md>`_
+- `Release checks <release.md>`_
+- `IDDQueue changelog <../CHANGELOG.md>`_
+- `Historical upstream changelog <changelog.rst>`_
+- `Why PostgreSQL <why.rst>`_
 
-
-Project Info
-------------
-
-- `Source Code <https://gitlab.com/dalibo/dramatiq-pg>`_
-- `Issue tracker <https://gitlab.com/dalibo/dramatiq-pg/issues>`_
-- `PostgreSQL License`_
-
-.. _Dramatiq: https://dramatiq.io/
-.. _Postgres: https://postgresql.org/
-.. _PostgreSQL license: ../LICENSE
+`Source <https://github.com/wa-pis/iddqueue>`_ and
+`issues <https://github.com/wa-pis/iddqueue/issues>`_ require repository access.
+PyPI publication is pending. This fork preserves DALIBO's PostgreSQL
+`LICENSE <../LICENSE>`_ and upstream credits in `README <../README.md>`_.

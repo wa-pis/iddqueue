@@ -39,6 +39,7 @@ print("Installed wheel verified:", version, sys.argv[1], iddqueue.__file__)
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("wheel", type=Path)
+    parser.add_argument("--quickstart", action="store_true", help="Run docs example on dedicated PostgreSQL")
     args = parser.parse_args()
     wheel = args.wheel.resolve(strict=True)
     env = dict(os.environ)
@@ -52,6 +53,9 @@ def main():
             target = str(wheel) + ("[monitoring]" if profile == "monitoring" else "")
             subprocess.run([str(python), "-m", "pip", "install", target], cwd=root, env=env, check=True)
             subprocess.run([str(python), "-I", "-c", SMOKE, profile], cwd=root, env=env, check=True)
+            if args.quickstart and profile == "base":
+                example = Path(__file__).resolve().parents[1] / "docs/quickstart.py"
+                subprocess.run([str(python), "-I", str(example)], cwd=root, env=env, check=True)
 
 
 if __name__ == "__main__":

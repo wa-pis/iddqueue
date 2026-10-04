@@ -7,9 +7,9 @@ broker.
 
 ## Features
 
-- Super simple deployment: Single table, no ORM.
+- PostgreSQL storage: one queue/results table plus optional feature tables, no ORM.
 - Stores message payload and results as native JSONb.
-- Uses LISTEN/NOTIFY to keep worker sync. No polling.
+- Uses LISTEN/NOTIFY for wakeups, plus startup/idle recovery scans.
 - Implements delayed task.
 - Reliable thanks to Postgres MVCC.
 - Self-healing: automatic purge of old messages. Automatic recovery after
@@ -36,7 +36,7 @@ and advisory lock identities remain unchanged.
   ``` console
   $ iddqueue init
   ```
-  Or adapt `iddqueue/schema.sql` to your needs.
+  For existing storage, stop participants and run `iddqueue upgrade`; raw `schema.sql` alone does not install all feature storage.
 - Before importing actors, define global broker with a connection
   pool:
   ``` python
@@ -63,6 +63,10 @@ integration by Curtis Maloney targets the original package. Compatibility with
 IDDQueue has not been verified.
 
 ## Support
+
+Compatibility and API stability: [SUPPORT](SUPPORT.md).
+Contribution steps: [CONTRIBUTING](CONTRIBUTING.md). Release checks: [guide](docs/release.md).
+User changes: [CHANGELOG](CHANGELOG.md).
 
 Report issues in [wa-pis/iddqueue](https://github.com/wa-pis/iddqueue/issues).
 The repository is currently private; access is required.

@@ -106,3 +106,38 @@ Run https://github.com/wa-pis/iddqueue/actions/runs/37193574361 — success,
 | test (3.14, 14) | success | https://github.com/wa-pis/iddqueue/actions/runs/37193574361/job/111410660854 |
 
 Tasks 1.1–1.6 завершены. Stage 2/3 открыты; sync/archive ещё не выполнялись.
+
+## Этап 2 — docs и правила сопровождения, 2026-10-04
+
+Переписаны index/get-started/user-guide/deployment, актуализированы API и README.
+Проверено по exports, broker/results/CLI/SQL/scheduler и main specs controls,
+cancellation, history, deduplication, batch, scheduler, distribution. Документы
+не обещают публикацию, одну таблицу, отсутствие polling, ежедневный purge SLA
+или exactly-once. Supported matrix и dependency ranges разделены; экспериментальные
+расширения, CLI/JSON/SQL contracts и breaking migration описаны в SUPPORT.
+CONTRIBUTING и три templates короткие; шаблоны используют GitHub blob links,
+работающие и после вставки в PR/issue body. CHANGELOG Unreleased содержит
+user-facing features/migration и consumer fixes, сохраняя upstream changelog
+и attribution; internal CI/OpenSpec bookkeeping не включён. Release guide
+содержит фактический entrypoint, prerequisites, evidence format и отделяет
+готовность от tag/upload. Лицензия и runtime неизменны, dependencies не добавлены.
+
+scripts/check_package.py --quickstart выполняет именно docs/quickstart.py
+через Python -I из base wheel venv вне checkout. Пример применил init SQL,
+проверил queue/coordination/deduplication/queue_control/attempts/schedules,
+записал сообщение до запуска worker и получил результат 5. Worker/pool закрыты,
+random quickstart schema удалена; отдельный SQL query подтвердил отсутствие
+quickstart_% schemas. Monitoring profile проверен отдельно как прежде.
+Отрицательный прогон с временно изменённым ожидаемым результатом 6 дал exit 1 /
+AssertionError; cleanup всё равно удалил схему, исходный файл восстановлен.
+
+Полный scripts/check_release.sh: Python 3.13.14 / dedicated PG14.20 :55432,
+131 passed in 43.26s, Ruff (включая docs/quickstart.py), poetry check,
+strict docs/local links, OpenSpec 18/18, build/LICENSE, wheel base/monitoring,
+quickstart — success. Проверялось дерево на 4a4eff40c728e981250acdd253118220ee329ef3
+с изменениями этапа; это не утверждение о чистом parent commit. После отрицательного
+прогона final docs/Ruff/strict/diff checks повторно прошли.
+Wheel SHA256: f63047b7f8a4bf8dff918875dfc49a2ac63a5754d2fd5d7798360036226bc294.
+Sdist SHA256: 1ae829f617886104d38f3261ca33fc89dfac1a1f202c45d30ae9140b3944df3b.
+CI последнего stage-1 evidence commit 4a4eff4 завершился success.
+2.7 остаётся открытым до фактической проверки CI этапа 2.

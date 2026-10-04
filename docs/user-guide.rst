@@ -1,123 +1,93 @@
-============
- User Guide
-============
+==========
+User Guide
+==========
 
-Enabling Postgres Broker
-========================
+Connections and results
+=======================
 
-Dramatiq-pg is available on PyPI. Install it with pip::
+Construct ``PostgresBroker(url=dsn)`` or ``PostgresBroker(pool=pool)`` with a
+synchronous psycopg_pool.ConnectionPool; providing both is invalid. URL query
+parameters minconn/maxconn size the pool (defaults 0/16). A broker-created pool
+opens lazily and is closed by broker.close(); a supplied pool belongs to you.
+Create pools separately in each worker process.
 
-    pip install iddqueue
+Results middleware is enabled by default. Mark actors ``store_results=True``
+and pass ``backend=broker.backend`` to get_result. ``results=False`` disables
+auto-registration. Standalone use: ``PostgresBackend(url=dsn)`` with
+``dramatiq.results.Results(backend=backend)``. Close owned backend pools too.
 
-This package installs a Python package named ``iddqueue`` and a script named
-``iddqueue``. To use Postgres as a Dramatiq message broker, use
-``iddqueue.PostgresBroker`` class.
+Storage setup and isolation
+===========================
 
-::
+``iddqueue init`` creates the queue plus coordination, deduplication,
+queue_control, attempts and schedules tables. ``iddqueue upgrade`` idempotently
+adds optional storage, started/cancel_requested columns and cancelled state to
+existing installations without discarding queued messages or Results.
+Use schema/prefix consistently on brokers, backends, CLI and collectors.
+Results are UUID-keyed; Dramatiq's logical namespace does not isolate SQL.
+Stop all participants during migrations; see `deployment <deployment-guide.rst>`_.
 
-   from dramatiq import set_broker
-   from iddqueue import PostgresBroker
+Publishing
+==========
 
-   set_broker(PostgresBroker())
+Ordinary actor.send/send_with_options uses standard Dramatiq enqueue, retries
+and delayed queues. Transactional enqueue uses a caller-owned active Psycopg
+transaction in the same database as business writes. Commit makes tasks and
+notifications visible; rollback removes both. Hooks describe SQL execution,
+not the eventual external commit. The broker does not commit or retry your
+transaction. See `transactional examples <../README.md#transactional-publishing>`_.
 
-By default, ``PostgresBroker`` reads ``PG*`` environment variables. Further
-options are detailed below.
+Deduplication accepts a key and positive integer TTL in milliseconds. Keys are
+scoped to logical queue and storage area; concurrent duplicates return the
+original message. Use that returned message for Results. Expired keys allow new
+publication; purge of a queue row does not release a live key. Deduplication
+suppresses publication, not duplicate actor execution.
 
+Batch enqueue accepts up to 1000 messages and an optional per-message options
+list (delay/deduplication_key/deduplication_ttl). It preserves input order and
+commits atomically. External batches use a savepoint in an active transaction;
+no batch API automatically retries an ambiguous disconnect. Detailed
+`batch and dedup examples <../README.md>`_ remain in README.
 
-Setting up PostgreSQL
-=====================
+Execution controls
+==================
 
-Postgres is not a native broker. Dramatiq-pg stores messages in a single table
-in its own schema. Thus you need to initialize schema and table before using
-Postgres as a broker. For now, Dramatiq-pg does not manage the schema for you
-and let's you use your database migration tool. Dramatiq-pg ships a
-``schema.sql`` file as a starting point for initializing the database for
-Dramatiq-pg.
+Enable ``PostgresBroker(queue_control=True)`` on every participating worker to
+use pause and cancellation safely, including already prefetched messages.
+``iddqueue pause emails`` and ``resume emails`` affect normal and delayed queues;
+publishing continues, paused tasks keep ETA/retry budget, and already authorized
+actors finish. The boundary is SQL start permission, not the first Python instruction.
 
-::
+``broker.cancel(message_id)`` or ``iddqueue cancel MESSAGE_ID`` cancels before
+start; Results raises ResultCancelled. Running actors receive a cooperative
+request; they must check broker.cancellation_requested themselves. They are
+not interrupted. Cancelled UUIDs cannot be revived by retry/recover; send a
+new message for new work. Dedup may return the cancelled original until expiry.
 
-    psql -f iddqueue/schema.sql
+Coordination and Dramatiq middleware
+====================================
 
-Table and type are contained in a ``dramatiq`` schema.
+PostgresRateLimiterBackend supports Dramatiq counters, window/bucket/concurrent
+limiters, barriers and group callbacks. Match broker schema/prefix; periodically
+purge expired coordination data. Pipelines/groups, async actors, callbacks,
+CurrentMessage, AgeLimit, TimeLimit and ShutdownNotifications use Dramatiq's
+standard implementations. TimeLimit is not a hard deadline for blocking system
+calls. Failure callbacks run on each failed attempt; use on_retry_exhausted for
+exhaustion. Callback side effects also require idempotency.
 
+Diagnostics and schedules
+=========================
 
-Connection Configuration
-========================
+``iddqueue failed list/show`` and ``retry ID`` inspect rejected tasks and start a
+fresh retry cycle; full payload is opt-in. Statistics include cancelled state.
+``attempt_history=True`` adds diagnostic execution records; arguments/options/
+results are omitted but exception text may contain application data. Incomplete
+records can mean running or crashed actors. Middleware failures can leave gaps:
+this is not an atomic audit log. Run history purge explicitly for retention.
 
-The ``PostgresBroker`` class accepts either a ``pool`` or an ``url`` argument.
-The ``pool`` is a psycopg connection pool object.
-
-::
-
-   from iddqueue import PostgresBroker
-   from psycopg_pool import ConnectionPool
-
-   pool = ConnectionPool("", min_size=0, max_size=8,
-                         kwargs={"autocommit": True}, open=False)
-   broker = PostgresBroker(pool=pool)
-
-
-The ``url`` argument is a psycopg-compatible `connection string
-<https://www.psycopg.org/psycopg3/docs/api/connections.html>`_, also called
-*dsn*. Internally, ``PostgresBroker`` creates a ``ConnectionPool``. You
-can customize de size of the pool by setting ``minconn`` and ``maxconn`` query
-parameters. ``PostgresBroker`` reads ``minconn`` and ``maxconn`` only from URL,
-not from keyword/value connection string.
-
-::
-
-   from iddqueue import PostgresBroker
-
-   broker = PostgresBroker(url="postgresql://user:password@host/dbname?minconn=8&maxconn=8")
-
-``maxconn`` defaults to 16 and ``minconn`` defaults to 0. The pool opens
-on first use, so constructing the broker doesn't connect to PostgreSQL or
-start background threads. Create pools separately in each worker process;
-do not share an opened pool across a process fork. Call ``broker.close()``
-to close a pool created by the broker. For a supplied pool, its owner must
-close it.
-
-
-Result Storage
-==============
-
-Dramatiq-pg implements a `Result backend
-<https://dramatiq.io/cookbook.html#results>`_ storing results in Postgres.
-``PostgresBroker`` **enables automatically Results middleware** with a
-``PostgresBackend`` sharing the same connection pool. Note that only actors
-defined with ``store_results=True`` triggers result storage.
-
-When using multiple brokers, you must pass the backend to
-``message.get_result()`` method. This is a limitation of Dramatiq.
-``PostgresBroker`` keeps a reference of it's auto-created backend.
-
-::
-
-   message = actor.send()
-   message.get_result(backend=broker.backend)
-
-
-Disabling Result Storage
-------------------------
-
-You can disable the ``Results`` middleware by passing ``results=False`` to
-broker constructor.
-
-::
-
-   broker = PostgresBroker(url=conninfo, results=False)
-
-
-Using Result Storage Alone
---------------------------
-
-You may want to use Postgres as a result storage while using another message
-broker (like RabbitMQ). To do this, directly use the ``PostgresBackend`` class.
-
-::
-
-   from dramatiq import Results
-   from iddqueue import PostgresBackend
-
-   backend = PostgresBackend(url=conninfo)
-   broker.add_middleware(Results(backend=backend))
+PostgresScheduler persists fixed intervals, polls due rows and atomically
+publishes/advances each occurrence. Multiple schedulers share work using row
+locks. Missed intervals coalesce into one task; no cron/calendar or full replay.
+Pausing a destination still allows publication. Disable preserves queued tasks.
+Examples, CLI flags and detailed limitations: `README <../README.md>`_ and
+`API Reference <api.rst>`_.

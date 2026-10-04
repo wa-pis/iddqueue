@@ -2,12 +2,12 @@
  API Reference
 ===============
 
-Dramatiq-pg ships a relatively simple API. Once you have initiated the broker,
-you're almost done with Dramatiq-pg and can use Dramatiq as usual.
+IDDQueue ships a relatively simple API. Once you have initiated the broker,
+you're almost done with IDDQueue and can use Dramatiq as usual.
 
 
-``iddqueue.PostgresBroker(url="", pool=None, results=True)``
-===============================================================
+``iddqueue.PostgresBroker(*, url="", pool=None, results=True, schema=None, prefix=None, queue_control=False, attempt_history=False)``
+=====================================================================================================================================
 
 :pool:
 
@@ -15,7 +15,7 @@ you're almost done with Dramatiq-pg and can use Dramatiq as usual.
 
 :url:
 
-   A PostgreSQL connection string as understood by libpq. Dramatiq-pg extends
+   A PostgreSQL connection string as understood by libpq. IDDQueue extends
    libpq URL-style connection string with ``minconn`` and ``maxconn``
    parameters. Defaults to empty string, leading libpq to read values from
    environment variables.
@@ -42,8 +42,9 @@ Initialization:
 
    from iddqueue import PostgresBroker
 
-   broker = PostgresBroker("postgresql://user:pass@host/dbname?maxconn=12")
-   set_broker(broker)
+   broker = PostgresBroker(url="postgresql://user:pass@host/dbname?maxconn=12")
+   import dramatiq
+   dramatiq.set_broker(broker)
 
 
 Result usage:
@@ -53,8 +54,8 @@ Result usage:
    message.get_result(backend=broker.backend)
 
 
-``iddqueue.PostgresBackend(url="", pool=None)``
-==================================================
+``iddqueue.PostgresBackend(*, url=None, pool=None, schema=None, prefix=None, **kwargs)``
+========================================================================================
 
 Postgres-backed implementation of result storage for Dramatiq.
 
@@ -121,7 +122,7 @@ Queue statistics
 
 ``queue_statistics(pool, *, schema="dramatiq", prefix="", queue=None)``
 from ``iddqueue.metrics`` returns a list of snapshots containing ``queue``,
-``counts`` for queued/consumed/done/rejected, ``ready``, ``scheduled`` and
+``counts`` for queued/consumed/done/rejected/cancelled, ``ready``, ``scheduled`` and
 ``oldest_ready_seconds``. It uses a single PostgreSQL statement and does not
 require Prometheus. Ready age uses the current enqueue timestamp and ETA;
 consumed rows are excluded from ready age. Empty selected queues return zeros.
@@ -145,3 +146,33 @@ the Dramatiq Results base class is logical metadata, not a SQL storage boundary.
 Custom coordination backends and collectors must match the broker's storage
 area. Upgrade all producers, workers and result waiters together after stopping
 the old processes. Table layout and stored UUIDs are unchanged.
+
+Extended broker API
+===================
+
+``enqueue(message, *, delay=None, deduplication_key=None, deduplication_ttl=None)``
+and ``enqueue_in_transaction(message, *, connection, ...)`` return the published
+or original deduplicated Message. Delays and TTLs are milliseconds.
+``enqueue_many(messages, *, options=None)`` and
+``enqueue_many_in_transaction(messages, *, connection, options=None)`` return
+an ordered list, with a maximum of 1000 inputs. Options are one dict per input.
+
+``pause_queue(queue)``, ``resume_queue(queue)`` and ``queue_is_paused(queue)``
+control a logical queue. ``cancel(message_id)`` returns status/state;
+``cancellation_status(message_id)`` returns state/requested and
+``cancellation_requested(message_id)`` returns a boolean. Every worker must
+opt into queue_control for the SQL actor start gate.
+
+``generate_init_sql(schema="dramatiq", prefix="")`` initializes all storage;
+``generate_upgrade_sql(schema="dramatiq", prefix="")`` adds optional storage
+idempotently without removing existing tasks. Both return SQL text for a
+synchronous Psycopg connection; apply with participants stopped.
+
+``PostgresScheduler(broker)`` from iddqueue.scheduler exposes
+``create(name, message, *, interval_ms, start_at=None)``, ``list()``,
+``disable(name)`` and ``tick(*, limit=100)``. start_at must include a timezone.
+Creation returns a schedule UUID string; tick returns published Messages.
+Fixed intervals, coalescing and transactional boundaries are documented in
+`User Guide <user-guide.rst>`_ and `README <../README.md>`_.
+
+CLI contracts and API stability: `SUPPORT <../SUPPORT.md>`_.

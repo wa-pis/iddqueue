@@ -9,12 +9,12 @@
 
 ## 2. Документация и правила сопровождения
 
-- [ ] 2.1 Актуализировать docs/index/get-started/user-guide/api/deployment и README: имя/ссылки IDDQueue, реальные таблицы, API/CLI, upgrade, эксплуатация и ограничения новых возможностей; сверить с code/main specs и выполнить docs/link checks.
-- [ ] 2.2 Добавить выбранный quickstart smoke из установленного wheel на dedicated PostgreSQL с cleanup; выполнить пример и подтвердить enqueue, результат и применённую SQL schema.
-- [ ] 2.3 Добавить support/compatibility policy: проверенные Python/PostgreSQL, supported/experimental API, CLI/JSON/SQL contracts, breaking changes и migration guidance; сверить claims с pyproject, exports и текущей CI matrix.
-- [ ] 2.4 Добавить CONTRIBUTING, короткие PR и bug/feature issue templates; проверить ссылки и наличие reproduction/expected behavior/validation без доменных security approvals соседнего проекта.
-- [ ] 2.5 Добавить пользовательский CHANGELOG Unreleased и краткие правила его ведения; сохранить исторический upstream changelog, сверить новые entries с реализованными фичами, исключить internal-only bookkeeping.
-- [ ] 2.6 Добавить release guide и evidence format с commit, checks, CI URLs и artifact hashes; проверить команды и явно отделить готовность от неавторизованных tag/upload/publication.
+- [x] 2.1 Актуализировать docs/index/get-started/user-guide/api/deployment и README: имя/ссылки IDDQueue, реальные таблицы, API/CLI, upgrade, эксплуатация и ограничения новых возможностей; сверить с code/main specs и выполнить docs/link checks.
+- [x] 2.2 Добавить выбранный quickstart smoke из установленного wheel на dedicated PostgreSQL с cleanup; выполнить пример и подтвердить enqueue, результат и применённую SQL schema.
+- [x] 2.3 Добавить support/compatibility policy: проверенные Python/PostgreSQL, supported/experimental API, CLI/JSON/SQL contracts, breaking changes и migration guidance; сверить claims с pyproject, exports и текущей CI matrix.
+- [x] 2.4 Добавить CONTRIBUTING, короткие PR и bug/feature issue templates; проверить ссылки и наличие reproduction/expected behavior/validation без доменных security approvals соседнего проекта.
+- [x] 2.5 Добавить пользовательский CHANGELOG Unreleased и краткие правила его ведения; сохранить исторический upstream changelog, сверить новые entries с реализованными фичами, исключить internal-only bookkeeping.
+- [x] 2.6 Добавить release guide и evidence format с commit, checks, CI URLs и artifact hashes; проверить команды и явно отделить готовность от неавторизованных tag/upload/publication.
 - [ ] 2.7 Выполнить полный release checks entrypoint и strict OpenSpec, обновить evidence; commit этапа отдельно, push в main и записать подтверждённый GitHub CI.
 
 ## 3. Завершение
