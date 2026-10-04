@@ -1,7 +1,4 @@
-default:
-
-RST=$(wildcard *.rst)
+PYTHON ?= python
+.PHONY: check
 check:
-	set -eux; for rst in $(RST) ; do \
-		$$VIRTUAL_ENV/bin/rst2html.py --strict $$rst >/dev/null; \
-	done
+	$(PYTHON) ../scripts/check_docs.py

@@ -1,9 +1,19 @@
 name: Tests
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: tests-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     strategy:
+      fail-fast: false
       matrix:
         python: ['3.10', '3.13', '3.14']
         postgres: ['14', '18']
@@ -23,17 +33,18 @@ jobs:
       PGUSER: postgres
       PGPASSWORD: postgres
       PGDATABASE: postgres
+      IDDQUEUE_TEST_DATABASE: dedicated
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
-      - run: pip install poetry
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install -g @fission-ai/openspec@1.12.0
+      - run: pip install poetry==2.5.1
       - run: poetry install --extras "binary monitoring"
-      - run: poetry run ruff check iddqueue tests/unit tests/func example.py scripts/check_license.py
-      - run: poetry build
-      - run: poetry run python scripts/check_license.py dist/*.whl dist/*.tar.gz
-      - run: poetry run pytest tests/unit
       - run: poetry run iddqueue init
       - run: poetry run python tests/pypsql < tests/func/schema.sql
-      - run: poetry run pytest tests/func
+      - run: poetry run sh scripts/check_release.sh

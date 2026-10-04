@@ -1,10 +1,10 @@
 ## 1. CI и проверки поставки
 
 - [ ] 1.1 Обновить Tests workflow: workflow_dispatch, timeout, concurrency, contents read, fail-fast false; проверить YAML и фактический запуск всех шести matrix jobs, включая ручной ref.
-- [ ] 1.2 Добавить isolated wheel smoke для base и monitoring profiles вне checkout: imports/module path, metadata, CLI help/version, все SQL resources; проверить оба profiles и отрицательный сценарий missing resource.
-- [ ] 1.3 Добавить строгую проверку RST и локальных ссылок, адаптировать docs/Makefile к установленному docutils; проверить диагностируемый malformed RST и broken link на временных fixtures, не меняя user docs ради прохождения.
-- [ ] 1.4 Добавить общий release checks entrypoint, вызывающий существующие Ruff/tests/build/LICENSE, package и docs checks; проверить ненулевой exit при ошибке/prerequisite и успешный полный запуск с dedicated PostgreSQL.
-- [ ] 1.5 Интегрировать проверки в CI; выполнить poetry check/build, Ruff, tests/unit tests/func на dedicated PostgreSQL и openspec validate --all --strict; записать фактические результаты, commit и artifact hashes в evidence.
+- [x] 1.2 Добавить isolated wheel smoke для base и monitoring profiles вне checkout: imports/module path, metadata, CLI help/version, все SQL resources; проверить оба profiles и отрицательный сценарий missing resource.
+- [x] 1.3 Добавить строгую проверку RST и локальных ссылок, адаптировать docs/Makefile к установленному docutils; проверить диагностируемый malformed RST и broken link на временных fixtures, не меняя user docs ради прохождения.
+- [x] 1.4 Добавить общий release checks entrypoint, вызывающий существующие Ruff/tests/build/LICENSE, package и docs checks; проверить ненулевой exit при ошибке/prerequisite и успешный полный запуск с dedicated PostgreSQL.
+- [x] 1.5 Интегрировать проверки в CI; выполнить poetry check/build, Ruff, tests/unit tests/func на dedicated PostgreSQL и openspec validate --all --strict; записать фактические результаты, commit и artifact hashes в evidence.
 - [ ] 1.6 Зафиксировать этап отдельным commit, push в wa-pis/iddqueue main; записать URL и успешный результат каждого CI job, не считать подготовленный workflow выполненным.
 
 ## 2. Документация и правила сопровождения
