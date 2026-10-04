@@ -60,12 +60,12 @@ future upstream revision. Both projects provide a PostgreSQL Dramatiq broker.
 
 See [migration from dramatiq-pg](docs/migration.md) for dependency, pool,
 import, CLI and database changes, including backup and rollback. No throughput
-advantage is claimed here. PyPI publication is pending; the upstream Django
+advantage is claimed here. The 0.13.0rc1 prerelease is available on PyPI; the upstream Django
 integration has not been verified with IDDQueue.
 
 ## Installation
 
-- Install the locally built wheel (PyPI publication is pending):
+- Install the published release candidate with `uv pip install "iddqueue[binary]==0.13.0rc1"`, or install a locally built wheel:
   ``` console
   $ pip install "dist/iddqueue-0.13.0-py3-none-any.whl[binary]"
   ```
@@ -107,7 +107,7 @@ Contribution steps: [CONTRIBUTING](CONTRIBUTING.md). Release checks: [guide](doc
 User changes: [CHANGELOG](CHANGELOG.md).
 
 Report issues in [wa-pis/iddqueue](https://github.com/wa-pis/iddqueue/issues).
-The repository is currently private; access is required.
+The repository is public.
 IDDQueue is available under the PostgreSQL licence.
 
 

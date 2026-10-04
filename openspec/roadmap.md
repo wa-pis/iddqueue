@@ -96,6 +96,6 @@ Tag/release/package upload — отдельный шаг. [Задачи](changes
 
 ## Публикация RC
 
-[publish-rc-release](changes/publish-rc-release/proposal.md): GitHub prerelease
-v0.13.0rc1 опубликован, remote hashes проверены. PyPI ожидает authentication;
-обе операции разрешены пользователем. Активный change не архивирован.
+[publish-rc-release](changes/archive/2026-10-05-publish-rc-release/proposal.md): GitHub prerelease
+v0.13.0rc1 опубликован, remote hashes проверены. PyPI 0.13.0rc1 опубликован через OIDC, hashes и чистая index installation проверены;
+обе операции завершены. Change архивирован 2026-10-05.

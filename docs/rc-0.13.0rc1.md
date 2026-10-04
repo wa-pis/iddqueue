@@ -24,8 +24,10 @@ iddqueue --version
 
 The expected CLI/metadata version is `0.13.0rc1`. Monitoring is optional; use
 `[binary,monitoring]` when needed. FastAPI is an example dependency group, not
-part of the package runtime. No package-index installation is advertised until
-publication is separately authorized. The repository remains private.
+part of the package runtime. Published on [PyPI](https://pypi.org/project/iddqueue/0.13.0rc1/) and
+[GitHub](https://github.com/wa-pis/iddqueue/releases/tag/v0.13.0rc1/).
+Install from PyPI with `uv pip install "iddqueue[binary]==0.13.0rc1"`.
+The repository is public.
 
 ## Migration and limits
 
@@ -49,4 +51,4 @@ application configuration; follow the migration guide's rollback limitations.
 The OpenSpec `prepare-rc-release` evidence records the candidate SHA, actual CI,
 commands, wheel/sdist SHA256 and known limitations. Build hashes identify those
 specific artifacts. [Release procedure](release.md) covers repeatable validation.
-Tag, GitHub prerelease, TestPyPI and PyPI uploads are separate actions.
+GitHub prerelease and PyPI publication completed; TestPyPI was not used.

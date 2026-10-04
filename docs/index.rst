@@ -30,6 +30,6 @@ Contents
 - `Why PostgreSQL <why.rst>`_
 
 `Source <https://github.com/wa-pis/iddqueue>`_ and
-`issues <https://github.com/wa-pis/iddqueue/issues>`_ require repository access.
-PyPI publication is pending. This fork preserves DALIBO's PostgreSQL
+`issues <https://github.com/wa-pis/iddqueue/issues>`_ are public.
+The 0.13.0rc1 prerelease is available on `PyPI <https://pypi.org/project/iddqueue/0.13.0rc1/>`_. This fork preserves DALIBO's PostgreSQL
 `LICENSE <../LICENSE>`_ and upstream credits in `README <../README.md>`_.

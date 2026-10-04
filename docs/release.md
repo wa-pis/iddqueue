@@ -1,7 +1,8 @@
 # Release readiness
 
-Build and checks do not create tags or publish a package. Repository is private;
-package publication is pending and requires a separate explicit request.
+Build and checks do not create tags or publish a package. The repository is public;
+0.13.0rc1 is published on GitHub and PyPI. Future publication requires a separate
+explicit request. See [Trusted Publishing](publishing.md).
 
 1. Select the candidate commit; check `git status --short` and `git rev-parse HEAD`.
    Review user changes/migrations in [CHANGELOG](../CHANGELOG.md) and

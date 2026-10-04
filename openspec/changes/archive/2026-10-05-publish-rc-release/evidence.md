@@ -20,3 +20,9 @@ GitHub environment pypi создан. Workflow publish.yml распознан Gi
 Commit be22062a43e1c44e357878f0bef9034ca8a4919f отправлен в main.
 [Tests 37232019564](https://github.com/wa-pis/iddqueue/actions/runs/37232019564): completed/success, 6/6 (3.10/3.13/3.14 × PG14/18), полный release gate.
 PyPI pending publisher должен добавить пользователь в аккаунте: iddqueue / wa-pis / iddqueue / publish.yml / pypi. Настройка PyPI ещё не подтверждена; publish workflow не запущен, upload не выполнен. Инструкция docs/publishing.md.
+
+## PyPI publication — completed
+
+Пользователь подтвердил pending publisher. Workflow [37232240070](https://github.com/wa-pis/iddqueue/actions/runs/37232240070) completed/success; [publish job](https://github.com/wa-pis/iddqueue/actions/runs/37232240070/job/111524232641). Workflow head a7fc6bf22ef3d0ead9f30d1a90fc97a771257445, package candidate по-прежнему 4e808632f920390100658b091bac2ab97a55eb2a.
+PyPI JSON /pypi/iddqueue/0.13.0rc1/json подтвердил version и оба SHA256 точных файлов выше. Чистое /tmp/iddqueue-pypi-rc-install: uv pip install 'iddqueue[binary]==0.13.0rc1' exit 0; import вне checkout, SQL resource и metadata version 0.13.0rc1, CLI 0.13.0rc1. TestPyPI не использовался. Credentials не сохранялись.
+Publication docs обновлены; исходные опубликованные artifacts не пересобирались/не заменялись.
