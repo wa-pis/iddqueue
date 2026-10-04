@@ -29,3 +29,18 @@ Commit beada7218c170ff5d6cae0911a09f16c427d734a, clean committed tree.
 - [Python 3.10 / PG14](https://github.com/wa-pis/iddqueue/actions/runs/37229478184/job/111515926174): success.
 
 Wheel Requires-Dist проверен отдельно: только прежние Dramatiq/Psycopg/pool/Tenacity и binary/monitoring extras; FastAPI/HTTPX/Uvicorn отсутствуют. Выделенный PostgreSQL остановлен.
+
+## Archive verification
+
+Архив 2026-10-04, delta specs отсутствуют (skip_specs); strict OpenSpec 18/18.
+Commit 5a0e63a6b84cde377d9f63de9470b7bff5bdd15f отправлен в main.
+[Tests 37229692085](https://github.com/wa-pis/iddqueue/actions/runs/37229692085): completed/success, 6/6.
+
+- [3.10 / PG18](https://github.com/wa-pis/iddqueue/actions/runs/37229692085/job/111516569964): success.
+- [3.14 / PG14](https://github.com/wa-pis/iddqueue/actions/runs/37229692085/job/111516570009): success.
+- [3.10 / PG14](https://github.com/wa-pis/iddqueue/actions/runs/37229692085/job/111516570017): success.
+- [3.14 / PG18](https://github.com/wa-pis/iddqueue/actions/runs/37229692085/job/111516570063): success.
+- [3.13 / PG14](https://github.com/wa-pis/iddqueue/actions/runs/37229692085/job/111516570090): success.
+- [3.13 / PG18](https://github.com/wa-pis/iddqueue/actions/runs/37229692085/job/111516570135): success.
+
+Последующий evidence-only commit фиксирует результат этого run и checkbox 3.3; runtime, tests, CI и dependency files не изменены.

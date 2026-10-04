@@ -83,7 +83,7 @@ actual evidence, sync/archive. При отсутствии доступной р
 ## FastAPI — 2026-10-04
 
 [document-fastapi-integration](changes/archive/2026-10-04-document-fastapi-integration/proposal.md):
-выполнено: 147 tests passed, CI 37229478184 6/6; архив 2026-10-04. Проверяемый пример lifespan + async endpoint
+выполнено: 147 tests passed, implementation CI 37229478184 и archive CI 37229692085: 6/6; архив 2026-10-04. Проверяемый пример lifespan + async endpoint
 с отправкой через thread, отдельный worker, acceptance на PostgreSQL и документация
 ограничения async-транзакций. Зависит от существующего broker; runtime API и схема
 не меняются. [Задачи](changes/archive/2026-10-04-document-fastapi-integration/tasks.md).
