@@ -13,3 +13,10 @@ Remote asset digests совпали:
 `Missing credentials for https://upload.pypi.org/legacy/`.
 Публикация не выполнена; credential env отсутствуют, .pypirc отсутствует (содержимое secrets не запрашивалось/не выводилось).
 Пользователь сообщил о наличии PyPI account; требуется настройка authentication.
+
+## Trusted Publishing setup
+
+GitHub environment pypi создан. Workflow publish.yml распознан GitHub, ID 374855795. Manual main-only trigger; OIDC id-token:write; fixed SHA256 и candidate target для существующих assets; uv 0.11.23 --trusted-publishing always. YAML syntax (Psych), docs checker, strict OpenSpec 19/19: passed.
+Commit be22062a43e1c44e357878f0bef9034ca8a4919f отправлен в main.
+[Tests 37232019564](https://github.com/wa-pis/iddqueue/actions/runs/37232019564): completed/success, 6/6 (3.10/3.13/3.14 × PG14/18), полный release gate.
+PyPI pending publisher должен добавить пользователь в аккаунте: iddqueue / wa-pis / iddqueue / publish.yml / pypi. Настройка PyPI ещё не подтверждена; publish workflow не запущен, upload не выполнен. Инструкция docs/publishing.md.
