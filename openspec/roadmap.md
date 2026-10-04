@@ -90,7 +90,6 @@ actual evidence, sync/archive. При отсутствии доступной р
 
 ## Release candidate — 2026-10-04
 
-[prepare-rc-release](changes/prepare-rc-release/proposal.md): подготовлен план
-0.13.0rc1; metadata/build ещё не изменены. Точные artifacts, release notes,
+[prepare-rc-release](changes/archive/2026-10-05-prepare-rc-release/proposal.md): 0.13.0rc1 подготовлен, 147 tests passed, candidate CI 37230705441 6/6; архив 2026-10-05. Точные artifacts, release notes,
 миграция, dev Pygments advisory, полный gate и actual CI перед передачей RC.
-Tag/release/package upload — отдельный шаг. [Задачи](changes/prepare-rc-release/tasks.md).
+Tag/release/package upload — отдельный шаг. [Задачи](changes/archive/2026-10-05-prepare-rc-release/tasks.md).

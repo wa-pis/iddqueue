@@ -16,3 +16,21 @@ Dramatiq 2.2.1, Psycopg 3.3.6, Pygments 2.21.0.
 - Wheel SHA256: 3acc297cfae2431f66bbf43393803489db9837ec888dc513dd87b8364ec1fb00.
 - Sdist SHA256: a4688f1c7f79fef71ce78e1e151e7367fd0f96ee52e1010c3c3130f5ac07b5b1.
 - Notes: docs/rc-0.13.0rc1.md. Tag, GitHub release, PyPI/TestPyPI и visibility changes не выполнялись.
+
+## Clean candidate and CI
+
+Candidate SHA: 4e808632f920390100658b091bac2ab97a55eb2a.
+Повторный полный gate на clean tree: exit 0, 147 passed / 48.31s; strict OpenSpec 19/19, все build/install/docs checks прошли. Hashes wheel/sdist совпали с указанными выше. Лог /tmp/iddqueue-rc-clean-release.log. Выделенный PostgreSQL остановлен.
+
+[Tests 37230705441](https://github.com/wa-pis/iddqueue/actions/runs/37230705441): completed/success, 6/6.
+
+- [3.14 / PG14](https://github.com/wa-pis/iddqueue/actions/runs/37230705441/job/111519551661): success.
+- [3.14 / PG18](https://github.com/wa-pis/iddqueue/actions/runs/37230705441/job/111519551800): success.
+- [3.13 / PG18](https://github.com/wa-pis/iddqueue/actions/runs/37230705441/job/111519551831): success.
+- [3.10 / PG14](https://github.com/wa-pis/iddqueue/actions/runs/37230705441/job/111519551859): success.
+- [3.13 / PG14](https://github.com/wa-pis/iddqueue/actions/runs/37230705441/job/111519551864): success.
+- [3.10 / PG18](https://github.com/wa-pis/iddqueue/actions/runs/37230705441/job/111519552004): success.
+
+Advisory #2 повторно прочитан после push: open/fixed_at=null. Это remote bookkeeping state, не доказательство отсутствия патча: uv.lock и чистое окружение содержат Pygments 2.21.0 >= patched 2.20.0. Не выполнялось dismiss/manual close.
+
+Handoff: dist/0.13.0rc1/iddqueue-0.13.0rc1-py3-none-any.whl и dist/0.13.0rc1/iddqueue-0.13.0rc1.tar.gz; release notes docs/rc-0.13.0rc1.md. Tag/GitHub release/PyPI/TestPyPI не выполнены; следующий шаг требует выбранного пользователем канала.
