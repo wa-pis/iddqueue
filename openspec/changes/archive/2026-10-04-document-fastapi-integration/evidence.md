@@ -15,3 +15,17 @@ Uvicorn 0.54.0; uv.lock фиксирует example group отдельно от r
 - Sdist SHA256: 5143622af0afa7cef009fef3d6b7d3c9f8ccede3b295b5b087296ad0c2dc7a44.
 - Runtime API/DDL не изменены. AsyncConnection transactional enqueue не поддерживается; отмена HTTP не отменяет поток публикации.
 - Publication/tags не выполнялись. Remote CI фиксируется только после фактического завершения.
+
+## Implementation CI
+
+Commit beada7218c170ff5d6cae0911a09f16c427d734a, clean committed tree.
+[Tests 37229478184](https://github.com/wa-pis/iddqueue/actions/runs/37229478184): success, 6/6.
+
+- [Python 3.14 / PG14](https://github.com/wa-pis/iddqueue/actions/runs/37229478184/job/111515925870): success.
+- [Python 3.14 / PG18](https://github.com/wa-pis/iddqueue/actions/runs/37229478184/job/111515925990): success.
+- [Python 3.10 / PG18](https://github.com/wa-pis/iddqueue/actions/runs/37229478184/job/111515926007): success.
+- [Python 3.13 / PG18](https://github.com/wa-pis/iddqueue/actions/runs/37229478184/job/111515926050): success.
+- [Python 3.13 / PG14](https://github.com/wa-pis/iddqueue/actions/runs/37229478184/job/111515926143): success.
+- [Python 3.10 / PG14](https://github.com/wa-pis/iddqueue/actions/runs/37229478184/job/111515926174): success.
+
+Wheel Requires-Dist проверен отдельно: только прежние Dramatiq/Psycopg/pool/Tenacity и binary/monitoring extras; FastAPI/HTTPX/Uvicorn отсутствуют. Выделенный PostgreSQL остановлен.

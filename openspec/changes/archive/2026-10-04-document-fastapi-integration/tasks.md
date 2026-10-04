@@ -13,5 +13,5 @@
 ## 3. Завершение
 
 - [x] 3.1 Выполнить полный tests/unit tests/func на выделенном PostgreSQL, Ruff, uv lock --check, docs checks, strict OpenSpec и build/installed metadata при изменении packaging; записать версии, команды и результаты в evidence.md.
-- [ ] 3.2 Commit/push завершённого change в wa-pis/iddqueue main; проверить фактический GitHub CI, записать ссылку/результат в evidence и обновить roadmap.
+- [x] 3.2 Commit/push завершённого change в wa-pis/iddqueue main; проверить фактический GitHub CI, записать ссылку/результат в evidence и обновить roadmap.
 - [ ] 3.3 Архивировать завершённый docs-only change после проверок; проверить strict OpenSpec, commit/push архива и фактический CI. Delta specs отсутствуют по skip_specs.
