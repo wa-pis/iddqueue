@@ -114,6 +114,6 @@ current RC/install/status, API/migration limits и historical/performance contex
 
 ## Корневой README
 
-[refresh-root-readme](changes/refresh-root-readme/proposal.md): короткий обзор и
+[refresh-root-readme](changes/archive/2026-10-05-refresh-root-readme/proposal.md): короткий обзор и
 проверенный quickstart, recipes отдельно; local docs/example/build/LICENSE passed.
-Actual CI перед архивированием.
+Signed ade489b, actual CI 37234026977 6/6; архив 2026-10-05.

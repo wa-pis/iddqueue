@@ -8,3 +8,10 @@ Exact README fenced actor and producer extracted by /tmp/verify-iddqueue-readme.
 Docs checker: exit 0. Ruff full configured paths: passed. uv lock --check: exit 0. strict OpenSpec 19/19, git diff --check: exit 0.
 uv build --out-dir /tmp/iddqueue-readme-build: wheel/sdist success; check_license.py both: passed. Published dist/0.13.0rc1 and release assets not replaced. This docs build is not a new package publication; PyPI original RC README metadata remains tied to its original artifact.
 Actual full matrix CI pending; runtime not changed.
+
+## Remote verification
+
+Signed commit ade489bb8fd4e55103175cfea6ed250b74a5d55b, verify-commit Good SSH signature, push main successful.
+[Tests 37234026977](https://github.com/wa-pis/iddqueue/actions/runs/37234026977): completed/success, 6/6, verified by gh run view (watch returned nonzero; authoritative readback successful).
+Jobs: 3.10/PG14 111529466014, 3.14/PG14 111529466216, 3.13/PG18 111529466230, 3.14/PG18 111529466255, 3.13/PG14 111529466301, 3.10/PG18 111529466306 — все success.
+All tasks complete; no delta specs. Archive bookkeeping changes only.
