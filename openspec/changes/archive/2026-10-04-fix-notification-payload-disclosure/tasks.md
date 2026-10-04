@@ -7,5 +7,5 @@
 ## 2. Verification and delivery
 
 - [x] 2.1 Запустить Ruff, poetry check, strict OpenSpec и полный tests/unit tests/func на выделенном PostgreSQL; записать реальные результаты evidence.md.
-- [ ] 2.2 Создать отдельный commit реализации и push main; проверить все шесть GitHub CI jobs фактически success.
-- [ ] 2.3 Синхронизировать delta spec, архивировать завершённый change и обновить roadmap/evidence; commit/push и проверить final HEAD CI, без публикации пакета.
+- [x] 2.2 Создать отдельный commit реализации и push main; проверить все шесть GitHub CI jobs фактически success.
+- [x] 2.3 Синхронизировать delta spec, архивировать завершённый change и обновить roadmap/evidence; commit/push и проверить final HEAD CI, без публикации пакета.

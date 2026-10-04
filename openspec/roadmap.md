@@ -2,7 +2,7 @@
 
 ## Security remediation — 2026-10-04
 
-[fix-notification-payload-disclosure](changes/fix-notification-payload-disclosure/proposal.md): план исправления medium CWE-200 Codex Security; ID-only ENQUEUE/ACK/NACK, restricted-role regression, обновление migration guidance. Реализация pending, публикация вне scope.
+[fix-notification-payload-disclosure](changes/archive/2026-10-04-fix-notification-payload-disclosure/proposal.md): medium CWE-200 исправлен: ID-only ENQUEUE/ACK/NACK, restricted-role regression, migration guidance. 143 tests passed, CI 37225306000 6/6 success, main spec synced; change архивирован. Публикация вне scope.
 
 ## Документация перехода — 2026-10-04
 

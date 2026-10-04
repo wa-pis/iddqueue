@@ -31,7 +31,7 @@ empty payload. Task arguments/options отсутствуют во всех эт�
 - strict OpenSpec: 19/19 passed.
 - Полный functional/unit набор: 143 passed in 43.75s.
 - Независимое read-only Codex Security patch review: no bypass/regression findings. Все pg_notify и общие publication paths прослежены.
-- GitHub CI: pending. Публикация не выполнялась.
+- GitHub CI c32dc03: https://github.com/wa-pis/iddqueue/actions/runs/37225306000 — success, все шесть jobs success. Публикация не выполнялась.
 
 Явные USAGE/SELECT assertions: 12 passed in 0.17s; restricted table lookup
 для has_table_privilege требует schema USAGE, поэтому проверка SELECT grant
