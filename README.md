@@ -125,10 +125,10 @@ The upstream logo was created by [Damien CAZEILS](http://www.damiencazeils.com/)
 ## Development
 
 ```console
-poetry install --extras "binary monitoring"
-poetry run iddqueue init
-poetry run python tests/pypsql < tests/func/schema.sql
-poetry run pytest tests/unit tests/func
+uv sync --locked --extra binary --extra monitoring
+uv run --locked --extra binary --extra monitoring iddqueue init
+uv run --locked --extra binary --extra monitoring python tests/pypsql < tests/func/schema.sql
+uv run --locked --extra binary --extra monitoring pytest tests/unit tests/func
 ```
 
 Configure the test database with `PGHOST`, `PGPORT`, `PGUSER`, `PGPASSWORD`

@@ -5,22 +5,22 @@ Use OpenSpec for proposed behavior: read [AGENTS](AGENTS.md),
 Keep each change small; reuse existing SQL/helpers and synchronous Psycopg 3.
 Preserve [LICENSE](LICENSE) and contributor attribution.
 
-Install development tools with `poetry install --extras "binary monitoring"`.
+Use uv 0.11.23 (the CI version). Install development tools with `uv sync --locked --extra binary --extra monitoring`.
 Functional tests terminate PostgreSQL connections and crash workers: configure
 PGHOST/PGPORT/PGUSER/PGPASSWORD/PGDATABASE for a dedicated instance.
 Prepare a fresh test database:
 
 ```sh
-poetry run iddqueue init
-poetry run python tests/pypsql < tests/func/schema.sql
+uv run --locked --extra binary --extra monitoring iddqueue init
+uv run --locked --extra binary --extra monitoring python tests/pypsql < tests/func/schema.sql
 export IDDQUEUE_TEST_DATABASE=dedicated
-poetry run sh scripts/check_release.sh
+uv run --locked --extra binary --extra monitoring sh scripts/check_release.sh
 ```
 
 Preparation is for fresh storage; do not rerun CREATE SCHEMA functest over an
 existing schema. The release command includes Ruff, unit/functional tests,
 strict docs/local links, OpenSpec, build/LICENSE and isolated wheel/quickstart.
-It needs libpq, Poetry, OpenSpec 1.12.0 and package-index access for clean installs.
+It needs libpq, uv, OpenSpec 1.12.0 and package-index access for clean installs.
 Individual checks and release evidence: [guide](docs/release.md).
 
 For bugs, reproduce first, add a meaningful regression check, then implement.

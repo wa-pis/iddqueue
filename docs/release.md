@@ -12,19 +12,19 @@ package publication is pending and requires a separate explicit request.
 
 ```sh
 export IDDQUEUE_TEST_DATABASE=dedicated
-poetry run sh scripts/check_release.sh
+uv run --locked --extra binary --extra monitoring sh scripts/check_release.sh
 ```
 
 The command fails on missing DB prerequisites or any check. It runs Ruff,
-unit/functional tests, strict RST/local file links, strict OpenSpec, Poetry check,
+unit/functional tests, strict RST/local file links, strict OpenSpec, uv lock/dependency checks,
 build, LICENSE validation, clean base/monitoring wheel installs and the executable
 [quickstart](quickstart.py). It prints checked commit, working tree and SHA256
 for artifacts. Run from a clean candidate for final evidence; a dirty tree result
 must explicitly name its modifications and does not certify the parent commit.
 
 Base wheel checks require system libpq; clean installs require index access.
-Poetry/OpenSpec are external tools, not runtime package dependencies. PYTHON and
-POETRY may select executable paths if normal launchers are unavailable.
+uv/OpenSpec are external tools, not runtime package dependencies. PYTHON and
+UV may select executable paths if normal launchers are unavailable.
 Functional tests terminate sessions/crash workers; never point at a shared DB.
 The quickstart uses an isolated random schema and cleans it up separately.
 

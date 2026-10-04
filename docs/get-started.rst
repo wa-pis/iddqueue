@@ -4,7 +4,7 @@ Get Started
 
 Install a locally built artifact (publication is pending)::
 
-    poetry build
+    uv build
     pip install "dist/iddqueue-0.13.0-py3-none-any.whl[binary]"
 
 The binary extra supplies libpq through Psycopg's binary distribution. Base
@@ -49,7 +49,7 @@ this exact file from a clean installed wheel environment outside checkout::
 
     export IDDQUEUE_TEST_DATABASE=dedicated
     python docs/quickstart.py
-    poetry run python scripts/check_package.py --quickstart dist/iddqueue-0.13.0-py3-none-any.whl
+    uv run --locked --extra binary --extra monitoring python scripts/check_package.py --quickstart dist/iddqueue-0.13.0-py3-none-any.whl
 
 It asserts six storage tables, the enqueued row and result 5, then stops the
 worker, closes pools and drops the schema. Runtime examples and operations:

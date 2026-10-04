@@ -42,7 +42,7 @@ on PostgreSQL 14/18, remove that obsolete clause from the upstream DDL only.
 Build/install the local wheel; IDDQueue is not yet published to PyPI:
 
 ```console
-poetry build
+uv build
 pip install "dist/iddqueue-0.13.0-py3-none-any.whl[binary]"
 iddqueue --version
 ```

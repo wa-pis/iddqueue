@@ -1,5 +1,9 @@
 # План развития PostgreSQL-проекта
 
+## Tooling — 2026-10-04
+
+[migrate-to-uv](changes/migrate-to-uv/proposal.md): план перехода Poetry → uv, lock/dev groups/build/CI/release gate/docs. Реализация pending; runtime и публикация вне scope.
+
 ## Security remediation — 2026-10-04
 
 [fix-notification-payload-disclosure](changes/archive/2026-10-04-fix-notification-payload-disclosure/proposal.md): medium CWE-200 исправлен: ID-only ENQUEUE/ACK/NACK, restricted-role regression, migration guidance. 143 tests passed, CI 37225306000 6/6 success, main spec synced; change архивирован. Публикация вне scope.

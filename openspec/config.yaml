@@ -7,7 +7,7 @@ context: |
   Upstream: https://gitlab.com/dalibo/dramatiq-pg, commit 80b1a490d0a494925a9f8be399a11b38cee5480a.
   Scope: синхронный PostgreSQL broker и Results backend для Dramatiq; без ORM.
   Stack: Python >=3.10,<4; Dramatiq >=2.2.1,<3; Psycopg >=3.3.6,<4;
-    psycopg-pool >=3.3.3,<4; Tenacity >=9,<10; Poetry.
+    psycopg-pool >=3.3.3,<4; Tenacity >=9,<10; uv.
   Storage: JSONB, LISTEN/NOTIFY, session advisory locks, таблица очереди и отдельная таблица координации.
   Delivery: at-least-once; задачи должны быть идемпотентными.
   Existing public API: PostgresBroker, PostgresBackend, generate_init_sql, iddqueue CLI.
@@ -17,7 +17,7 @@ context: |
   GitHub: https://github.com/wa-pis/iddqueue, private, main; publication policy remains undecided.
   Preserve PostgreSQL license and original contributor credits.
   Feature roadmap: openspec/roadmap.md; previous six features and baseline archived; extend-postgres-capabilities все семь этапов выполнены, main specs синхронизированы; change архивирован 2026-10-03.
-  Project maintenance practices completed, project-maintenance main spec synced; change archived 2026-10-04. No active roadmap tasks remain.
+  Project maintenance practices completed, project-maintenance main spec synced; change archived 2026-10-04. uv migration in progress.
   User authorized recording all discussed features in OpenSpec on 2026-10-02.
 rules:
   proposal:
