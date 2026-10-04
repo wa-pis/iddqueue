@@ -1,0 +1,38 @@
+name: Publish RC to PyPI
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: publish-0.13.0rc1
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: pypi
+      url: https://pypi.org/project/iddqueue/
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.11.23"
+      - name: Download verified RC assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir artifacts
+          gh release view v0.13.0rc1 --repo wa-pis/iddqueue --json targetCommitish --jq .targetCommitish | \
+            awk '$0 != "4e808632f920390100658b091bac2ab97a55eb2a" { exit 1 }'
+          gh release download v0.13.0rc1 --repo wa-pis/iddqueue --dir artifacts \
+            --pattern 'iddqueue-0.13.0rc1-py3-none-any.whl' --pattern 'iddqueue-0.13.0rc1.tar.gz'
+          cd artifacts
+          printf '%s\n' \
+            '3acc297cfae2431f66bbf43393803489db9837ec888dc513dd87b8364ec1fb00  iddqueue-0.13.0rc1-py3-none-any.whl' \
+            'a4688f1c7f79fef71ce78e1e151e7367fd0f96ee52e1010c3c3130f5ac07b5b1  iddqueue-0.13.0rc1.tar.gz' | sha256sum --check --strict
+      - name: Publish exact candidate with OIDC
+        run: uv publish --trusted-publishing always artifacts/iddqueue-0.13.0rc1-py3-none-any.whl artifacts/iddqueue-0.13.0rc1.tar.gz

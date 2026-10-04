@@ -16,3 +16,9 @@ GitHub prerelease создаётся на точном candidate SHA; assets с�
 
 - PyPI immutable version → отправлять только проверенные файлы.
 - Отсутствие credentials → не считать upload выполненным; сохранить фактическую ошибку и запросить настройку доступа.
+
+## Trusted Publishing
+
+Пользователь разрешил настройку. Workflow publish.yml запускается вручную на main, environment=pypi, id-token:write только в publish job. Скачать существующие GitHub assets и сравнить с фиксированными SHA256 проверенного кандидата; не пересобирать, не выполнять package code. Это workflow первого RC, без автоматического запуска на каждом push и без универсального release framework. uv publish --trusted-publishing always требует OIDC и не переключается на token fallback.
+
+PyPI pending publisher: project iddqueue, owner wa-pis, repository iddqueue, workflow publish.yml, environment pypi. Создание pending publisher в аккаунте пользователя ещё не подтверждено. Workflow запускать после настройки; фактический upload остаётся task 1.3.

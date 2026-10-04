@@ -5,6 +5,7 @@
 ## What Changes
 
 - Выпустить GitHub prerelease v0.13.0rc1 из проверенного candidate SHA с wheel/sdist/SHA256SUMS.
+- Добавить manual GitHub Actions publish.yml с environment pypi и OIDC, скачиванием точных RC assets и фиксированной проверкой SHA256.
 - Опубликовать те же артефакты на PyPI после получения безопасно настроенной аутентификации.
 - Проверить remote hashes/version и записать evidence; не выдавать GitHub release за PyPI publication.
 
