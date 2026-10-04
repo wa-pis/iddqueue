@@ -51,3 +51,19 @@ Heartbeat после подготовки плана авторизовал appl
 Main specs синхронизированы, change архивирован 2026-10-03. Активных этапов этого
 roadmap не осталось; новая функциональность требует отдельного OpenSpec change.
 Публикация пакета не выполнялась и требует отдельного запроса.
+
+## Ревью и сопровождение — 2026-10-04
+
+Следующая работа авторизована пользователем через автоматизацию; порядок строго
+последовательный, без реализации поверх активного запуска.
+
+| Приоритет | Change | Состояние | Проверка |
+| --- | --- | --- | --- |
+| 1 | [fix-consumer-notification-consistency](changes/fix-consumer-notification-consistency/proposal.md) | План готов; R1–R4 не исправлены | [review/repro](changes/fix-consumer-notification-consistency/review.md), затем regressions/full suite/CI |
+| 2 | [adopt-project-maintenance-practices](changes/adopt-project-maintenance-practices/proposal.md) | План готов; не реализован | CI/package checks, docs/policies, full release checks и CI |
+
+Первым исправлять consumer payload/queue claim, missing hints и lock release.
+Docs/CI долги не дублируются в runtime change. Использовать Ponytail и Caveman,
+не сокращая контракты/проверки. После каждого change — separate commit/push,
+actual evidence, sync/archive. При отсутствии доступной работы автоматизация
+приостанавливает себя; tag/PyPI publication по-прежнему требуют отдельного запроса.
