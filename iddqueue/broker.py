@@ -301,6 +301,8 @@ class PostgresConsumer(Consumer):
                 self.queue_name,
             )
 
+        self.purge_locks()
+
         processing = len(self.in_processing)
         if processing >= self.prefetch:
             # Wait and don't consume the message, other worker will be faster
@@ -324,18 +326,16 @@ class PostgresConsumer(Consumer):
         # If we have some notifies, loop to find one todo.
         while self.notifies:
             notify = self.notifies.pop(0)
-            if "kwargs" in notify.payload:
-                full_payload = notify.payload
-            else:
-                truncated_payload = json.loads(notify.payload)
-                if truncated_payload.get("scan"):
-                    self.notifies += self.fetch_pending_notifies()
-                    continue
-                full_payload = self.fetch_by_id(truncated_payload["message_id"])
-            message = Message.decode(full_payload.encode("utf-8"))
-            if self.consume_one(message):
-                self.in_processing.add(message.message_id)
-                return MessageProxy(message)
+            payload = json.loads(notify.payload)
+            if payload.get("scan"):
+                self.notifies += self.fetch_pending_notifies()
+                continue
+            # Legacy full payloads are hints too; claim returns durable data.
+            message = Message(self.queue_name, "", (), {}, {}, message_id=payload["message_id"])
+            claimed = self.consume_one(message)
+            if claimed:
+                self.in_processing.add(claimed.message_id)
+                return MessageProxy(claimed)
             else:
                 logger.debug(
                     "Message %s already consumed. Skipping.",
@@ -452,10 +452,11 @@ class PostgresConsumer(Consumer):
                 curs, self.queue_name, self.queries.schema, self.queries.prefix
             ):
                 return False
-            lock = message_lock(message, schema=self.queries.schema, prefix=self.queries.prefix)
-            curs.execute(self.queries.CONSUME_ONE, (message.message_id, lock))
+            lock = message_lock(message.copy(queue_name=self.queue_name), schema=self.queries.schema, prefix=self.queries.prefix)
+            curs.execute(self.queries.CONSUME_ONE, (message.message_id, self.queue_name, lock))
+            row = curs.fetchone()
             # If no row was updated, this mean another worker has consumed it.
-            successfully_consumed = curs.rowcount == 1
+            successfully_consumed = row is not None
 
             if successfully_consumed:
                 logger.info("Consumed %s@%s.", message.message_id, message.queue_name)
@@ -464,7 +465,7 @@ class PostgresConsumer(Consumer):
                 # other clauses failed.
                 curs.execute(self.queries.RELEASE_ONE, (lock,))
 
-            return successfully_consumed
+            return Message.decode(row[0].encode()) if successfully_consumed else None
 
     @raise_connection_error
     def nack(self, message):
@@ -487,19 +488,6 @@ class PostgresConsumer(Consumer):
             )
         self.unlock_q.put_nowait(message)
         self.in_processing.remove(message.message_id)
-
-    @raise_connection_error
-    def fetch_by_id(self, message_id):
-        logger.debug(
-            "Retrieving truncated message %s in %s.",
-            message_id,
-            self.queue_name,
-        )
-        # Get or open connection.
-        conn = self.get_consume_conn()
-        with transaction(conn) as curs:
-            curs.execute(self.queries.FETCH_BY_ID, (message_id,))
-            return curs.fetchone()[0]
 
     @raise_connection_error
     def fetch_pending_notifies(self):
@@ -605,9 +593,10 @@ QUERIES = QueryManager(
         UPDATE {schema}.{tablename}
             SET "state" = 'consumed', started = FALSE,
                 mtime = NOW()
-            WHERE message_id = %s
+            WHERE message_id = %s AND queue_name = %s
             AND state IN ('queued', 'consumed')
-            AND pg_try_advisory_lock(%s);
+            AND pg_try_advisory_lock(%s)
+            RETURNING message::text;
         """
         ),
         NOTIFY_UNLOCKED="""
@@ -647,13 +636,6 @@ QUERIES = QueryManager(
             FROM {schema}.{tablename}
             WHERE state IN ('queued', 'consumed')
             AND queue_name = %s;
-        """
-        ),
-        FETCH_BY_ID=dedent(
-            """\
-        SELECT message::text
-            FROM {schema}.{tablename}
-            WHERE message_id = %s;
         """
         ),
         NACK=dedent(

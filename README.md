@@ -655,3 +655,13 @@ scheduler transaction and prevents future publications while preserving queued
 tasks. SIGTERM/SIGINT lets the current tick finish, then exits and closes the CLI
 pool. Database errors exit the foreground process; a service manager may restart
 it. Polling and actor enqueue hooks may add latency to short intervals.
+
+
+### Consumer notification consistency
+
+NOTIFY is a wakeup hint, including legacy full-message payloads. Workers claim
+only their own queue and read the authoritative actor payload atomically from
+PostgreSQL. Stale notifications for deleted, terminal, or moved messages are
+skipped. ACK/NACK session locks are drained before the next consumer claim or
+prefetch wait, even with a continuous backlog; retries retain their unlock
+wakeup. This preserves at-least-once delivery, not exactly-once side effects.

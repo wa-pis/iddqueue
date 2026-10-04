@@ -187,7 +187,7 @@ def test_real_worker_prefetched_cancel_and_cooperative_request(area):
 
         def observe(message):
             result = claim(message)
-            if result and message.actor_name == "second":
+            if result and result.actor_name == "second":
                 prefetched.set()
             return result
 

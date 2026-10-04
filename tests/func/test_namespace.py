@@ -15,11 +15,13 @@ def consume_namespace(schema, prefix, output, release):
     broker = PostgresBroker(schema=schema, prefix=prefix)
     consumer = broker.consume("same", timeout=1000)
     fetched = []
-    original = consumer.fetch_by_id
-    def fetch(message_id):
-        fetched.append(message_id)
-        return original(message_id)
-    consumer.fetch_by_id = fetch
+    original = consumer.consume_one
+    def fetch(message):
+        returned = original(message)
+        if returned:
+            fetched.append(returned.message_id)
+        return returned
+    consumer.consume_one = fetch
     try:
         consumer.get_listen_conn()
         output.put(("listening", (schema, prefix)))

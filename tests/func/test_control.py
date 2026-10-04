@@ -123,7 +123,7 @@ def test_prefetched_pause_preserves_results_and_retries(area):
 
         def claim(message):
             result = original_claim(message)
-            if result and message.actor_name == "second":
+            if result and result.actor_name == "second":
                 claimed_second.set()
             return result
 
