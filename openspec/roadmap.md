@@ -79,3 +79,11 @@ Docs/CI долги не дублируются в runtime change. Использ
 не сокращая контракты/проверки. После каждого change — separate commit/push,
 actual evidence, sync/archive. При отсутствии доступной работы автоматизация
 приостанавливает себя; tag/PyPI publication по-прежнему требуют отдельного запроса.
+
+## FastAPI — 2026-10-04
+
+[document-fastapi-integration](changes/document-fastapi-integration/proposal.md):
+план готов, реализация ещё не начата. Проверяемый пример lifespan + async endpoint
+с отправкой через thread, отдельный worker, acceptance на PostgreSQL и документация
+ограничения async-транзакций. Зависит от существующего broker; runtime API и схема
+не меняются. [Задачи](changes/document-fastapi-integration/tasks.md).

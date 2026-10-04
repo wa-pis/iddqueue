@@ -18,7 +18,8 @@ uv run --locked --extra binary --extra monitoring sh scripts/check_release.sh
 The command fails on missing DB prerequisites or any check. It runs Ruff,
 unit/functional tests, strict RST/local file links, strict OpenSpec, uv lock/dependency checks,
 build, LICENSE validation, clean base/monitoring wheel installs and the executable
-[quickstart](quickstart.py). It prints checked commit, working tree and SHA256
+[quickstart](quickstart.py). The gate also installs the optional FastAPI example
+group and checks its lifecycle, event-loop safety and separate worker acceptance. It prints checked commit, working tree and SHA256
 for artifacts. Run from a clean candidate for final evidence; a dirty tree result
 must explicitly name its modifications and does not certify the parent commit.
 

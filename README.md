@@ -9,6 +9,9 @@ IDDQueue is a fork of [DALIBO’s dramatiq-pg](https://gitlab.com/dalibo/dramati
 It preserves the PostgreSQL license and original contributor credits.
 
 
+See the [FastAPI integration guide](docs/fastapi.md) for lifespan, async endpoints
+and a separate worker example.
+
 ## Features
 
 - PostgreSQL storage: one queue/results table plus optional feature tables, no ORM.

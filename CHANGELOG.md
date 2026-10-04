@@ -9,6 +9,8 @@ remain preserved with upstream credits. Unreleased entries are not publication.
 
 ### Added
 
+- Runnable FastAPI lifespan/async publication example with a separate worker and PostgreSQL acceptance tests.
+
 - PostgreSQL transactional enqueue and atomic batches (up to 1000 messages).
 - PostgreSQL rate limiters, barriers and group completion callbacks.
 - Publication deduplication with queue-scoped keys and millisecond TTLs.

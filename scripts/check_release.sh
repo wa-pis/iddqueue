@@ -9,7 +9,7 @@ cd "$(dirname "$0")/.."
 PYTHON=${PYTHON:-python}
 UV=${UV:-uv}
 "$UV" lock --check
-"$UV" sync --locked --extra binary --extra monitoring
+"$UV" sync --locked --extra binary --extra monitoring --group fastapi-example
 "$PYTHON" - <<'PY'
 import psycopg
 with psycopg.connect("") as conn:
@@ -17,7 +17,7 @@ with psycopg.connect("") as conn:
         assert conn.execute("SELECT to_regclass(%s)", (table,)).fetchone()[0], f"Prepare test table {table}"
 PY
 "$UV" pip check
-"$UV" run --no-sync ruff check iddqueue tests/unit tests/func example.py scripts docs/quickstart.py
+"$UV" run --no-sync ruff check iddqueue tests/unit tests/func example.py scripts docs/quickstart.py examples
 "$UV" run --no-sync pytest tests/unit tests/func
 "$PYTHON" scripts/check_docs.py
 openspec validate --all --strict

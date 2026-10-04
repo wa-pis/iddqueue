@@ -5,16 +5,16 @@ Use OpenSpec for proposed behavior: read [AGENTS](AGENTS.md),
 Keep each change small; reuse existing SQL/helpers and synchronous Psycopg 3.
 Preserve [LICENSE](LICENSE) and contributor attribution.
 
-Use uv 0.11.23 (the CI version). Install development tools with `uv sync --locked --extra binary --extra monitoring`.
+Use uv 0.11.23 (the CI version). Install development tools with `uv sync --locked --extra binary --extra monitoring --group fastapi-example`.
 Functional tests terminate PostgreSQL connections and crash workers: configure
 PGHOST/PGPORT/PGUSER/PGPASSWORD/PGDATABASE for a dedicated instance.
 Prepare a fresh test database:
 
 ```sh
-uv run --locked --extra binary --extra monitoring iddqueue init
-uv run --locked --extra binary --extra monitoring python tests/pypsql < tests/func/schema.sql
+uv run --locked --extra binary --extra monitoring --group fastapi-example iddqueue init
+uv run --locked --extra binary --extra monitoring --group fastapi-example python tests/pypsql < tests/func/schema.sql
 export IDDQUEUE_TEST_DATABASE=dedicated
-uv run --locked --extra binary --extra monitoring sh scripts/check_release.sh
+uv run --locked --extra binary --extra monitoring --group fastapi-example sh scripts/check_release.sh
 ```
 
 Preparation is for fresh storage; do not rerun CREATE SCHEMA functest over an
