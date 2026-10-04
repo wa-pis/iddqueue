@@ -69,3 +69,20 @@ make -C docs PYTHON=../.venv/bin/python check и sh -n проверены отд
 Недоступная БД 127.0.0.1:1 приводит к exit 1 / psycopg.OperationalError
 до Ruff/tests/build. Первый failed CI сохранён как regression evidence,
 не заменяет успешный повтор. Tasks 1.1–1.6 завершены; stage 2/3 остаются открыты.
+
+### Последующий CI evidence commit выявил нестабильный тест
+
+91a5694094213d0a752b01110f10992dfb8460cb: run
+https://github.com/wa-pis/iddqueue/actions/runs/37193234339 — 5 success,
+Python 3.10/PG18 failure в test_expiry_and_standard_limiters: второй add
+после TTL 30 ms вернул True. Локальная контролируемая пауза 60 ms подтвердила
+это корректное expiry поведение backend. Test live/expired разделены: TTL
+10 seconds для live assertions, принудительное истечение timestamp через
+SQL для expired assertions; такой же короткий event TTL устранён в соседнем
+test_durable_events. Runtime не изменён. 1.6 повторно открыт до успешного CI
+последнего исправления; stage 2 не начинался.
+
+После исправления: targeted coordination 7 passed in 3.64s; полный release
+check success (131 tests), Ruff/docs/strict OpenSpec/Poetry/build/LICENSE,
+base и monitoring wheel acceptance прошли; hashes wheel/sdist прежние.
+Точный test duration записан ниже после чтения полного лога.

@@ -62,3 +62,13 @@ coverage threshold без baseline, кастомный CI path classifier, ко�
 Изменение файлов сопровождения обратимо git revert, SQL/data migration нет.
 После всех этапов sync main spec и archive; paused автоматизацию не возобновлять
 без отдельного запроса пользователя.
+
+## CI verification adjustment — 2026-10-04
+
+Финальный evidence commit выявил timing flaw в существующих coordination tests:
+30/40 ms TTL мог истечь между успешным add/notify и проверкой на busy runner.
+В рамках проверки CI этапа 1 tests/func/test_coordination.py использует долгий
+TTL для live проверок, затем явно переводит timestamp в прошлое для expired
+проверок. Это проверяет те же live/expired branches без требования к скорости
+runner; runtime backend, TTL API и dependencies не меняются. Не добавлять rerun
+policy, скрывающую реальные ошибки. Полный suite и шесть CI jobs обязательны.

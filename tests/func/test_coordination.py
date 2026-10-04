@@ -79,11 +79,13 @@ def test_counters_across_processes(backend):
         assert sum(executor.map(window_attempt, [(key, i) for i in range(12)])) == 4
 
 
-def test_expiry_and_standard_limiters(backend):
+def test_expiry_and_standard_limiters(backend, pgconn):
     key = str(uuid.uuid4())
-    assert backend.add(key, 1, 30)
-    assert not backend.add(key, 2, 30)
-    time.sleep(0.06)
+    assert backend.add(key, 1, 10000)
+    assert not backend.add(key, 2, 10000)
+    with pgconn() as cursor:
+        cursor.execute(sql.SQL("UPDATE {} SET expires_at = clock_timestamp() - interval '1 second' WHERE key = %s")
+                       .format(backend.table), (key,))
     assert backend.add(key, 2, 1000)
     limiter = ConcurrentRateLimiter(backend, key + "mutex", limit=1)
     with limiter.acquire(raise_on_failure=False) as acquired:
@@ -100,12 +102,14 @@ def test_expiry_and_standard_limiters(backend):
             assert not acquired
 
 
-def test_durable_events(backend):
+def test_durable_events(backend, pgconn):
     key = str(uuid.uuid4())
     assert not backend.wait(key, 20)
-    backend.wait_notify(key, 40)
+    backend.wait_notify(key, 10000)
     assert backend.wait(key, 0)
-    time.sleep(0.08)
+    with pgconn() as cursor:
+        cursor.execute(sql.SQL("UPDATE {} SET event_expires_at = clock_timestamp() - interval '1 second' WHERE key = %s")
+                       .format(backend.table), (key,))
     assert not backend.wait(key, 0)
     with ThreadPoolExecutor(2) as executor:
         waiting = executor.submit(backend.wait, key, 2000)

@@ -60,7 +60,7 @@ roadmap не осталось; новая функциональность тр�
 | Приоритет | Change | Состояние | Проверка |
 | --- | --- | --- | --- |
 | 1 | [fix-consumer-notification-consistency](changes/archive/2026-10-04-fix-consumer-notification-consistency/proposal.md) | R1–R4 исправлены; 130 tests passed; CI 37192114318 6/6 | [review/repro](changes/archive/2026-10-04-fix-consumer-notification-consistency/review.md), затем regressions/full suite/CI |
-| 2 | [adopt-project-maintenance-practices](changes/adopt-project-maintenance-practices/proposal.md) | Этап 1 завершён: 131 tests, CI 37193025467 6/6; docs/policies следующие | CI/package checks подтверждены; далее docs/policies и installed quickstart |
+| 2 | [adopt-project-maintenance-practices](changes/adopt-project-maintenance-practices/proposal.md) | Этап 1: checks готовы, 131 tests; финальный CI повторяется после устранения TTL test race | CI/package checks подтверждены; далее docs/policies и installed quickstart |
 
 Consumer исправлен и архивирован 2026-10-04. adopt-project-maintenance-practices: CI/проверки поставки завершены; следующий этап — документация и правила сопровождения.
 Docs/CI долги не дублируются в runtime change. Использовать Ponytail и Caveman,
