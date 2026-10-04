@@ -16,6 +16,7 @@ Contents
 ========
 
 - `Get Started <get-started.rst>`_
+- `Migration from dramatiq-pg <migration.md>`_
 - `User Guide <user-guide.rst>`_
 - `API Reference <api.rst>`_
 - `Deployment Guide <deployment-guide.rst>`_
