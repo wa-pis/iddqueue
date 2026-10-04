@@ -46,3 +46,26 @@ Commit 450bae3b0e58f3fe0511d8ba52b871dab499ebc2 отправлен в main.
 Homebrew launcher): 131 passed in 45.58s, все остальные checks success.
 Проверялось дерево на 450bae3 с изменением launcher; hashes артефактов те же.
 Рабочий failed run не считается успешным evidence; 1.1/1.6 ещё открыты.
+
+### Этап 1 подтверждён
+
+Исправленный commit 2c7ef9c964cc49e821ece54ddabb8076000e9d90 в main;
+workflow_dispatch на ref main: https://github.com/wa-pis/iddqueue/actions/runs/37193025467.
+Статус completed/success; все шесть jobs выполнили общий release check,
+131 tests passed в каждом. Checked commit в логах совпадает с headSha,
+working tree clean. SHA256 wheel и sdist совпали с локальными хешами выше
+во всех шести jobs (прочитаны фактические логи).
+
+| Job | Result | URL |
+| --- | --- | --- |
+| test (3.10, 18) | success | https://github.com/wa-pis/iddqueue/actions/runs/37193025467/job/111409031266 |
+| test (3.13, 18) | success | https://github.com/wa-pis/iddqueue/actions/runs/37193025467/job/111409031442 |
+| test (3.14, 18) | success | https://github.com/wa-pis/iddqueue/actions/runs/37193025467/job/111409031461 |
+| test (3.14, 14) | success | https://github.com/wa-pis/iddqueue/actions/runs/37193025467/job/111409031473 |
+| test (3.13, 14) | success | https://github.com/wa-pis/iddqueue/actions/runs/37193025467/job/111409031477 |
+| test (3.10, 14) | success | https://github.com/wa-pis/iddqueue/actions/runs/37193025467/job/111409031536 |
+
+make -C docs PYTHON=../.venv/bin/python check и sh -n проверены отдельно.
+Недоступная БД 127.0.0.1:1 приводит к exit 1 / psycopg.OperationalError
+до Ruff/tests/build. Первый failed CI сохранён как regression evidence,
+не заменяет успешный повтор. Tasks 1.1–1.6 завершены; stage 2/3 остаются открыты.
