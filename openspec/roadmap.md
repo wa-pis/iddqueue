@@ -99,3 +99,9 @@ Tag/release/package upload — отдельный шаг. [Задачи](changes
 [publish-rc-release](changes/archive/2026-10-05-publish-rc-release/proposal.md): GitHub prerelease
 v0.13.0rc1 опубликован, remote hashes проверены. PyPI 0.13.0rc1 опубликован через OIDC, hashes и чистая index installation проверены;
 обе операции завершены. Change архивирован 2026-10-05.
+
+## Очистка репозитория
+
+[clean-legacy-repository](changes/clean-legacy-repository/proposal.md): obsolete
+Poetry runner/config/assets удалены, docs/dev setup обновлены; 147 tests passed.
+Подписанный commit и actual CI перед архивированием.

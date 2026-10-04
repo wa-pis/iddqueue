@@ -7,7 +7,3 @@ services:
       POSTGRES_DB: postgres
     ports:
       - "5432:5432"
-    volumes:
-      - ./iddqueue/schema.sql:/docker-entrypoint-initdb.d/000-queue.sql
-      - ./iddqueue/coordination.sql:/docker-entrypoint-initdb.d/000-z-coordination.sql
-      - ./tests/func/schema.sql:/docker-entrypoint-initdb.d/001-tests.sql

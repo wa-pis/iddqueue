@@ -5,7 +5,8 @@ remain preserved with upstream credits. Unreleased entries are not publication.
 
 ## Unreleased
 
-No additional changes.
+- Remove obsolete Poetry test runner, unused upstream logo files and stale tooling configs; use the uv release gate.
+- Optional development Compose starts fresh PostgreSQL; initialize complete storage with `iddqueue init` and prepare functional-test schema explicitly.
 
 ## 0.13.0rc1 — release candidate — published 2026-10-05
 

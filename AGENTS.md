@@ -12,7 +12,7 @@ feature, select its change explicitly and read its proposal, specs, design and
 tasks. Check roadmap and archived changes for completed features; unchecked
 tasks are not implementation evidence.
 The migration was implemented before OpenSpec adoption; its completed tasks
-record existing work. GitHub setup is complete: wa-pis/iddqueue, private, main; six CI matrix jobs passed. Repository and package
+record existing work. GitHub setup is complete: wa-pis/iddqueue, public, main; six CI matrix jobs passed. Repository and package
 names must come from the user, rather than be inferred from the upstream name.
 
 Keep the implementation small: synchronous Psycopg 3, no ORM, session-bound

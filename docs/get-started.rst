@@ -2,10 +2,9 @@
 Get Started
 ===========
 
-Install a locally built artifact (publication is pending)::
+Install the published release candidate::
 
-    uv build
-    pip install "dist/iddqueue-0.13.0-py3-none-any.whl[binary]"
+    uv pip install "iddqueue[binary]==0.13.0rc1"
 
 The binary extra supplies libpq through Psycopg's binary distribution. Base
 installation instead needs system libpq. Configure PGHOST, PGPORT, PGUSER,
@@ -49,7 +48,8 @@ this exact file from a clean installed wheel environment outside checkout::
 
     export IDDQUEUE_TEST_DATABASE=dedicated
     python docs/quickstart.py
-    uv run --locked --extra binary --extra monitoring python scripts/check_package.py --quickstart dist/iddqueue-0.13.0-py3-none-any.whl
+    uv build --out-dir dist/0.13.0rc1
+    uv run --locked --extra binary --extra monitoring python scripts/check_package.py --quickstart --expected-version 0.13.0rc1 dist/0.13.0rc1/iddqueue-0.13.0rc1-py3-none-any.whl
 
 It asserts six storage tables, the enqueued row and result 5, then stops the
 worker, closes pools and drops the schema. Runtime examples and operations:

@@ -65,9 +65,9 @@ integration is archived and has not been verified with IDDQueue.
 
 ## Installation
 
-- Install the published release candidate with `uv pip install "iddqueue[binary]==0.13.0rc1"`, or install a locally built wheel:
+- Install the published release candidate:
   ``` console
-  $ pip install "dist/iddqueue-0.13.0-py3-none-any.whl[binary]"
+  $ uv pip install "iddqueue[binary]==0.13.0rc1"
   ```
   Requires Python 3.10+, Dramatiq 2.2.1+ and Psycopg 3.3.6+.
 - Init database schema with `init` command.
@@ -129,15 +129,19 @@ The upstream logo was created by [Damien CAZEILS](http://www.damiencazeils.com/)
 ## Development
 
 ```console
-uv sync --locked --extra binary --extra monitoring
-uv run --locked --extra binary --extra monitoring iddqueue init
-uv run --locked --extra binary --extra monitoring python tests/pypsql < tests/func/schema.sql
-uv run --locked --extra binary --extra monitoring pytest tests/unit tests/func
+uv sync --locked --extra binary --extra monitoring --group fastapi-example
+uv run --locked --extra binary --extra monitoring --group fastapi-example iddqueue init
+uv run --locked --extra binary --extra monitoring --group fastapi-example python tests/pypsql < tests/func/schema.sql
+uv run --locked --extra binary --extra monitoring --group fastapi-example pytest tests/unit tests/func
 ```
 
 Configure the test database with `PGHOST`, `PGPORT`, `PGUSER`, `PGPASSWORD`
 and `PGDATABASE`. Tests terminate database connections and restart workers;
-use a dedicated test database. `docker-compose.yml` provides PostgreSQL 18.
+use a dedicated test database. `docker-compose.yml` optionally provides a fresh
+PostgreSQL 18 instance (`docker compose up -d postgres`); run the initialization
+commands above afterwards. It does not install a partial schema automatically.
+The old Poetry container runner was removed; use the uv release gate in
+[CONTRIBUTING](CONTRIBUTING.md).
 
 Version 0.13 uses Psycopg 3 pools; Psycopg 2 pools are no longer supported.
 Broker-created pools open on first use and default to zero idle connections.
