@@ -26,3 +26,5 @@ PyPI pending publisher должен добавить пользователь в
 Пользователь подтвердил pending publisher. Workflow [37232240070](https://github.com/wa-pis/iddqueue/actions/runs/37232240070) completed/success; [publish job](https://github.com/wa-pis/iddqueue/actions/runs/37232240070/job/111524232641). Workflow head a7fc6bf22ef3d0ead9f30d1a90fc97a771257445, package candidate по-прежнему 4e808632f920390100658b091bac2ab97a55eb2a.
 PyPI JSON /pypi/iddqueue/0.13.0rc1/json подтвердил version и оба SHA256 точных файлов выше. Чистое /tmp/iddqueue-pypi-rc-install: uv pip install 'iddqueue[binary]==0.13.0rc1' exit 0; import вне checkout, SQL resource и metadata version 0.13.0rc1, CLI 0.13.0rc1. TestPyPI не использовался. Credentials не сохранялись.
 Publication docs обновлены; исходные опубликованные artifacts не пересобирались/не заменялись.
+
+Archive/docs commit 4cab2bb отправлен в main; docs checker и strict OpenSpec 18/18 passed. Финальный evidence-only commit отмечает завершённую task 1.4; package/runtime/workflow не меняет.
