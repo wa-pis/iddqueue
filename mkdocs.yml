@@ -1,0 +1,47 @@
+site_name: IDDQueue
+site_description: PostgreSQL broker and Results backend for Dramatiq
+site_url: https://wa-pis.github.io/iddqueue/
+repo_url: https://github.com/wa-pis/iddqueue
+repo_name: wa-pis/iddqueue
+edit_uri: edit/main/docs/
+theme:
+  name: readthedocs
+  highlightjs: true
+plugins:
+  - search
+markdown_extensions:
+  - admonition
+  - tables
+  - toc:
+      permalink: true
+validation:
+  nav:
+    omitted_files: warn
+    not_found: warn
+  links:
+    absolute_links: relative_to_docs
+    anchors: warn
+    unrecognized_links: warn
+exclude_docs: |
+  changelog.rst
+  quickstart.py
+  Makefile
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Installation and quickstart: get-started.md
+      - Step by step — manual and commands: walkthrough.md
+      - Migration from dramatiq-pg: migration.md
+  - Guides:
+      - User guide: user-guide.md
+      - Detailed recipes: recipes.md
+      - FastAPI: fastapi.md
+      - Deployment and retention: deployment-guide.md
+      - Why PostgreSQL: why.md
+  - Reference:
+      - API and CLI: api.md
+      - 0.13.0rc1 release notes: rc-0.13.0rc1.md
+  - Maintenance:
+      - Release checks: release.md
+      - PyPI publishing — manual and commands: publishing.md
+      - Documentation — manual and commands: docs-site.md

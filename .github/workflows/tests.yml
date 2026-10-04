@@ -47,7 +47,7 @@ jobs:
         with:
           version: "0.11.23"
       - run: uv python find "${{ matrix.python }}"
-      - run: uv sync --locked --python "${{ matrix.python }}" --extra binary --extra monitoring --group fastapi-example
+      - run: uv sync --locked --python "${{ matrix.python }}" --extra binary --extra monitoring --group fastapi-example --group docs
       - run: uv run --no-sync iddqueue init
       - run: uv run --no-sync python tests/pypsql < tests/func/schema.sql
       - run: uv run --no-sync sh scripts/check_release.sh

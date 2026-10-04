@@ -9,7 +9,7 @@ cd "$(dirname "$0")/.."
 PYTHON=${PYTHON:-python}
 UV=${UV:-uv}
 "$UV" lock --check
-"$UV" sync --locked --extra binary --extra monitoring --group fastapi-example
+"$UV" sync --locked --extra binary --extra monitoring --group fastapi-example --group docs
 "$PYTHON" - <<'PY'
 import psycopg
 with psycopg.connect("") as conn:
@@ -20,6 +20,7 @@ PY
 "$UV" run --no-sync ruff check iddqueue tests/unit tests/func example.py scripts docs/quickstart.py examples
 "$UV" run --no-sync pytest tests/unit tests/func
 "$PYTHON" scripts/check_docs.py
+"$UV" run --no-sync mkdocs build --strict
 openspec validate --all --strict
 VERSION=$("$UV" run --no-sync python -c 'from importlib.metadata import version; print(version("iddqueue"))')
 BUILD_DIR="dist/$VERSION"

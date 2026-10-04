@@ -117,3 +117,8 @@ current RC/install/status, API/migration limits и historical/performance contex
 [refresh-root-readme](changes/archive/2026-10-05-refresh-root-readme/proposal.md): короткий обзор и
 проверенный quickstart, recipes отдельно; local docs/example/build/LICENSE passed.
 Signed ade489b, actual CI 37234026977 6/6; архив 2026-10-05.
+
+## Сайт документации
+
+[publish-documentation-site](changes/publish-documentation-site/proposal.md): MkDocs/readthedocs,
+пошаговые UI/CLI guides, strict CI и GitHub Pages; реализация и remote проверки выполняются.

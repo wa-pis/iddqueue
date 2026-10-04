@@ -1,10 +1,10 @@
 # FastAPI integration
 
 IDDQueue works with FastAPI using its synchronous Psycopg 3 broker. The runnable
-[web example](../examples/fastapi/app.py) publishes from an async endpoint through
+[web example](https://github.com/wa-pis/iddqueue/blob/main/examples/fastapi/app.py) publishes from an async endpoint through
 `await asyncio.to_thread(actor.send, ...)`; the event loop remains available.
-[Shared actors](../examples/fastapi/tasks.py) are registered on an explicit broker.
-The [worker entry point](../examples/fastapi/worker.py) runs separately.
+[Shared actors](https://github.com/wa-pis/iddqueue/blob/main/examples/fastapi/tasks.py) are registered on an explicit broker.
+The [worker entry point](https://github.com/wa-pis/iddqueue/blob/main/examples/fastapi/worker.py) runs separately.
 
 ## Run from a checkout
 
@@ -77,7 +77,7 @@ Request cancellation/disconnection does not stop a running publication thread;
 a commit may have succeeded even if the client received no response. Retrying
 that HTTP request may enqueue another message; no exactly-once promise is made.
 
-[Transactional enqueue](user-guide.rst) supports a synchronous Psycopg Connection.
+[Transactional enqueue](user-guide.md) supports a synchronous Psycopg Connection.
 An application's Psycopg AsyncConnection transaction cannot be passed to that
 API. Sending through this example's independent pool is not atomic with an
 async business transaction. To use existing transactional enqueue, perform the

@@ -3,14 +3,14 @@
 First release candidate for the independent IDDQueue fork of
 [DALIBO dramatiq-pg](https://gitlab.com/dalibo/dramatiq-pg).
 This is a prerelease for evaluation, not a published stable release.
-The PostgreSQL [license](../LICENSE) and original contributor credits are preserved.
+The PostgreSQL [license](https://github.com/wa-pis/iddqueue/blob/main/LICENSE) and original contributor credits are preserved.
 
 ## Included
 
 Synchronous Psycopg 3 and Dramatiq 2.2.1+, transactional/batch enqueue,
 PostgreSQL coordination, deduplication, queue control/cancellation, failure retry,
 attempt history, scheduling, namespace isolation, optional Prometheus metrics,
-and a [FastAPI example](fastapi.md). See the [changelog](../CHANGELOG.md).
+and a [FastAPI example](fastapi.md). See the [changelog](https://github.com/wa-pis/iddqueue/blob/main/CHANGELOG.md).
 Task notifications carry message IDs only; consumers retrieve authoritative SQL rows.
 
 ## Test installation

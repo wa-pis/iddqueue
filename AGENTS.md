@@ -20,7 +20,7 @@ advisory locks and LISTEN/NOTIFY. Preserve the upstream license and credits.
 Use a dedicated PostgreSQL instance for functional tests: the suite terminates
 connections and crashes/restarts its workers.
 
-After changes, run the relevant checks: `uv run --locked --extra binary --extra monitoring --group fastapi-example ruff check iddqueue tests/unit tests/func example.py`, `uv run --locked --extra binary --extra monitoring --group fastapi-example pytest tests/unit tests/func`
+After changes, run the relevant checks: `uv run --locked --extra binary --extra monitoring --group fastapi-example --group docs ruff check iddqueue tests/unit tests/func example.py`, `uv run --locked --extra binary --extra monitoring --group fastapi-example --group docs pytest tests/unit tests/func`
 (with a prepared test database), `uv lock --check`, and `uv build` when
 packaging changes. Validate OpenSpec with `openspec validate --all --strict`.
 

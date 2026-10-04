@@ -1,5 +1,7 @@
 # IDDQueue
 
+[Documentation](https://wa-pis.github.io/iddqueue/) · [Step-by-step setup](https://wa-pis.github.io/iddqueue/walkthrough/)
+
 A PostgreSQL broker and Results backend for [Dramatiq](https://dramatiq.io/),
 built on synchronous Psycopg 3. Tasks, results and coordination live in PostgreSQL;
 no Redis or ORM is required by IDDQueue.
@@ -23,7 +25,7 @@ PostgreSQL license and original contributor credits.
 
 Delivery is **at least once**: actors and callbacks must be idempotent.
 LISTEN/NOTIFY carries message IDs as wakeup hints; consumers claim authoritative
-SQL rows with session advisory locks. See [behavior and limits](docs/user-guide.rst).
+SQL rows with session advisory locks. See [behavior and limits](docs/user-guide.md).
 
 ## Install
 
@@ -96,10 +98,10 @@ Close broker-owned pools on shutdown; callers close pools they supply.
 
 ## Guides and examples
 
-- [Documentation index](docs/index.rst), [user guide](docs/user-guide.rst), [API](docs/api.rst).
+- [Documentation index](docs/index.md), [user guide](docs/user-guide.md), [API](docs/api.md).
 - [Detailed recipes](docs/recipes.md): transactions, middleware, controls, metrics and schedules.
 - [FastAPI](docs/fastapi.md): lifespan, async endpoint thread offload and separate worker.
-- [Deployment and retention](docs/deployment-guide.rst), [why PostgreSQL](docs/why.rst).
+- [Deployment and retention](docs/deployment-guide.md), [why PostgreSQL](docs/why.md).
 - [RC notes](docs/rc-0.13.0rc1.md), [changelog](CHANGELOG.md), [release checks](docs/release.md).
 
 The broker and result APIs are synchronous. Async actors use Dramatiq's AsyncIO

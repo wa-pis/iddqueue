@@ -15,7 +15,7 @@ Dramatiq middleware/composition. The newer deduplication/batch, queue controls,
 cancellation, attempt history and fixed interval scheduler APIs are experimental
 pre-1.0 extensions. They are tested, but may change with documented migration.
 Private helpers, query templates and direct table mutation are implementation
-details. See [API](docs/api.rst) and [limitations](docs/user-guide.rst).
+details. See [API](docs/api.md) and [limitations](docs/user-guide.md).
 
 Documented CLI commands and JSON fields are integration surfaces. Use global
 storage flags before commands. UUID pagination is not chronological ordering;

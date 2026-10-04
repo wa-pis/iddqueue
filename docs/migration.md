@@ -1,9 +1,9 @@
 # Migrating from dramatiq-pg
 
 This guide covers [dramatiq-pg 0.12.0](https://pypi.org/project/dramatiq-pg/0.12.0/)
-to the published IDDQueue 0.13.0rc1 prerelease. See the [comparison](../README.md#compared-with-dramatiq-pg).
+to the published IDDQueue 0.13.0rc1 prerelease. See the [comparison](https://github.com/wa-pis/iddqueue/blob/main/README.md#compared-with-dramatiq-pg).
 The original [DALIBO project](https://gitlab.com/dalibo/dramatiq-pg), credits and
-[PostgreSQL license](../LICENSE) remain acknowledged.
+[PostgreSQL license](https://github.com/wa-pis/iddqueue/blob/main/LICENSE) remain acknowledged.
 
 ## Prepare and rehearse
 

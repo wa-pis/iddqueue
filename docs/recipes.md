@@ -1,7 +1,7 @@
 # IDDQueue recipes
 
-Detailed examples for the PostgreSQL broker. Start with the [README](../README.md),
-[user guide](user-guide.rst) and [API reference](api.rst).
+Detailed examples for the PostgreSQL broker. Start with the [README](https://github.com/wa-pis/iddqueue/blob/main/README.md),
+[user guide](user-guide.md) and [API reference](api.md).
 
 ## Transactional publishing
 
@@ -282,7 +282,7 @@ separation, not PostgreSQL permissions; use database roles for access control.
 
 This project is a fork of [DALIBO's dramatiq-pg](https://gitlab.com/dalibo/dramatiq-pg),
 originally credited to Étienne BERSAC and other upstream contributors.
-The original `Copyright (c) 2019, DALIBO` and full [LICENSE](../LICENSE) are preserved
+The original `Copyright (c) 2019, DALIBO` and full [LICENSE](https://github.com/wa-pis/iddqueue/blob/main/LICENSE) are preserved
 in source, wheel and sdist. Package metadata identifies the PostgreSQL License.
 
 The PostgreSQL License permits use, modification and distribution for any

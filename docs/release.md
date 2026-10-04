@@ -5,10 +5,10 @@ Build and checks do not create tags or publish a package. The repository is publ
 explicit request. See [Trusted Publishing](publishing.md).
 
 1. Select the candidate commit; check `git status --short` and `git rev-parse HEAD`.
-   Review user changes/migrations in [CHANGELOG](../CHANGELOG.md) and
-   [support policy](../SUPPORT.md). Preserve license and credits.
+   Review user changes/migrations in [CHANGELOG](https://github.com/wa-pis/iddqueue/blob/main/CHANGELOG.md) and
+   [support policy](https://github.com/wa-pis/iddqueue/blob/main/SUPPORT.md). Preserve license and credits.
 2. Install dev dependencies, configure a dedicated PostgreSQL with PG* variables
-   and prepare fresh storage as in [CONTRIBUTING](../CONTRIBUTING.md).
+   and prepare fresh storage as in [CONTRIBUTING](https://github.com/wa-pis/iddqueue/blob/main/CONTRIBUTING.md).
 3. Run the same entrypoint as CI (artifacts go to `dist/<package-version>/`,
    selected by exact filename so older builds cannot enter acceptance):
 
@@ -20,7 +20,7 @@ uv run --locked --extra binary --extra monitoring sh scripts/check_release.sh
 The command fails on missing DB prerequisites or any check. It runs Ruff,
 unit/functional tests, strict RST/local file links, strict OpenSpec, uv lock/dependency checks,
 build, LICENSE validation, clean base/monitoring wheel installs and the executable
-[quickstart](quickstart.py). The gate also installs the optional FastAPI example
+[quickstart](https://github.com/wa-pis/iddqueue/blob/main/docs/quickstart.py). The gate also installs the optional FastAPI example
 group and checks its lifecycle, event-loop safety and separate worker acceptance. It prints checked commit, working tree and SHA256
 for artifacts. Run from a clean candidate for final evidence; a dirty tree result
 must explicitly name its modifications and does not certify the parent commit.
