@@ -13,3 +13,11 @@
 
 `python scripts/check_docs.py`: exit 0. Ruff full configured paths: passed. `uv lock --check`: exit 0. Strict OpenSpec 19/19, `git diff --check`: exit 0. Published index-installed package /tmp/iddqueue-pypi-rc-install CLI --version=0.13.0rc1, --help successful. Exact index installation/remote hashes were validated in publication evidence; no new package upload/build performed here.
 Read-only stale phrase search confirms removed unpublished/private/stable-version/old performance assertions in live docs. Runtime code unchanged. Full unit/func/PostgreSQL/build/install verification delegated to existing actual GitHub CI for this docs commit; results not yet asserted.
+
+## Completion
+
+Signed commit d793ea890160ecc180d4cf9522969c28578f1788: git verify-commit Good SSH signature, push main successful.
+[Tests 37233573387](https://github.com/wa-pis/iddqueue/actions/runs/37233573387): completed/success, 6/6, full tests/build/install/doc gate.
+Jobs: 3.14/PG18 111528149459, 3.13/PG14 111528149514, 3.10/PG18 111528149518, 3.14/PG14 111528149534, 3.13/PG18 111528149587, 3.10/PG14 111528149623 — все success.
+GitHub v0.13.0rc1 release body обновлён: successful PyPI publication, exact install, public repo и актуальные docs links; readback подтвердил. Assets/tag не изменены. Published package README metadata belongs to immutable original RC artifact; corrections are repository/live release docs, not a replacement upload of 0.13.0rc1.
+Delta specs отсутствуют; docs-only change завершён.
