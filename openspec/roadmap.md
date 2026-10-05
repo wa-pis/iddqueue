@@ -136,4 +136,4 @@ Compose перенесены из корня, скиллы исключены и
 
 ## Ponytail simplification
 
-[simplify-development-tooling](changes/simplify-development-tooling/proposal.md): удалён dev watch extra, redundant argparse defaults и docs Makefile; проверки выполняются. Watchdog остаётся зависимостью MkDocs.
+[simplify-development-tooling](changes/archive/2026-10-05-simplify-development-tooling/proposal.md): удалён dev watch extra, redundant argparse defaults и docs Makefile; 147 local tests passed, CI 37359430071 6/6, Documentation 37359434787 success. Signed 0562f65; архив 2026-10-05. Watchdog остаётся зависимостью MkDocs.
