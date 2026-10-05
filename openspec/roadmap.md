@@ -133,3 +133,7 @@ Signed ade489b, actual CI 37234026977 6/6; архив 2026-10-05.
 [clean-project-tooling-layout](changes/archive/2026-10-05-clean-project-tooling-layout/proposal.md): test actors и
 Compose перенесены из корня, скиллы исключены из Git; 147 local tests passed. Signed
 220c52f, Tests 37353269772 6/6, Documentation 37353269808 success; архив 2026-10-05.
+
+## Ponytail simplification
+
+[simplify-development-tooling](changes/simplify-development-tooling/proposal.md): удалён dev watch extra, redundant argparse defaults и docs Makefile; проверки выполняются. Watchdog остаётся зависимостью MkDocs.

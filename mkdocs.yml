@@ -25,7 +25,6 @@ validation:
 exclude_docs: |
   changelog.rst
   quickstart.py
-  Makefile
 nav:
   - Home: index.md
   - Getting Started:

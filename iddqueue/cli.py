@@ -114,7 +114,6 @@ def make_argument_parser():
         "-d",
         "--dsn",
         "--connstring",
-        action="store",
         dest="url",
         default="",
         metavar="CONNSTRING",
@@ -122,8 +121,6 @@ def make_argument_parser():
     )
     parser.add_argument(
         "--schemaname",
-        action="store",
-        dest="schemaname",
         default="dramatiq",
         metavar="SCHEMA",
         help=(
@@ -132,8 +129,6 @@ def make_argument_parser():
     )
     parser.add_argument(
         "--prefix",
-        action="store",
-        dest="prefix",
         default="",
         metavar="PREFIX",
         help='Prefix for table name for message. Default is "%(default)s".',
