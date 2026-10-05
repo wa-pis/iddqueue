@@ -4,6 +4,12 @@ Use OpenSpec for proposed behavior: read [AGENTS](AGENTS.md),
 [roadmap](openspec/roadmap.md) and relevant specs/change artifacts first.
 Keep each change small; reuse existing SQL/helpers and synchronous Psycopg 3.
 Preserve [LICENSE](LICENSE) and contributor attribution.
+Agent skills in `.agents/` are optional local tooling and are not committed;
+OpenSpec plans/specifications and `AGENTS.md` remain project sources.
+
+Functional worker actors live in `tests/func/actors.py`. User-facing examples
+are in `examples/` and `docs/quickstart.py`; optional local PostgreSQL starts with
+`docker compose -f examples/postgres/compose.yml up -d postgres`.
 
 Use uv 0.11.23 (the CI version). Install development tools with `uv sync --locked --extra binary --extra monitoring --group fastapi-example --group docs`.
 Functional tests terminate PostgreSQL connections and crash workers: configure

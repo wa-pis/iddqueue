@@ -17,7 +17,7 @@ with psycopg.connect("") as conn:
         assert conn.execute("SELECT to_regclass(%s)", (table,)).fetchone()[0], f"Prepare test table {table}"
 PY
 "$UV" pip check --python "$("$UV" run --no-sync python -c 'import sys; print(sys.executable)')"
-"$UV" run --no-sync ruff check iddqueue tests/unit tests/func example.py scripts docs/quickstart.py examples
+"$UV" run --no-sync ruff check iddqueue tests/unit tests/func scripts docs/quickstart.py examples
 "$UV" run --no-sync pytest tests/unit tests/func
 "$PYTHON" scripts/check_docs.py
 "$UV" run --no-sync mkdocs build --strict

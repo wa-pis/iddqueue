@@ -88,7 +88,7 @@ class WorkerManager(object):
                 "--processes=4",
                 "--threads=2",
                 "--use-spawn",
-                "example",
+                "tests.func.actors",
             ],
             start_new_session=True,
             env=self.env,

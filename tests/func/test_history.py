@@ -10,10 +10,10 @@ import pytest
 from dramatiq.worker import Worker
 from psycopg import sql
 
-from example import saver
 from iddqueue import PostgresBroker, generate_init_sql
 from iddqueue.history import list_attempts, purge_attempts
 from iddqueue.schema import generate_upgrade_sql
+from tests.func.actors import saver
 
 from .conftest import WorkerManager
 

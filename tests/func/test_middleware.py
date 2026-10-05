@@ -17,9 +17,9 @@ from dramatiq.results import ResultFailure
 from dramatiq.worker import Worker
 from psycopg import sql
 
-from example import shutdown_probe
 from iddqueue import PostgresBroker, generate_init_sql
 from iddqueue.broker import message_lock
+from tests.func.actors import shutdown_probe
 
 from .conftest import WorkerManager
 

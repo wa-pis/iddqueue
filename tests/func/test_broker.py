@@ -5,7 +5,7 @@ from random import randint
 
 import pytest
 
-from example import failing, rejecting, sleeper, writer
+from tests.func.actors import failing, rejecting, sleeper, writer
 
 
 @pytest.mark.timeout(12)

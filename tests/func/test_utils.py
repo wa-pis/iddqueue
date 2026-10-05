@@ -1,9 +1,9 @@
-from example import pool
 from iddqueue.utils import (
     getconn,
     transaction,
     wait_for_notifies,
 )
+from tests.func.actors import pool
 
 
 def test_subscription_isolation(pgconn):

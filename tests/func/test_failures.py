@@ -11,9 +11,9 @@ from dramatiq.results import ResultFailure
 from psycopg import sql
 from psycopg.types.json import Jsonb
 
-from example import retryable
 from iddqueue import generate_init_sql
 from iddqueue.broker import message_lock
+from tests.func.actors import retryable
 
 
 def cli(*args):

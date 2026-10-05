@@ -124,7 +124,7 @@ def test_durable_events(backend, pgconn):
 
 
 def test_group_callback(restart_worker, witness):
-    from example import writer
+    from tests.func.actors import writer
 
     marker = str(uuid.uuid4())
     group = dramatiq.group([writer.message(part=i, marker=marker) for i in range(4)])

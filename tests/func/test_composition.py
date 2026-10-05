@@ -7,7 +7,7 @@ import psycopg
 import pytest
 from dramatiq.results import ResultFailure, ResultMissing
 
-from example import async_value, execution_time, failing, saver, scale
+from tests.func.actors import async_value, execution_time, failing, saver, scale
 
 
 @pytest.mark.timeout(15)

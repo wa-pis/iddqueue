@@ -14,10 +14,10 @@ from prometheus_client import CollectorRegistry, generate_latest
 from prometheus_client.parser import text_string_to_metric_families
 from psycopg.types.json import Jsonb
 
-from example import failing, saver
 from iddqueue import PostgresBroker
 from iddqueue.metrics import PostgresQueueCollector, queue_statistics
 from iddqueue.utils import make_pool
+from tests.func.actors import failing, saver
 
 from .conftest import WorkerManager
 

@@ -127,3 +127,8 @@ Signed ade489b, actual CI 37234026977 6/6; архив 2026-10-05.
 ## GitHub About
 
 [update-github-project-page](changes/archive/2026-10-05-update-github-project-page/proposal.md): description, документация homepage и семь topics обновлены; GitHub readback подтверждён 2026-10-05.
+
+## Разделение tooling и проекта
+
+[clean-project-tooling-layout](changes/clean-project-tooling-layout/proposal.md): test actors и
+Compose перенесены из корня, скиллы исключены из Git; проверки выполняются.

@@ -4,7 +4,7 @@ import pytest
 from dramatiq import Message, get_broker
 from dramatiq.results import ResultFailure, ResultMissing, ResultTimeout
 
-from example import failing, saver
+from tests.func.actors import failing, saver
 
 
 @pytest.mark.timeout(8)

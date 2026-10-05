@@ -23,7 +23,7 @@ service. It starts fresh storage, without a partial queue schema:
 ```sh
 git clone https://github.com/wa-pis/iddqueue.git
 cd iddqueue
-docker compose up -d postgres
+docker compose -f examples/postgres/compose.yml up -d postgres
 export PGHOST=127.0.0.1 PGPORT=5432 PGUSER=postgres PGDATABASE=postgres
 export PGPASSWORD=postgres
 ```
