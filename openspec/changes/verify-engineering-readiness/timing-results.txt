@@ -1,0 +1,17 @@
+Reproduced: Listener.wait accepts an unrelated ACK as task completion
+Random actor has no bounded success guarantee: seed 71729 first 16 fail decisions
+RUN 1 exit 0 ...                                                                      [100%]
+3 passed in 8.49s
+
+RUN 2 exit 0 ...                                                                      [100%]
+3 passed in 7.49s
+
+RUN 3 exit 0 ...                                                                      [100%]
+3 passed in 7.44s
+
+RUN 4 exit 0 ...                                                                      [100%]
+3 passed in 7.42s
+
+RUN 5 exit 0 ...                                                                      [100%]
+3 passed in 7.46s
+

@@ -1,0 +1,19 @@
+{
+  "installed_atomicity": "commit/result and rollback/business/task passed",
+  "states": [
+    [
+      "done",
+      2342
+    ]
+  ],
+  "attempts": [
+    2578,
+    3,
+    2340
+  ],
+  "connections_running": 49,
+  "tasks": 2340,
+  "seconds": 120.66,
+  "restart": "SIGKILL worker process group then new two-process worker",
+  "metrics_samples": 117
+}
