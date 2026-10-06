@@ -25,3 +25,7 @@ Graceful stop --time 30: billing-a/billing-b/notifications exited 0, логи ш
 Точные команды и producer assertions: container-acceptance.md.
 
 Docs links/strict MkDocs, Ruff, uv lock --check, strict OpenSpec и diff check passed. Runtime/package files не изменены; полный suite не повторялся локально для documentation-only diff. Выделенные контейнеры/network удалены, ранее остановленная Colima снова остановлена.
+
+## Завершение
+
+Signed commit c33b4619c6317a81b73eadf7846a69d59bc746dd, SSH signature проверена, push main выполнен. Actual Tests https://github.com/wa-pis/iddqueue/actions/runs/37533505783 — success 6/6, Documentation https://github.com/wa-pis/iddqueue/actions/runs/37533505839 — success. Все 11 tasks выполнены. Research-only change без delta specs; runtime spec уже синхронизирована в add-domain-actors. Архив 2026-10-07.

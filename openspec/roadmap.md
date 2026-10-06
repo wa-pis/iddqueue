@@ -144,7 +144,7 @@ Compose перенесены из корня, скиллы исключены и
 
 ## Исследование actor initialization — 2026-10-06
 
-[investigate-actor-initialization](changes/investigate-actor-initialization/proposal.md): подтверждена ранняя привязка Dramatiq actor и отсутствие automatic rebind; план native/deferred alternatives, позднего DSN, доменных actors, одного bootstrap, штатных multi-process workers и Docker deployment; FastAPI optional. Выбран и реализован Domain API в add-domain-actors. Task 2.6 проверен 2026-10-07 на Colima containerd: Dockerfile/default CMD, две billing replicas по два процесса, queue isolation, connection samples и graceful shutdown. Документация обновлена; actual CI ожидается.
+[investigate-actor-initialization](changes/archive/2026-10-07-investigate-actor-initialization/proposal.md): подтверждена ранняя привязка Dramatiq actor и отсутствие automatic rebind; план native/deferred alternatives, позднего DSN, доменных actors, одного bootstrap, штатных multi-process workers и Docker deployment; FastAPI optional. Выбран и реализован Domain API в add-domain-actors. Task 2.6 проверен 2026-10-07 на Colima containerd: Dockerfile/default CMD, две billing replicas по два процесса, queue isolation, connection samples и graceful shutdown. Signed c33b461, actual Tests 37533505783 6/6, Documentation 37533505839 success. Все 11 tasks завершены; архив 2026-10-07.
 
 ## Domain actors — 2026-10-07
 
