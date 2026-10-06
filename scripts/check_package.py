@@ -15,6 +15,7 @@ import subprocess
 import sys
 import iddqueue
 from iddqueue.schema import generate_init_sql, generate_upgrade_sql
+from iddqueue.metrics import PostgresDomainCollector, domain_statistics
 
 root = pathlib.Path(sys.prefix).resolve()
 assert root in pathlib.Path(iddqueue.__file__).resolve().parents, iddqueue.__file__
@@ -38,6 +39,7 @@ except RuntimeError:
     pass
 else:
     raise AssertionError("Unregistered Domain actor sent a message")
+assert list(PostgresDomainCollector(object(), domains=["installed"]).describe()) == []
 if sys.argv[1] == "monitoring":
     import prometheus_client
     from iddqueue.metrics import PostgresQueueCollector

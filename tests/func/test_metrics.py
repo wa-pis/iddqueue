@@ -80,7 +80,7 @@ def test_standard_prometheus_processing_and_retry(tmp_path):
                     text = response.read().decode()
                 samples = [sample for family in text_string_to_metric_families(text) for sample in family.samples]
                 def value(name, actor):
-                    return sum(sample.value for sample in samples if sample.name == name and sample.labels.get("actor_name") == actor)
+                    return sum(sample.value for sample in samples if sample.name == name and sample.labels.get("actor_name") == actor and sample.labels.get("queue_name") == queue)
                 if value("dramatiq_message_retries_total", "failing") >= 1:
                     assert value("dramatiq_messages_total", "saver") >= 1
                     assert value("dramatiq_message_errors_total", "failing") >= 2

@@ -144,3 +144,52 @@ Domains/queues separate code and workload, not database access. Use existing
 schema/prefix namespaces for storage separation and database roles/databases
 when access isolation is required. One standard worker uses one broker; several
 DSNs require independent process bootstraps, not an automatic multi-broker worker.
+
+## Domain monitoring (development checkout)
+
+This monitoring API is not included in published RC3 yet. It does not require
+importing actor modules or registering Domain objects:
+
+```python
+from iddqueue.metrics import domain_statistics, PostgresDomainCollector
+
+snapshots = domain_statistics(broker.pool, domains=["billing", "notifications"],
+                             schema="dramatiq", prefix="")
+# Optional monitoring extra and an existing exporter registry:
+registry.register(PostgresDomainCollector(broker.pool, domains=["billing"]))
+```
+
+Each snapshot contains `domain`, `counts` by stored state, `ready`, `scheduled`
+and `oldest_ready_seconds`. `billing` and `billing.DQ` form one domain; dotted
+names such as `shipping.eu` are preserved. Only the final `.DQ` is stripped;
+that suffix is reserved for delayed transport and cannot distinguish a manually
+named queue/domain ending in `.DQ`. Explicit empty domains return zero snapshots;
+`domains=[]` selects none and `domains=None` discovers domains from stored queues.
+
+One parameterized database query reads a transactionally consistent snapshot
+for all selected domains. It scans retained rows; use filters and retention,
+and choose a scrape interval that fits the database workload. The caller owns
+the pool. Collector registration performs no database I/O. Gauges are named
+`iddqueue_domain_messages` (labels `domain`, `state`), `iddqueue_domain_ready`,
+`iddqueue_domain_scheduled`, `iddqueue_domain_oldest_ready_seconds` (label `domain`).
+Existing `iddqueue_queue_*` collectors can be used alongside them.
+
+Retained `done`/`rejected` counts decrease after purge: they are not throughput
+counters. `consumed` includes prefetched tasks and is not the exact number of
+actors currently executing. `scheduled` includes future prefetched messages;
+oldest-ready age starts at eligibility for execution, not original creation.
+
+Use Dramatiq's native Prometheus middleware for processing metrics, with
+`queue_name` and `actor_name` labels. Examples for the billing domain:
+
+```promql
+sum(rate(dramatiq_messages_total{queue_name="billing"}[5m]))
+sum(rate(dramatiq_message_errors_total{queue_name="billing"}[5m]))
+sum(rate(dramatiq_message_retries_total{queue_name=~"billing(\\.DQ)?"}[5m]))
+sum(rate(dramatiq_message_duration_milliseconds_sum{queue_name="billing"}[5m]))
+ / sum(rate(dramatiq_message_duration_milliseconds_count{queue_name="billing"}[5m]))
+```
+
+Duration is in milliseconds. Native counters belong to worker lifetimes; retain
+and aggregate their time series in Prometheus. SQL snapshot gauges do not replace
+those counters. No new HTTP server, message-ID labels or storage schema is added.

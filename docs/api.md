@@ -113,3 +113,5 @@ Use `@domain.actor` or `@domain.actor(...)`, then `domain.register(broker)` at
 startup. Actor names are qualified with the domain; options are validated on
 registration. See [domain lifecycle and examples](domains.md). This additive API
 is included since 0.13.0rc3.
+
+Development monitoring additions: `domain_statistics(pool, *, domains=None, schema="dramatiq", prefix="")` and `PostgresDomainCollector(pool, **options)` from `iddqueue.metrics`. See [domain metric semantics](domains.md#domain-monitoring-development-checkout); these additions are not in published RC3.
