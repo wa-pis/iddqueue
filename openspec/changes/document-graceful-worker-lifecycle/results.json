@@ -1,0 +1,24 @@
+{
+  "reload_results": 8,
+  "initial_pids": [
+    95948,
+    95949
+  ],
+  "completion_pids": [
+    95948,
+    95949,
+    95972,
+    95973
+  ],
+  "new_pid": 95972,
+  "reloaded": true,
+  "shutdown_exit": 0,
+  "shutdown_seconds": 5.0,
+  "inflight_result_preserved": true,
+  "connections_after_close": 0,
+  "attempts": [
+    10,
+    1,
+    10
+  ]
+}
