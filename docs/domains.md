@@ -92,6 +92,12 @@ Put `--queues` at the end because it accepts multiple queue names. Several
 replicas may consume one domain. Each spawned process creates its own broker
 and pool (default maximum 16 connections per pool); account for all processes,
 consumers' reserved sessions and producer processes against PostgreSQL limits.
+For example, two replicas with two processes each can use up to
+`2 × 2 × 16 = 64` worker connections, plus producer pools and other database
+clients. Reserved consumer sessions count inside each pool maximum. Leave
+headroom for administration; thread count alone does not determine pool size.
+In a container acceptance run with 100 small tasks, these replicas held 16 and
+15 connections after processing. This observation is not a capacity guarantee.
 Shutdown uses the standard Dramatiq lifecycle.
 
 A producer can import `add` freely and initialize once at its entry point:
@@ -128,9 +134,12 @@ docker run --rm --env DATABASE_URL iddqueue-domains \
 
 Database credentials belong in runtime environment/settings or deployment
 secrets, not the image. There is no new container runtime dependency or worker
-process manager in IDDQueue. Container commands are examples; local verification
-covers spawned CLI workers, and actual Docker execution depends on a running
-engine.
+process manager in IDDQueue. The Dockerfile was built and its default CMD, queue filters, two billing
+replicas (two spawned processes each), Results and graceful shutdown were
+verified with containerd/nerdctl on Colima and a dedicated PostgreSQL 18
+container. The Docker Engine command spelling above was not executed in that
+run. With Colima's containerd runtime, replace `docker` with `colima nerdctl --`.
+After stopping the workers, their database sessions returned to zero.
 
 Domains/queues separate code and workload, not database access. Use existing
 schema/prefix namespaces for storage separation and database roles/databases
