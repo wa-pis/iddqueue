@@ -169,3 +169,7 @@ Domain observability завершён 2026-10-07: 165 tests, actual CI 375403043
 ## Debugging metrics kit — 2026-10-07
 
 [add-debugging-metrics-kit](changes/archive/2026-10-07-add-debugging-metrics-kit/proposal.md): guide, optional external exporter и Grafana dashboard на существующих метриках. Local 175 tests, 12 PromQL queries promtool validated; signed fd1a012, CI 37542481082 6/6 и Documentation 37542481148 success. Main spec synced, архив 2026-10-07. Published RC3 unchanged.
+
+## Custom recipes — 2026-10-07
+
+[document-custom-recipes](changes/document-custom-recipes/proposal.md): guide со своим domain/bootstrap/producer, запуском и checklist. Docs strict и exact Python example result 5 passed; remote CI pending.

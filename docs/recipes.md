@@ -3,6 +3,8 @@
 Detailed examples for the PostgreSQL broker. Start with the [README](https://github.com/wa-pis/iddqueue/blob/main/README.md),
 [user guide](user-guide.md) and [API reference](api.md).
 
+Build your own example with the [recipe authoring guide](custom-recipes.md).
+
 ## Transactional publishing
 
 Use `enqueue_in_transaction` to publish a task atomically with application

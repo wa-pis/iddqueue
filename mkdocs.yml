@@ -34,6 +34,7 @@ nav:
   - Guides:
       - User guide: user-guide.md
       - Detailed recipes: recipes.md
+      - Write your own recipe: custom-recipes.md
       - Debugging metrics: debugging.md
       - SQLAlchemy transactions: sqlalchemy.md
       - Domain actors: domains.md
