@@ -168,4 +168,4 @@ Domain observability завершён 2026-10-07: 165 tests, actual CI 375403043
 
 ## Debugging metrics kit — 2026-10-07
 
-[add-debugging-metrics-kit](changes/add-debugging-metrics-kit/proposal.md): guide, optional external exporter и Grafana dashboard на существующих метриках. Local 175 tests, 12 PromQL queries promtool validated; CI pending. Published RC3 unchanged.
+[add-debugging-metrics-kit](changes/archive/2026-10-07-add-debugging-metrics-kit/proposal.md): guide, optional external exporter и Grafana dashboard на существующих метриках. Local 175 tests, 12 PromQL queries promtool validated; signed fd1a012, CI 37542481082 6/6 и Documentation 37542481148 success. Main spec synced, архив 2026-10-07. Published RC3 unchanged.

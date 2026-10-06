@@ -7,3 +7,5 @@ Official promtool 3.15.0 revision 5241a27fe3c6983549fccc32f6e65917408c63cd linux
 Dashboard JSON structure/filter/quantile aggregation/seconds conversion/storage max checked; Grafana import/render not executed because no Grafana service was started. No live dashboard rendering claimed. PromQL syntax and referenced metrics verified, not production alert/load evaluation.
 
 Docs link check/strict MkDocs, Ruff, uv lock --check and strict OpenSpec passed. First docs check caught an incorrectly inserted navigation entry under validation; corrected before final checks. No runtime/package version/dependency/schema change. Published RC3 untouched. Actual CI pending.
+
+Signed implementation fd1a012f0c6408773e35a4f49c7130d9ee198ff7 verified/pushed. Actual Tests https://github.com/wa-pis/iddqueue/actions/runs/37542481082 success 6/6; Documentation https://github.com/wa-pis/iddqueue/actions/runs/37542481148 success. Main spec synced, archived 2026-10-07.
