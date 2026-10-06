@@ -13,3 +13,9 @@ Docker application example supplied but not executed: docker info failed because
 Experimental gate wheel/sdist SHA256: 6b30a07a64b5bcc5919bf59dcac6b8f04678ad3708df9c94acefc63fea8c6faa / d8c6141276678dff972a27b5af193efb0af68d069440f4ab68f2a78112ecbbad. No publication/version bump; original published RC2 local assets preserved separately and restored after checks. Actual CI pending.
 
 CI первого commit 211dfe3: run 37531316719 выявил Python 3.10 mock target resolution (dramatiq.actor разрешался как функция). Тест исправлен через явный import_module + patch.object; production API не затронут. Documentation 37531316726 success.
+
+## Завершение — 2026-10-07
+
+Исправленный signed commit a38e127d3b36fe0ee64a770ea4b12fdd4c6773f2 отправлен в main; SSH signature проверена. Повторный local gate: 158 passed in 51.99s, Ruff/lock/docs/OpenSpec/build/LICENSE/clean installed acceptance passed.
+Actual GitHub Tests https://github.com/wa-pis/iddqueue/actions/runs/37531822792: success, все шесть Python 3.10/3.13/3.14 × PostgreSQL 14/18 jobs success. Documentation https://github.com/wa-pis/iddqueue/actions/runs/37531822886 success.
+Main domain-actors spec синхронизирована и strict validation прошла. Change завершён и архивирован 2026-10-07; research task 2.6 остаётся открытым для фактических Docker replicas/connection measurements. Опубликованный RC2 не изменён; исходные release assets восстановлены после development build.
