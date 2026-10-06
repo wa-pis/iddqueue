@@ -130,3 +130,35 @@ unfixed revision restores the disclosure.
 Deduplication suppresses publication, not repeated execution. Cancellation is
 cooperative after task start. The scheduler supports fixed intervals, not cron;
 actor priority is local to the Dramatiq worker, not a global PostgreSQL scheduler.
+
+## Manage schema through application migrations
+
+The broker never creates or upgrades tables automatically. `iddqueue init` and
+`iddqueue upgrade` perform DDL only when explicitly invoked. No `auto_migrate`
+or `skip_migration` option is needed.
+
+Choose either the CLI or your application migration runner to apply DDL. For a
+new, empty namespace, execute the generated SQL through your migration connection:
+
+```python
+from iddqueue import generate_init_sql
+
+# Run inside your migration runner's transaction, using its connection.
+connection.execute(generate_init_sql(schema="dramatiq", prefix=""))
+```
+
+This example uses a Psycopg connection. Other runners must execute the returned
+PostgreSQL SQL through their own driver; generation performs no database I/O.
+For a supported existing installation, use `generate_upgrade_sql(schema, prefix)`
+instead. `generate_init_sql` is not an upgrade script for populated storage.
+
+Configure the broker with the same `schema` and `prefix`. Creating an arbitrary
+queue table is insufficient: required types, columns, indexes and auxiliary
+objects must match the package SQL. Apply migrations before starting producers
+and workers. Use a migration role for DDL and grant the runtime role the needed
+schema usage and data access rights; runtime does not require schema CREATE.
+Missing storage produces a PostgreSQL error, with no automatic repair.
+
+Updating **IDDQueue RC2 to RC3 requires no DDL**: Domain uses existing queue and
+actor names. This does not guarantee migration-free upgrades for future versions
+or replace the migration steps from legacy dramatiq-pg above.
