@@ -6,4 +6,4 @@
 ## 2. Verification
 
 - [x] 2.1 Проверить docs links, strict MkDocs и OpenSpec; записать evidence.
-- [ ] 2.2 Подписать commit, push и проверить фактический GitHub CI; архивировать change.
+- [x] 2.2 Подписать commit, push и проверить фактический GitHub CI; архивировать change.

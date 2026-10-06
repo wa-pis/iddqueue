@@ -172,4 +172,4 @@ Domain observability завершён 2026-10-07: 165 tests, actual CI 375403043
 
 ## Custom recipes — 2026-10-07
 
-[document-custom-recipes](changes/document-custom-recipes/proposal.md): guide со своим domain/bootstrap/producer, запуском и checklist. Docs strict и exact Python example result 5 passed; remote CI pending.
+[document-custom-recipes](changes/archive/2026-10-07-document-custom-recipes/proposal.md): guide со своим domain/bootstrap/producer, запуском и checklist. Docs strict и exact Python example result 5 passed; signed 0d13b7c, CI 37543145122 final 6/6 после rerun старых timing tests, Documentation 37543145134 success. Архивирован; runtime/RC3 unchanged.
