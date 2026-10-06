@@ -45,6 +45,20 @@ if sys.argv[1] == "monitoring":
     from iddqueue.metrics import PostgresQueueCollector
 else:
     assert metadata.packages_distributions().get("prometheus_client") is None
+if sys.argv[1] == "sqlalchemy":
+    from iddqueue.sqlalchemy import enqueue_sqlalchemy
+    from sqlalchemy import create_engine
+    engine = create_engine("sqlite://")
+    try:
+        enqueue_sqlalchemy(object(), actor.message(1), connection=engine)
+    except TypeError:
+        pass
+    else:
+        raise AssertionError("Engine must not be used for transactional publication")
+    finally:
+        engine.dispose()
+else:
+    assert metadata.packages_distributions().get("sqlalchemy") is None
 print("Installed wheel verified:", version, sys.argv[1], iddqueue.__file__)
 '''
 
@@ -59,12 +73,12 @@ def main():
     env = dict(os.environ)
     env.pop("PYTHONPATH", None)
     env.pop("PYTHONHOME", None)
-    for profile in ("base", "monitoring"):
+    for profile in ("base", "monitoring", "sqlalchemy"):
         with tempfile.TemporaryDirectory(prefix="iddqueue-package-") as directory:
             root = Path(directory)
             venv.create(root / "venv", with_pip=True)
             python = root / "venv/bin/python"
-            target = str(wheel) + ("[monitoring]" if profile == "monitoring" else "")
+            target = str(wheel) + (f"[{profile}]" if profile != "base" else "")
             subprocess.run([str(python), "-m", "pip", "install", target], cwd=root, env=env, check=True)
             subprocess.run([str(python), "-I", "-c", SMOKE, profile, args.expected_version], cwd=root, env=env, check=True)
             if args.quickstart and profile == "base":

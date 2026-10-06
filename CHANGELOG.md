@@ -5,6 +5,8 @@ remain preserved with upstream credits. Unreleased entries are not publication.
 
 ## Unreleased
 
+- Add optional synchronous SQLAlchemy Connection/Session transactional enqueue adapter on Psycopg 3.
+
 - Add domain queue snapshots and optional Prometheus domain gauges, combining main/delayed queues.
 
 ## 0.13.0rc3 — release candidate — 2026-10-07

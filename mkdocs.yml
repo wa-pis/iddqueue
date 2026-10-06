@@ -34,6 +34,7 @@ nav:
   - Guides:
       - User guide: user-guide.md
       - Detailed recipes: recipes.md
+      - SQLAlchemy transactions: sqlalchemy.md
       - Domain actors: domains.md
       - FastAPI: fastapi.md
       - Deployment and retention: deployment-guide.md

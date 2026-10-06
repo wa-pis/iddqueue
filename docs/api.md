@@ -115,3 +115,5 @@ registration. See [domain lifecycle and examples](domains.md). This additive API
 is included since 0.13.0rc3.
 
 Development monitoring additions: `domain_statistics(pool, *, domains=None, schema="dramatiq", prefix="")` and `PostgresDomainCollector(pool, **options)` from `iddqueue.metrics`. See [domain metric semantics](domains.md#domain-monitoring-development-checkout); these additions are not in published RC3.
+
+Development optional adapter: `iddqueue.sqlalchemy.enqueue_sqlalchemy(broker, message, *, connection, delay=None, deduplication_key=None, deduplication_ttl=None)`. See [SQLAlchemy transactions](sqlalchemy.md); not in published RC3.
