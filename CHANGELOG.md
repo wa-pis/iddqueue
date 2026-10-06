@@ -3,7 +3,12 @@
 User-facing IDDQueue changes. [Historical upstream releases](docs/changelog.rst)
 remain preserved with upstream credits. Unreleased entries are not publication.
 
-## Unreleased
+## 0.13.0rc2 — release candidate — 2026-10-06
+
+- Publish searchable documentation with step-by-step manual and CLI guides.
+- Refresh migration/API/upstream comparison documentation.
+- Move test actors and PostgreSQL Compose out of the repository root; remove agent skills from Git.
+- Remove unused Dramatiq watch extra and redundant argparse defaults.
 
 - Remove obsolete Poetry test runner, unused upstream logo files and stale tooling configs; use the uv release gate.
 - Optional development Compose starts fresh PostgreSQL; initialize complete storage with `iddqueue init` and prepare functional-test schema explicitly.

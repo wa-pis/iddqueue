@@ -137,3 +137,7 @@ Compose перенесены из корня, скиллы исключены и
 ## Ponytail simplification
 
 [simplify-development-tooling](changes/archive/2026-10-05-simplify-development-tooling/proposal.md): удалён dev watch extra, redundant argparse defaults и docs Makefile; 147 local tests passed, CI 37359430071 6/6, Documentation 37359434787 success. Signed 0562f65; архив 2026-10-05. Watchdog остаётся зависимостью MkDocs.
+
+## RC2 — 2026-10-06
+
+[publish-rc2](changes/publish-rc2/proposal.md): выпуск 0.13.0rc2 на GitHub/PyPI авторизован; release gate и публикация выполняются.

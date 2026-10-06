@@ -21,10 +21,10 @@ Maintainers can [edit and deploy this site](docs-site.md) or follow the [PyPI pu
 - [Deployment Guide](deployment-guide.md)
 - [Compatibility and support](https://github.com/wa-pis/iddqueue/blob/main/SUPPORT.md)
 - [Contributing](https://github.com/wa-pis/iddqueue/blob/main/CONTRIBUTING.md)
-- [0.13.0rc1 release notes](rc-0.13.0rc1.md)
+- [0.13.0rc2 release notes](rc-0.13.0rc2.md)
 - [Release checks](release.md)
 - [IDDQueue changelog](https://github.com/wa-pis/iddqueue/blob/main/CHANGELOG.md)
 - [Historical upstream changelog](https://github.com/wa-pis/iddqueue/blob/main/docs/changelog.rst)
 - [Why PostgreSQL](why.md)
 
-[Source](https://github.com/wa-pis/iddqueue) and [issues](https://github.com/wa-pis/iddqueue/issues) are public. The 0.13.0rc1 prerelease is available on [PyPI](https://pypi.org/project/iddqueue/0.13.0rc1/). This fork preserves DALIBO's PostgreSQL [LICENSE](https://github.com/wa-pis/iddqueue/blob/main/LICENSE) and upstream credits in [README](https://github.com/wa-pis/iddqueue/blob/main/README.md).
+[Source](https://github.com/wa-pis/iddqueue) and [issues](https://github.com/wa-pis/iddqueue/issues) are public. The 0.13.0rc2 publication is tracked on [PyPI](https://pypi.org/project/iddqueue/0.13.0rc2/). This fork preserves DALIBO's PostgreSQL [LICENSE](https://github.com/wa-pis/iddqueue/blob/main/LICENSE) and upstream credits in [README](https://github.com/wa-pis/iddqueue/blob/main/README.md).

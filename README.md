@@ -6,8 +6,8 @@ A PostgreSQL broker and Results backend for [Dramatiq](https://dramatiq.io/),
 built on synchronous Psycopg 3. Tasks, results and coordination live in PostgreSQL;
 no Redis or ORM is required by IDDQueue.
 
-**Current release: [0.13.0rc1](https://pypi.org/project/iddqueue/0.13.0rc1/)** —
-a release candidate for evaluation. [GitHub assets](https://github.com/wa-pis/iddqueue/releases/tag/v0.13.0rc1)
+**Current release: [0.13.0rc2](https://pypi.org/project/iddqueue/0.13.0rc2/)** —
+a release candidate for evaluation. [GitHub assets](https://github.com/wa-pis/iddqueue/releases/tag/v0.13.0rc2)
 include the wheel, sdist and SHA256 checksums.
 
 IDDQueue is a fork of [DALIBO's dramatiq-pg](https://gitlab.com/dalibo/dramatiq-pg)
@@ -35,7 +35,7 @@ See [compatibility and API stability](SUPPORT.md).
 
 ```sh
 uv venv
-uv pip install "iddqueue[binary]==0.13.0rc1"
+uv pip install "iddqueue[binary]==0.13.0rc2"
 ```
 
 The `binary` extra supplies libpq. Base installs require system libpq;
@@ -102,7 +102,7 @@ Close broker-owned pools on shutdown; callers close pools they supply.
 - [Detailed recipes](docs/recipes.md): transactions, middleware, controls, metrics and schedules.
 - [FastAPI](docs/fastapi.md): lifespan, async endpoint thread offload and separate worker.
 - [Deployment and retention](docs/deployment-guide.md), [why PostgreSQL](docs/why.md).
-- [RC notes](docs/rc-0.13.0rc1.md), [changelog](CHANGELOG.md), [release checks](docs/release.md).
+- [RC notes](docs/rc-0.13.0rc2.md), [changelog](CHANGELOG.md), [release checks](docs/release.md).
 
 The broker and result APIs are synchronous. Async actors use Dramatiq's AsyncIO
 middleware; FastAPI async endpoints offload publication to a thread.
@@ -117,10 +117,10 @@ is unverified. No tested Django integration is currently provided.
 ## Compared with dramatiq-pg
 
 Baseline: [dramatiq-pg 0.12.0](https://pypi.org/project/dramatiq-pg/0.12.0/),
-compared with the published IDDQueue 0.13.0rc1 prerelease. This describes the published version, not every
+compared with the published IDDQueue 0.13.0rc2 prerelease. This describes the published version, not every
 future upstream revision. Both projects provide a PostgreSQL Dramatiq broker.
 
-| Area | dramatiq-pg 0.12.0 | IDDQueue 0.13.0rc1 / practical benefit |
+| Area | dramatiq-pg 0.12.0 | IDDQueue 0.13.0rc2 / practical benefit |
 | --- | --- | --- |
 | Core storage and delivery | JSONB tasks/results, delayed tasks, LISTEN/NOTIFY, advisory locks, recovery and maintenance CLI | Preserved; at-least-once delivery still requires idempotent actors |
 | Runtime | Python >=3.6,<4; Dramatiq >=1.5,<2; Psycopg 2 | Python >=3.10,<4; Dramatiq >=2.2.1,<3; synchronous Psycopg 3 and psycopg-pool |
@@ -137,7 +137,7 @@ future upstream revision. Both projects provide a PostgreSQL Dramatiq broker.
 
 See [migration from dramatiq-pg](docs/migration.md) for dependency, pool,
 import, CLI and database changes, including backup and rollback. No throughput
-advantage is claimed here. The 0.13.0rc1 prerelease is available on PyPI; the legacy Django
+advantage is claimed here. The 0.13.0rc2 prerelease is available on PyPI; the legacy Django
 integration is archived and has not been verified with IDDQueue.
 
 ## Development and support
