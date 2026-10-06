@@ -11,3 +11,5 @@ Initial probes exposed missing declaration declare_queue implementation and func
 Docker application example supplied but not executed: docker info failed because /var/run/docker.sock daemon is unavailable. No container execution or multi-container replicas claimed. Standard spawned CLI and queue filter commands executed.
 
 Experimental gate wheel/sdist SHA256: 6b30a07a64b5bcc5919bf59dcac6b8f04678ad3708df9c94acefc63fea8c6faa / d8c6141276678dff972a27b5af193efb0af68d069440f4ab68f2a78112ecbbad. No publication/version bump; original published RC2 local assets preserved separately and restored after checks. Actual CI pending.
+
+CI первого commit 211dfe3: run 37531316719 выявил Python 3.10 mock target resolution (dramatiq.actor разрешался как функция). Тест исправлен через явный import_module + patch.object; production API не затронут. Documentation 37531316726 success.

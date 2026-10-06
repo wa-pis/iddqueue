@@ -1,4 +1,5 @@
 from datetime import timedelta
+from importlib import import_module
 from unittest.mock import patch
 
 import dramatiq
@@ -12,7 +13,7 @@ from iddqueue import Domain
 
 
 def test_late_registration_keeps_imported_native_actor():
-    with patch("dramatiq.actor.get_broker", side_effect=AssertionError("default lookup")):
+    with patch.object(import_module("dramatiq.actor"), "get_broker", side_effect=AssertionError("default lookup")):
         domain = Domain("billing")
         @domain.actor(priority=2, store_results=True)
         def add(a, b):

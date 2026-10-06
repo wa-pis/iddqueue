@@ -1,8 +1,10 @@
+# domain-actors Specification
+
 ## Purpose
 
 Декларация доменных акторов с автоматической маршрутизацией по очередям и явной регистрацией брокера при запуске приложения.
 
-## ADDED Requirements
+## Requirements
 
 ### Requirement: Domain actor declaration
 Domain SHALL назначать своим стандартным Dramatiq Actors очередь по имени домена и qualified actor_name, без default broker lookup или PostgreSQL I/O при import.
