@@ -151,3 +151,7 @@ Compose перенесены из корня, скиллы исключены и
 [add-domain-actors](changes/archive/2026-10-07-add-domain-actors/proposal.md): реализация Domain queue/qualified names
 и late startup registration, native Actors, framework-independent multi-domain worker/Docker example.
 Завершено и архивировано 2026-10-07: 158 local tests, полный gate, signed a38e127; Tests 37531822792 6/6, Documentation 37531822886 success. Main spec синхронизирована. API не входит в опубликованный RC2.
+
+## RC3 — 2026-10-07
+
+[publish-rc3](changes/publish-rc3/proposal.md): 0.13.0rc3 с Domain API, release gate и публикация по существующему GitHub/PyPI flow. Выполняется; RC1/RC2 неизменны.

@@ -1,6 +1,6 @@
 # Step by step: your first queue
 
-This guide uses the published `0.13.0rc2` release candidate. Tasks and results
+This guide uses the published `0.13.0rc3` release candidate. Tasks and results
 are stored in PostgreSQL; a Dramatiq worker runs separately from the producer.
 
 ## 1. Prepare PostgreSQL
@@ -39,13 +39,13 @@ rather than pointing destructive functional tests at an application database.
 1. Choose Python 3.10 or newer; the tested matrix is 3.10, 3.13 and 3.14.
 2. Create a virtual environment in your application directory.
 3. Install the published release candidate with the `binary` extra.
-4. Verify that the CLI reports `0.13.0rc2`.
+4. Verify that the CLI reports `0.13.0rc3`.
 
 ### Through commands
 
 ```sh
 uv venv
-uv pip install "iddqueue[binary]==0.13.0rc2"
+uv pip install "iddqueue[binary]==0.13.0rc3"
 uv run --no-sync iddqueue --version
 ```
 

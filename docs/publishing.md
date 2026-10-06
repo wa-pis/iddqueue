@@ -1,12 +1,12 @@
 # PyPI Trusted Publishing
 
 The public GitHub prerelease is available at
-[v0.13.0rc2](https://github.com/wa-pis/iddqueue/releases/tag/v0.13.0rc2).
+[v0.13.0rc3](https://github.com/wa-pis/iddqueue/releases/tag/v0.13.0rc3).
 The manual [publish workflow](https://github.com/wa-pis/iddqueue/blob/main/.github/workflows/publish.yml) uploads those
 exact wheel/sdist files, after checking the recorded candidate SHA and fixed
 SHA256 hashes. It does not rebuild the candidate or need a stored API token.
 
-0.13.0rc2 has been published successfully through this workflow. RC1 remains available.
+0.13.0rc3 has been published successfully through this workflow. RC1 remains available.
 The trusted publisher is configured; do not add it again or rerun the same
 immutable release upload. For a new release, prepare a verified candidate and
 update the workflow's version, candidate SHA and hashes first.
@@ -35,8 +35,8 @@ For the initial upload after registration, run **Publish RC to PyPI** on `main`,
 gh workflow run publish.yml --repo wa-pis/iddqueue --ref main
 ```
 
-Check actual job success, PyPI version `0.13.0rc2` and both file SHA256 values,
-then install `iddqueue[binary]==0.13.0rc2` in a clean environment. Do not treat
+Check actual job success, PyPI version `0.13.0rc3` and both file SHA256 values,
+then install `iddqueue[binary]==0.13.0rc3` in a clean environment. Do not treat
 workflow preparation or a queued job as successful publication. Do not paste
 API tokens into issues or chat. This workflow is scoped to the exact configured RC;
 a future version needs its own verified candidate and hashes.

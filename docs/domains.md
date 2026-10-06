@@ -1,10 +1,9 @@
 # Domain actors and one bootstrap
 
-This additive API is available in the development checkout. Published
-`0.13.0rc2` does not include `Domain` yet; install the checkout to try it:
+The `Domain` API is included in `0.13.0rc3`:
 
 ```sh
-uv sync --locked --extra binary
+uv pip install "iddqueue[binary]==0.13.0rc3"
 ```
 
 ## Declare tasks without DSN

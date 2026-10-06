@@ -106,10 +106,10 @@ Broker and Results isolate by `schema`/`prefix`. Notifications and message locks
 
 CLI contracts and API stability: [SUPPORT](https://github.com/wa-pis/iddqueue/blob/main/SUPPORT.md).
 
-## Domain actors (development checkout)
+## Domain actors (0.13.0rc3)
 
 `Domain(name)` declares standard Dramatiq Actors with domain-derived queues.
 Use `@domain.actor` or `@domain.actor(...)`, then `domain.register(broker)` at
 startup. Actor names are qualified with the domain; options are validated on
 registration. See [domain lifecycle and examples](domains.md). This additive API
-is not included in the published 0.13.0rc2 release.
+is included since 0.13.0rc3.

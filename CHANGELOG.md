@@ -3,7 +3,7 @@
 User-facing IDDQueue changes. [Historical upstream releases](docs/changelog.rst)
 remain preserved with upstream credits. Unreleased entries are not publication.
 
-## Unreleased
+## 0.13.0rc3 — release candidate — 2026-10-07
 
 - Add Domain actors with domain-derived queues, qualified actor names and explicit late broker registration; framework-independent worker/container example.
 
