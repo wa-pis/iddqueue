@@ -162,4 +162,6 @@ Compose перенесены из корня, скиллы исключены и
 
 ## Доменные метрики и SQLAlchemy — 2026-10-07
 
-После external schema documentation: [add-domain-observability](changes/add-domain-observability/proposal.md), затем [add-sqlalchemy-transaction-adapter](changes/add-sqlalchemy-transaction-adapter/proposal.md). Два независимых planning changes: snapshot/Prometheus domain aggregation и optional sync SQLAlchemy caller transaction. Async SQLAlchemy не обещается. Реализация ещё не начата; published RC3 неизменен.
+После external schema documentation: [add-domain-observability](changes/archive/2026-10-07-add-domain-observability/proposal.md), затем [add-sqlalchemy-transaction-adapter](changes/add-sqlalchemy-transaction-adapter/proposal.md). Два независимых planning changes: snapshot/Prometheus domain aggregation и optional sync SQLAlchemy caller transaction. Async SQLAlchemy не обещается. Реализация ещё не начата; published RC3 неизменен.
+
+Domain observability завершён 2026-10-07: 165 tests, actual CI 37540304330 6/6, signed 6e65d5e; main spec synced и архив. SQLAlchemy adapter следующий.
