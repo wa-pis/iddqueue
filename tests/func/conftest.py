@@ -73,7 +73,9 @@ def listener():
 
 
 class WorkerManager(object):
-    def __init__(self, name="workers", env=None):
+    def __init__(self, name="workers", env=None, module="tests.func.actors", queues=None):
+        self.module = module
+        self.queues = queues
         self.env = env
         self.logfilename = f"my-{name}.log"
 
@@ -88,7 +90,8 @@ class WorkerManager(object):
                 "--processes=4",
                 "--threads=2",
                 "--use-spawn",
-                "tests.func.actors",
+                self.module,
+                *(["--queues", *self.queues] if self.queues else []),
             ],
             start_new_session=True,
             env=self.env,

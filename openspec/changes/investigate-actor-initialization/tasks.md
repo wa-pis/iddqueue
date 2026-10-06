@@ -5,16 +5,18 @@
 
 ## 2. Investigation before API choice
 
-- [ ] 2.1 Составить воспроизводимую import/startup матрицу: actor до/после startup с поздним DSN, обычный producer и spawned worker, повторные конфигурации/test teardown; FastAPI только optional integration.
-- [ ] 2.2 Проверить native registration/factory и минимальный deferred adapter; оценить стабильные import handles без собственного повторения Actor API.
-- [ ] 2.3 Проверить actor options/middleware validation, Results/async actors, send_with_options/timedelta, message/pipelines/groups/callbacks и pool ownership для каждого жизнеспособного варианта.
-- [ ] 2.4 Описать повторную настройку, конфликт brokers, lifecycle isolation и понятную ошибку до binding; выбрать минимальный вариант и согласовать контракт.
+- [x] 2.1 Составить воспроизводимую import/startup матрицу: actor до/после startup с поздним DSN, обычный producer и spawned worker, повторные конфигурации/test teardown; FastAPI только optional integration.
+- [x] 2.2 Проверить native registration/factory и минимальный deferred adapter; оценить стабильные import handles без собственного повторения Actor API.
+- [x] 2.3 Проверить actor options/middleware validation, Results/async actors, send_with_options/timedelta, message/pipelines/groups/callbacks и pool ownership для каждого жизнеспособного варианта.
+- [x] 2.4 Описать повторную настройку, конфликт brokers, lifecycle isolation и понятную ошибку до binding; выбрать минимальный вариант и согласовать контракт.
 
-- [ ] 2.5 Проверить доменные billing/notifications modules, стабильные imports/.send(), names/queue routing и одну app.worker точку сборки; сравнить общий broker с явными domain registries.
+- [x] 2.5 Проверить доменные billing/notifications modules, стабильные imports/.send(), names/queue routing и одну app.worker точку сборки; сравнить общий broker с явными domain registries.
 - [ ] 2.6 Проверить штатный CLI: all queues/queue filter, несколько процессов и реплик, process-local pools и graceful shutdown; записать точные проверенные команды и connection budget.
-- [ ] 2.7 Спланировать минимальный Docker application example: один image/entry point, exec CMD, поздний DSN/runtime settings, отдельные queue-filtered containers без собственного worker CLI. Контейнерные проверки отмечать выполненными только после фактического запуска.
-- [ ] 2.8 Зафиксировать границы domain isolation: queue routing отдельно от schema/prefix/DB-role access, duplicate actor names и независимые lifecycle настройки.
+- [x] 2.7 Спланировать минимальный Docker application example: один image/entry point, exec CMD, поздний DSN/runtime settings, отдельные queue-filtered containers без собственного worker CLI. Контейнерные проверки отмечать выполненными только после фактического запуска.
+- [x] 2.8 Зафиксировать границы domain isolation: queue routing отдельно от schema/prefix/DB-role access, duplicate actor names и независимые lifecycle настройки.
 
 ## 3. Implementation handoff
 
-- [ ] 3.1 Подготовить отдельный implementation change с delta specs/tests/migration/docs/framework-independent bootstrap и Docker example scope; FastAPI optional для выбранного API; не реализовывать runtime в исследовательском change.
+- [x] 3.1 Подготовить отдельный implementation change с delta specs/tests/migration/docs/framework-independent bootstrap и Docker example scope; FastAPI optional для выбранного API; не реализовывать runtime в исследовательском change.
+
+Примечание: 2.7 выполнен как planning/application example, не Docker runtime acceptance. В 2.6 standard four-process spawn/queue filter проверены; multi-container replicas/connection budget measurement остаются непроверенными при недоступном Docker engine.

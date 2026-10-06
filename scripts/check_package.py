@@ -29,6 +29,15 @@ for name in ("schema", "coordination", "deduplication", "control", "cancellation
     assert resources.files("iddqueue").joinpath(name + ".sql").read_text().strip(), name
 assert generate_init_sql("smoke", "test_").strip()
 assert generate_upgrade_sql("smoke", "test_").strip()
+domain = iddqueue.Domain("installed")
+actor = domain.actor(lambda value: value, actor_name="echo")
+assert actor.actor_name == "installed.echo" and actor.queue_name == "installed"
+try:
+    actor.send(1)
+except RuntimeError:
+    pass
+else:
+    raise AssertionError("Unregistered Domain actor sent a message")
 if sys.argv[1] == "monitoring":
     import prometheus_client
     from iddqueue.metrics import PostgresQueueCollector

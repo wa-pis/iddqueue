@@ -98,6 +98,8 @@ Close broker-owned pools on shutdown; callers close pools they supply.
 
 ## Guides and examples
 
+[Domain actors and one worker bootstrap](docs/domains.md) are available in the development checkout; this API is not included in published RC2.
+
 - [Documentation index](docs/index.md), [user guide](docs/user-guide.md), [API](docs/api.md).
 - [Detailed recipes](docs/recipes.md): transactions, middleware, controls, metrics and schedules.
 - [FastAPI](docs/fastapi.md): lifespan, async endpoint thread offload and separate worker.

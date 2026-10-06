@@ -39,3 +39,7 @@ FastAPI example сейчас register_actors(broker) создаёт actor вну
 ## Next Step
 
 Сначала воспроизводимые probes/import matrix и сравнение вариантов. Только затем согласовать выбранный контракт и отдельный implementation proposal/spec/tasks.
+
+## Selected Contract — 2026-10-07
+
+После уточнений пользователя выбран явный Domain(name): queue/name derivation и late register(broker), native Actors вместо proxy/monkeypatch. Реализация в add-domain-actors; один process bootstrap загружает DSN и domains, штатный CLI и Docker application example. FastAPI не требуется. Domain objects bind once; независимые конфигурации используют новые Domain instances. Docker engine недоступен, multi-container replica acceptance остаётся отдельной непроверенной частью исследования.

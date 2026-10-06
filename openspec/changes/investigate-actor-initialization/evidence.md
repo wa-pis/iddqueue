@@ -9,3 +9,5 @@ Patch get_broker вызвал sentinel RuntimeError, custom actor_class не в�
 Patch ConnectionPool.open запрещал I/O: PostgresBroker() создал closed pool и close завершился без открытия. PASS. Функциональных PG tests не запускалось; это не deferred API acceptance и не доказательство отсутствия hooks при custom middleware.
 
 Официальные источники: https://dramatiq.io/guide.html и https://dramatiq.io/reference.html (online docs labelled 2.2.0; поведение установленной 2.2.1 подтверждено исходниками/probes). Ранние ad-hoc probes исправлены после ошибочного len(Queue) и лишнего import Results из middleware; окончательные перечисленные assertions прошли.
+
+2026-10-07: выбранный Domain контракт реализован и проверен в add-domain-actors (9 unit + 2 separate CLI/PostgreSQL acceptance, 158 full suite). Повторный same broker no-op, другой broker и declaration after bind отвергаются, новые Domain instances обеспечивают независимую регистрацию. Async/Results/delay/callback names/native pipelines/groups проверены; обычный producer/worker, без обязательной привязки FastAPI. Dockerfile и commands подготовлены, engine недоступен; фактические контейнеры/replicas не проверялись.

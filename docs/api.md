@@ -105,3 +105,11 @@ Broker and Results isolate by `schema`/`prefix`. Notifications and message locks
 `PostgresScheduler(broker)` from iddqueue.scheduler exposes `create(name, message, *, interval_ms, start_at=None)`, `list()`, `disable(name)` and `tick(*, limit=100)`. start_at must include a timezone. Creation returns a schedule UUID string; tick returns published Messages. Fixed intervals, coalescing and transactional boundaries are documented in [User Guide](user-guide.md) and [recipes](recipes.md).
 
 CLI contracts and API stability: [SUPPORT](https://github.com/wa-pis/iddqueue/blob/main/SUPPORT.md).
+
+## Domain actors (development checkout)
+
+`Domain(name)` declares standard Dramatiq Actors with domain-derived queues.
+Use `@domain.actor` or `@domain.actor(...)`, then `domain.register(broker)` at
+startup. Actor names are qualified with the domain; options are validated on
+registration. See [domain lifecycle and examples](domains.md). This additive API
+is not included in the published 0.13.0rc2 release.

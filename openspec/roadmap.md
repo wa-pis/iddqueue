@@ -145,3 +145,9 @@ Compose перенесены из корня, скиллы исключены и
 ## Исследование actor initialization — 2026-10-06
 
 [investigate-actor-initialization](changes/investigate-actor-initialization/proposal.md): подтверждена ранняя привязка Dramatiq actor и отсутствие automatic rebind; план native/deferred alternatives, позднего DSN, доменных actors, одного bootstrap, штатных multi-process workers и Docker deployment; FastAPI optional. Реализация нового API пока не выбрана и не выполняется.
+
+## Domain actors — 2026-10-07
+
+[add-domain-actors](changes/add-domain-actors/proposal.md): реализация Domain queue/qualified names
+и late startup registration, native Actors, framework-independent multi-domain worker/Docker example.
+11 focused tests прошли; полный gate/CI выполняются. API не входит в опубликованный RC2.
