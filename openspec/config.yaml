@@ -14,7 +14,7 @@ context: |
   Local migration implemented before OpenSpec adoption on 2026-10-02.
   Verified: 147 tests on Python 3.13.14/PostgreSQL 14.20; current cleanup CI 37233116835 6/6, Ruff/docs/build/install checks.
   GitHub CI passed all six Python 3.10/3.13/3.14 and PostgreSQL 14/18 combinations; run 37233116835; installed base/monitoring wheel acceptance and strict docs checks and installed-wheel quickstart passed.
-  GitHub: https://github.com/wa-pis/iddqueue, public, main; 0.13.0rc1 опубликован на GitHub/PyPI через Trusted Publishing, будущая публикация требует отдельного запроса.
+  GitHub: https://github.com/wa-pis/iddqueue, public, main; 0.13.0rc2 опубликован на GitHub/PyPI через Trusted Publishing, будущая публикация требует отдельного запроса.
   Preserve PostgreSQL license and original contributor credits.
   Feature roadmap: openspec/roadmap.md; previous six features and baseline archived; extend-postgres-capabilities все семь этапов выполнены, main specs синхронизированы; change архивирован 2026-10-03.
   Project maintenance practices completed, project-maintenance main spec synced; change archived 2026-10-04. uv migration completed; uv.lock, native uv_build and locked CI/release gate; change archived 2026-10-04.

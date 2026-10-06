@@ -1,7 +1,7 @@
 # Release readiness
 
 Build and checks do not create tags or publish a package. The repository is public;
-0.13.0rc2 is being prepared for GitHub and PyPI; RC1 remains published. Future publication requires a separate
+0.13.0rc2 is published on GitHub and PyPI. Future publication requires a separate
 explicit request. See [Trusted Publishing](publishing.md).
 
 1. Select the candidate commit; check `git status --short` and `git rev-parse HEAD`.

@@ -6,7 +6,7 @@ The manual [publish workflow](https://github.com/wa-pis/iddqueue/blob/main/.gith
 exact wheel/sdist files, after checking the recorded candidate SHA and fixed
 SHA256 hashes. It does not rebuild the candidate or need a stored API token.
 
-RC2 GitHub assets are verified; the PyPI publication is in progress. RC1 was already published successfully through this workflow.
+0.13.0rc2 has been published successfully through this workflow. RC1 remains available.
 The trusted publisher is configured; do not add it again or rerun the same
 immutable release upload. For a new release, prepare a verified candidate and
 update the workflow's version, candidate SHA and hashes first.

@@ -140,4 +140,4 @@ Compose перенесены из корня, скиллы исключены и
 
 ## RC2 — 2026-10-06
 
-[publish-rc2](changes/publish-rc2/proposal.md): выпуск 0.13.0rc2 на GitHub/PyPI авторизован; release gate и публикация выполняются.
+[publish-rc2](changes/archive/2026-10-06-publish-rc2/proposal.md): 0.13.0rc2 опубликован на GitHub/PyPI. Candidate 784bd30; 147 tests, CI 37516016275 6/6; OIDC 37516414169 success. Remote hashes и clean index installation подтверждены, архив 2026-10-06.
