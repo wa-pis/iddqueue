@@ -144,4 +144,4 @@ Compose перенесены из корня, скиллы исключены и
 
 ## Исследование actor initialization — 2026-10-06
 
-[investigate-actor-initialization](changes/investigate-actor-initialization/proposal.md): подтверждена ранняя привязка Dramatiq actor и отсутствие automatic rebind; план native/deferred alternatives, lifecycle и compatibility checks. Реализация нового API пока не выбрана и не выполняется.
+[investigate-actor-initialization](changes/investigate-actor-initialization/proposal.md): подтверждена ранняя привязка Dramatiq actor и отсутствие automatic rebind; план native/deferred alternatives, позднего DSN, доменных actors, одного bootstrap, штатных multi-process workers и Docker deployment; FastAPI optional. Реализация нового API пока не выбрана и не выполняется.

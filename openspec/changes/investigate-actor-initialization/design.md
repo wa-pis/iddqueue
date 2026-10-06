@@ -4,7 +4,7 @@
 
 IDDQueue make_pool использует open=False; default PostgresBroker construction не открывает pool. Нет нужды приравнивать импорт broker к немедленному SQL I/O, но actor declaration всё равно выполняет registration/middleware hooks.
 
-FastAPI example сейчас register_actors(broker) создаёт actor внутри factory; lifecycle явный, однако стабильного importable add нет. Требуется отделить декларацию задач от конфигурации процесса.
+FastAPI example сейчас register_actors(broker) создаёт actor внутри factory; это лишь один пример lifecycle, не основа нового API. Главный сценарий: обычный Python producer и Dramatiq worker. Требуется отделить декларацию задач от конфигурации процесса.
 
 ## Options
 
@@ -19,9 +19,22 @@ FastAPI example сейчас register_actors(broker) создаёт actor вну
 
 Повторная настройка same broker, conflicting broker, two app instances и tests teardown должны иметь определённый контракт. Pool ownership/close остаётся явным, multiprocessing spawn получает отдельную process initialization. Не обещать hot reconfiguration.
 
+## Agreed Application Scenarios
+
+- DSN может поступать из settings/config loader при startup, а не только PG* environment до import. PostgresBroker(url=dsn) — существующий интерфейс; новые configure/bind/register API пока только обсуждаемые варианты.
+- Домены billing/notifications содержат actors и бизнес-логику, не читают credentials и не создают собственные PostgreSQL pools при import. Callers хотят стабильный import actor и .send(), без передачи bootstrap повсюду.
+- Одна app.worker точка входа загружает settings, создаёт process-local broker и явно собирает выбранные доменные actors. Порядок импорта модулей tasks до/после startup должен входить в acceptance.
+- Основной минимальный вариант — один broker/DSN и отдельные queue names для доменов. Отдельные brokers/DSN — изучаемая возможность, не обязательная реализация нескольких backends в одном Dramatiq worker.
+- Несколько worker processes/container replicas используют общую PostgreSQL очередь; pool создаётся отдельно в каждом процессе. Проверить spawn, отсутствие переноса открытого pool через fork, число соединений и shutdown.
+- Штатный CLI Dramatiq запускает app.worker; --queues выбирает доменную очередь. Проверить фактический argparse синтаксис команд, import/load broker, registration в дочерних процессах и multi-domain task routing.
+- Один Docker image приложения использует exec-form CMD с Dramatiq --use-spawn; DSN передаётся через runtime environment/settings или secret injection, не baked into image. Тот же entry point запускает все очереди либо отдельные контейнеры с queue filters.
+- Docker — deploy example приложения, не новая runtime dependency IDDQueue. Собственный worker/process manager CLI, auto-discovery magic и container pipeline не требуются.
+- Разделение модулей/очередей отделяет код/нагрузку, не является security isolation. Schema/prefix разделяют storage/notification/lock domains; настоящая access isolation требует DB roles/databases. Names actors/queues между доменами не должны случайно конфликтовать.
+- FastAPI — optional integration check после framework-independent contract, не обязательный framework и не источник настроек API.
+
 ## Open Decisions
 
-Один configurable broker на процесс или независимые registries для нескольких приложений; API названия/exports; прямой вызов actor до startup; допускается ли построение message/pipeline до binding; момент проверки middleware options. Предпочтение Ponytail: native hooks и standard Actors, без полного proxy повторяющего Dramatiq API, monkeypatch глобального Dramatiq и скрытого default broker.
+Для одного startup и нескольких доменов: общий registry или явные domain registries; поддержка нескольких независимых конфигураций и её ограничения; API названия/exports; прямой вызов actor до startup; допускается ли построение message/pipeline до binding; момент проверки middleware options. Предпочтение Ponytail: native hooks и standard Actors, без полного proxy повторяющего Dramatiq API, monkeypatch глобального Dramatiq и скрытого default broker.
 
 ## Next Step
 
