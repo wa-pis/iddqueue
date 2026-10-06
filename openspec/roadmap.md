@@ -159,3 +159,7 @@ Compose перенесены из корня, скиллы исключены и
 ## Внешнее управление схемой — 2026-10-07
 
 [document-external-schema-management](changes/document-external-schema-management/proposal.md): план документации/проверок существующего explicit DDL и external migration runner. Auto-migration flag не требуется; RC2 -> RC3 без DDL. Реализация и PostgreSQL acceptance ещё не выполнены.
+
+## Доменные метрики и SQLAlchemy — 2026-10-07
+
+После external schema documentation: [add-domain-observability](changes/add-domain-observability/proposal.md), затем [add-sqlalchemy-transaction-adapter](changes/add-sqlalchemy-transaction-adapter/proposal.md). Два независимых planning changes: snapshot/Prometheus domain aggregation и optional sync SQLAlchemy caller transaction. Async SQLAlchemy не обещается. Реализация ещё не начата; published RC3 неизменен.
