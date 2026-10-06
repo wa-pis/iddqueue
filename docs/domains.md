@@ -193,3 +193,5 @@ sum(rate(dramatiq_message_duration_milliseconds_sum{queue_name="billing"}[5m]))
 Duration is in milliseconds. Native counters belong to worker lifetimes; retain
 and aggregate their time series in Prometheus. SQL snapshot gauges do not replace
 those counters. No new HTTP server, message-ID labels or storage schema is added.
+
+See the [debugging kit](debugging.md) for processing errors/retries/rejects, p50/p95 and a ready-made dashboard.

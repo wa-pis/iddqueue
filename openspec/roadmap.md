@@ -165,3 +165,7 @@ Compose перенесены из корня, скиллы исключены и
 После external schema documentation: [add-domain-observability](changes/archive/2026-10-07-add-domain-observability/proposal.md), затем [add-sqlalchemy-transaction-adapter](changes/archive/2026-10-07-add-sqlalchemy-transaction-adapter/proposal.md). Оба changes завершены и архивированы: snapshot/Prometheus domain aggregation и optional sync SQLAlchemy caller transaction. Async SQLAlchemy не поддерживается этим adapter; published RC3 неизменен.
 
 Domain observability завершён 2026-10-07: 165 tests, actual CI 37540304330 6/6, signed 6e65d5e; main spec synced и архив. SQLAlchemy adapter завершён: 173 tests, CI 37541082307 6/6 после rerun старого timing test; signed 1feb1df, main spec synced, архив 2026-10-07.
+
+## Debugging metrics kit — 2026-10-07
+
+[add-debugging-metrics-kit](changes/add-debugging-metrics-kit/proposal.md): guide, optional external exporter и Grafana dashboard на существующих метриках. Local 175 tests, 12 PromQL queries promtool validated; CI pending. Published RC3 unchanged.

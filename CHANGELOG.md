@@ -5,6 +5,8 @@ remain preserved with upstream credits. Unreleased entries are not publication.
 
 ## Unreleased
 
+- Add optional debugging metrics guide, storage exporter example and Grafana dashboard using native metrics.
+
 - Add optional synchronous SQLAlchemy Connection/Session transactional enqueue adapter on Psycopg 3.
 
 - Add domain queue snapshots and optional Prometheus domain gauges, combining main/delayed queues.

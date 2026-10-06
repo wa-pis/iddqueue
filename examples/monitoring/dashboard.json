@@ -1,0 +1,453 @@
+{
+  "title": "IDDQueue debugging",
+  "uid": "iddqueue-debug",
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": true,
+  "tags": [
+    "iddqueue",
+    "dramatiq"
+  ],
+  "timezone": "browser",
+  "refresh": "30s",
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Ready backlog",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$datasource"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "max by (domain) (iddqueue_domain_ready{job=\"$storage_job\",domain=~\"${domain:regex}\"})",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "legendFormat": "{{domain}}{{actor_name}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 2,
+      "title": "Oldest ready age",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$datasource"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 0,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "max by (domain) (iddqueue_domain_oldest_ready_seconds{job=\"$storage_job\",domain=~\"${domain:regex}\"})",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "legendFormat": "{{domain}}{{actor_name}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 3,
+      "title": "Scheduled tasks",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$datasource"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 0,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "max by (domain) (iddqueue_domain_scheduled{job=\"$storage_job\",domain=~\"${domain:regex}\"})",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "legendFormat": "{{domain}}{{actor_name}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 4,
+      "title": "Executing actors",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$datasource"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 8,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(dramatiq_messages_inprogress{job=\"$worker_job\",queue_name=~\"${domain:regex}(\\\\.DQ)?\"})",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "legendFormat": "{{domain}}{{actor_name}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 5,
+      "title": "Retained rejected rows",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$datasource"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 8,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "max by (domain) (iddqueue_domain_messages{job=\"$storage_job\",domain=~\"${domain:regex}\",state=\"rejected\"})",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "legendFormat": "{{domain}}{{actor_name}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 6,
+      "title": "Errors in selected range",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$datasource"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 8,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(increase(dramatiq_message_errors_total{job=\"$worker_job\",queue_name=~\"${domain:regex}(\\\\.DQ)?\"}[$__range]))",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "legendFormat": "{{domain}}{{actor_name}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 7,
+      "title": "Retries in selected range",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$datasource"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 16,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(increase(dramatiq_message_retries_total{job=\"$worker_job\",queue_name=~\"${domain:regex}(\\\\.DQ)?\"}[$__range]))",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "legendFormat": "{{domain}}{{actor_name}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 8,
+      "title": "Terminal rejects in selected range",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$datasource"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 16,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(increase(dramatiq_message_rejects_total{job=\"$worker_job\",queue_name=~\"${domain:regex}(\\\\.DQ)?\"}[$__range]))",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "legendFormat": "{{domain}}{{actor_name}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 9,
+      "title": "Processed attempts per second",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$datasource"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 16,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(dramatiq_messages_total{job=\"$worker_job\",queue_name=~\"${domain:regex}(\\\\.DQ)?\"}[$__rate_interval]))",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "legendFormat": "{{domain}}{{actor_name}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 10,
+      "title": "Duration p50",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$datasource"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 24,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.50, sum by (le) (rate(dramatiq_message_duration_milliseconds_bucket{job=\"$worker_job\",queue_name=~\"${domain:regex}(\\\\.DQ)?\"}[$__rate_interval]))) / 1000",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "legendFormat": "{{domain}}{{actor_name}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 11,
+      "title": "Duration p95",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$datasource"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 24,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(dramatiq_message_duration_milliseconds_bucket{job=\"$worker_job\",queue_name=~\"${domain:regex}(\\\\.DQ)?\"}[$__rate_interval]))) / 1000",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "legendFormat": "{{domain}}{{actor_name}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 12,
+      "title": "Errors per actor per second",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$datasource"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 24,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (actor_name) (rate(dramatiq_message_errors_total{job=\"$worker_job\",queue_name=~\"${domain:regex}(\\\\.DQ)?\"}[$__rate_interval]))",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "legendFormat": "{{domain}}{{actor_name}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops"
+        },
+        "overrides": []
+      }
+    }
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "datasource",
+        "label": "Prometheus",
+        "type": "datasource",
+        "query": "prometheus",
+        "refresh": 1
+      },
+      {
+        "name": "worker_job",
+        "label": "Worker scrape job",
+        "type": "textbox",
+        "query": "iddqueue-workers",
+        "current": {
+          "text": "iddqueue-workers",
+          "value": "iddqueue-workers"
+        }
+      },
+      {
+        "name": "storage_job",
+        "label": "Storage scrape job",
+        "type": "textbox",
+        "query": "iddqueue-storage",
+        "current": {
+          "text": "iddqueue-storage",
+          "value": "iddqueue-storage"
+        }
+      },
+      {
+        "name": "domain",
+        "label": "Domain",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "$datasource"
+        },
+        "query": "label_values(iddqueue_domain_ready{job=\"$storage_job\"}, domain)",
+        "definition": "label_values(iddqueue_domain_ready{job=\"$storage_job\"}, domain)",
+        "refresh": 1,
+        "multi": true,
+        "includeAll": true,
+        "allValue": ".*",
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        }
+      }
+    ]
+  }
+}

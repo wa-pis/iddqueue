@@ -1,8 +1,10 @@
 import json
 import os
+import re
 import socket
 import subprocess
 import time
+from pathlib import Path
 from urllib.request import urlopen
 from uuid import uuid4
 
@@ -85,6 +87,12 @@ def test_standard_prometheus_processing_and_retry(tmp_path):
                     assert value("dramatiq_messages_total", "saver") >= 1
                     assert value("dramatiq_message_errors_total", "failing") >= 2
                     assert value("dramatiq_message_duration_milliseconds_count", "saver") >= 1
+                    assert value("dramatiq_message_rejects_total", "failing") >= 1
+                    dashboard = (Path(__file__).resolve().parents[2] / "examples/monitoring/dashboard.json").read_text()
+                    metrics = set(re.findall(r"dramatiq_[a-z_]+", dashboard))
+                    assert metrics <= {sample.name for sample in samples}
+                    assert value("dramatiq_message_duration_milliseconds_bucket", "saver") >= 1
+                    assert any(sample.name == "dramatiq_messages_inprogress" and sample.labels.get("queue_name") == queue for sample in samples)
                     return
             except OSError:
                 pass
