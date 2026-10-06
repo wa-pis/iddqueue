@@ -154,4 +154,4 @@ Compose перенесены из корня, скиллы исключены и
 
 ## RC3 — 2026-10-07
 
-[publish-rc3](changes/publish-rc3/proposal.md): 0.13.0rc3 с Domain API, release gate и публикация по существующему GitHub/PyPI flow. Выполняется; RC1/RC2 неизменны.
+[publish-rc3](changes/archive/2026-10-07-publish-rc3/proposal.md): 0.13.0rc3 опубликован на GitHub/PyPI с Domain API. Candidate 911ca1a; 158 local tests, CI 37536626612 6/6; OIDC 37537043153 success. Remote hashes/clean index installation/quickstart проверены; архив 2026-10-07. RC1/RC2 неизменны.
