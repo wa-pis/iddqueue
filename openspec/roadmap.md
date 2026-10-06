@@ -158,7 +158,7 @@ Compose перенесены из корня, скиллы исключены и
 
 ## Внешнее управление схемой — 2026-10-07
 
-[document-external-schema-management](changes/document-external-schema-management/proposal.md): план документации/проверок существующего explicit DDL и external migration runner. Auto-migration flag не требуется; RC2 -> RC3 без DDL. Реализация и PostgreSQL acceptance ещё не выполнены.
+[document-external-schema-management](changes/archive/2026-10-07-document-external-schema-management/proposal.md): план документации/проверок существующего explicit DDL и external migration runner. Auto-migration flag не требуется; RC2 -> RC3 без DDL. Завершено: 160 tests, CI 37539694974 6/6; внешняя схема/runtime без CREATE проверены, main spec synced, архив 2026-10-07.
 
 ## Доменные метрики и SQLAlchemy — 2026-10-07
 
