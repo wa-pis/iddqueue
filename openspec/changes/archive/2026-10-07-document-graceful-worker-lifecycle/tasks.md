@@ -5,4 +5,4 @@
 
 ## 2. Completion
 
-- [ ] 2.1 Docs/OpenSpec checks, signed commit/push, actual GitHub CI; evidence и archive.
+- [x] 2.1 Docs/OpenSpec checks, signed commit/push, actual GitHub CI; evidence и archive.

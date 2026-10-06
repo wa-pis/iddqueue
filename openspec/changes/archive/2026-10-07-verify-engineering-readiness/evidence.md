@@ -38,3 +38,5 @@
 Follow-up change fix-readiness-observation-gaps: dashboard interpolation, deterministic/message-specific timing tests, native Prometheus hard-restart lifecycle guidance. Эта проверка не исправляла findings и не заявляет readiness next RC.
 
 Local full suite:175passed57.96s; Ruff passed; uv lock --check passed; build/LICENSE passed. No runtime changes. Remote CI pending.
+
+Remote Tests37547185094:6/6 first-attempt success on signed718927461280fd4dd57bea582a76a609d5295410 (includes prior signed verificationbcaaacc46858062f85af03ed376edfd53b06c277). Documentation37547185152success/deployed. Verification-only parent run cancelled by superseding main push, not counted as completed check. Findings remain planned, not fixed.

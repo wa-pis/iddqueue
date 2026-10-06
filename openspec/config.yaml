@@ -12,7 +12,7 @@ context: |
   Delivery: at-least-once; задачи должны быть идемпотентными.
   Existing public API: PostgresBroker, PostgresBackend, generate_init_sql, iddqueue CLI.
   Local migration implemented before OpenSpec adoption on 2026-10-02.
-  Verified: 173 tests on Python 3.13.14/PostgreSQL 14.20; SQLAlchemy adapter CI 37541082307 6/6, Ruff/docs/build/install checks.
+  Verified: 175 tests on Python 3.13.14/PostgreSQL 14.20; engineering readiness/graceful lifecycle CI 37547185094 6/6, Ruff/docs/build/LICENSE/installed acceptance.
   GitHub CI passed all six Python 3.10/3.13/3.14 and PostgreSQL 14/18 combinations; run 37541082307; installed base/monitoring wheel acceptance and strict docs checks and installed-wheel quickstart passed.
   GitHub: https://github.com/wa-pis/iddqueue, public, main; 0.13.0rc3 опубликован на GitHub/PyPI через Trusted Publishing, будущая публикация требует отдельного запроса.
   Preserve PostgreSQL license and original contributor credits.

@@ -176,6 +176,8 @@ Domain observability завершён 2026-10-07: 165 tests, actual CI 375403043
 
 ## Engineering readiness — 2026-10-07
 
-[verify-engineering-readiness](changes/verify-engineering-readiness/proposal.md): installed wheel atomicity/domain/results, 2340tasks/120.66s multi-worker SIGKILL/restart, shutdown connections0, actual Grafana13.2.3 render. Найдены dotted-domain PromQL error, non-specific ACK/random tests и hard-restart native inprogress stale5. [fix-readiness-observation-gaps](changes/fix-readiness-observation-gaps/proposal.md) — план исправлений, apply pending. Publication не выполнялась; readiness следующего RC не объявляется.
+[verify-engineering-readiness](changes/archive/2026-10-07-verify-engineering-readiness/proposal.md): installed wheel atomicity/domain/results, 2340tasks/120.66s multi-worker SIGKILL/restart, shutdown connections0, actual Grafana13.2.3 render. Найдены dotted-domain PromQL error, non-specific ACK/random tests и hard-restart native inprogress stale5. [fix-readiness-observation-gaps](changes/fix-readiness-observation-gaps/proposal.md) — план исправлений, apply pending. Publication не выполнялась; readiness следующего RC не объявляется.
 
-[document-graceful-worker-lifecycle](changes/document-graceful-worker-lifecycle/proposal.md): native SIGHUP8results/newPIDs и active-task SIGTERM/exit0/connections0 подтверждены; deployment guide signals/timeouts/container grace обновлён. CI pending.
+[document-graceful-worker-lifecycle](changes/archive/2026-10-07-document-graceful-worker-lifecycle/proposal.md): native SIGHUP8results/newPIDs и active-task SIGTERM/exit0/connections0 подтверждены; deployment guide signals/timeouts/container grace обновлён. 175 local tests passed, actual CI37547185094 6/6 и Documentation37547185152success; архив2026-10-07.
+
+Readiness verification завершена и архивирована:175tests57.96s, CI37547185094 6/6. Три findings остаются в fix-readiness-observation-gaps; не исправлены этой проверкой.

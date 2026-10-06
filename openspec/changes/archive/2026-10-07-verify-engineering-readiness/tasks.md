@@ -7,4 +7,4 @@
 
 ## 2. Evidence
 
-- [ ] 2.1 Проверки OpenSpec/docs и review findings; signed commit/push, actual CI, archive.
+- [x] 2.1 Проверки OpenSpec/docs и review findings; signed commit/push, actual CI, archive.
