@@ -43,6 +43,7 @@ nav:
       - Why PostgreSQL: why.md
   - Reference:
       - API and CLI: api.md
+      - 0.13.0rc5 release notes: rc-0.13.0rc5.md
       - 0.13.0rc4 release notes: rc-0.13.0rc4.md
       - 0.13.0rc3 release notes: rc-0.13.0rc3.md
       - 0.13.0rc2 release notes: rc-0.13.0rc2.md

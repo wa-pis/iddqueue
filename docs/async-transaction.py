@@ -1,4 +1,4 @@
-"""Development API: atomic async publication, isolated schema and cleanup."""
+"""RC5 API: atomic async publication, isolated schema and cleanup."""
 
 import asyncio
 import os

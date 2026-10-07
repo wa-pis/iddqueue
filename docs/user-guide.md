@@ -34,9 +34,8 @@ PostgresRateLimiterBackend supports Dramatiq counters, window/bucket/concurrent 
 
 PostgresScheduler persists fixed intervals, polls due rows and atomically publishes/advances each occurrence. Multiple schedulers share work using row locks. Missed intervals coalesce into one task; no cron/calendar or full replay. Pausing a destination still allows publication. Disable preserves queued tasks. Examples, CLI flags and detailed limitations: [recipes](recipes.md) and [API Reference](api.md).
 
-## Async transaction input (development)
+## Async transaction input
 
-The development branch adds explicit awaitable single/batch publication on a
-caller-owned Psycopg AsyncConnection. Published RC4 supports synchronous
-transaction input only. See the [async recipe](recipes.md#async-transactional-publishing-development)
+RC5 includes explicit awaitable single/batch publication on a
+caller-owned Psycopg AsyncConnection. The synchronous methods remain available. See the [async recipe](recipes.md#async-transactional-publishing)
 for ownership, cancellation and synchronous hook limits. Workers and results remain synchronous.

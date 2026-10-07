@@ -66,7 +66,7 @@ pool and url arguments have the same meaning and the same behaviour as for Postg
 
 `broker.enqueue_in_transaction(message, *, connection, delay=None)` requires a synchronous Psycopg 3 connection with an active transaction. It returns the enqueued message, including the delayed queue and eta when `delay` is supplied in milliseconds. An idle connection raises `ValueError`; database errors propagate without automatic retries.
 
-Development branch (not published RC4): `await broker.enqueue_in_transaction_async(message, *, connection, delay=None, deduplication_key=None, deduplication_ttl=None)`
+Included in RC5: `await broker.enqueue_in_transaction_async(message, *, connection, delay=None, deduplication_key=None, deduplication_ttl=None)`
 and `await broker.enqueue_many_in_transaction_async(messages, *, connection, options=None)`
 require a Psycopg 3 AsyncConnection already in an active transaction. Wrong input
 type raises TypeError; an inactive connection raises ValueError. They return a
@@ -125,6 +125,6 @@ startup. Actor names are qualified with the domain; options are validated on
 registration. See [domain lifecycle and examples](domains.md). This additive API
 is included since 0.13.0rc3.
 
-Monitoring additions (0.13.0rc4): `domain_statistics(pool, *, domains=None, schema="dramatiq", prefix="")` and `PostgresDomainCollector(pool, **options)` from `iddqueue.metrics`. See [domain metric semantics](domains.md#domain-monitoring); these additions are included in RC4.
+Monitoring additions (since 0.13.0rc4): `domain_statistics(pool, *, domains=None, schema="dramatiq", prefix="")` and `PostgresDomainCollector(pool, **options)` from `iddqueue.metrics`. See [domain metric semantics](domains.md#domain-monitoring); these additions are included in RC5.
 
-Optional adapter (0.13.0rc4): `iddqueue.sqlalchemy.enqueue_sqlalchemy(broker, message, *, connection, delay=None, deduplication_key=None, deduplication_ttl=None)`. See [SQLAlchemy transactions](sqlalchemy.md); included in RC4.
+Optional adapter (since 0.13.0rc4): `iddqueue.sqlalchemy.enqueue_sqlalchemy(broker, message, *, connection, delay=None, deduplication_key=None, deduplication_ttl=None)`. See [SQLAlchemy transactions](sqlalchemy.md); included in RC5.

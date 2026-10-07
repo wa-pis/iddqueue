@@ -7,6 +7,13 @@ remain preserved with upstream credits. Unreleased entries are not publication.
 
 No pending release entries.
 
+## 0.13.0rc5 — release candidate — 2026-10-07
+
+- Add explicit awaitable single/batch transactional publication using caller-owned Psycopg AsyncConnection, with delay, deduplication, savepoints and cancellation propagation.
+- Preserve synchronous consumers/results/hooks and optional synchronous SQLAlchemy adapter; no database migration from RC4.
+- Add runnable async business transaction/actor recipe to release checks and update installation/API guides.
+- Complete static security diff review of all 20 changed paths after RC4; no new security findings. Dependency advisory feeds and deployed privileges are outside that review.
+
 ## 0.13.0rc4 — release candidate — 2026-10-07
 
 - Discard malformed PostgreSQL notification hints without restarting consumers or releasing active locks; use a consistent UUID identity for claim/ACK.

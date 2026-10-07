@@ -28,9 +28,9 @@ milliseconds, measured from enqueue time. Enqueue middleware hooks run around
 the SQL operation: `after_enqueue` does not mean the outer transaction has
 committed. Workers still provide at-least-once delivery.
 
-### Async transactional publishing (development)
+### Async transactional publishing
 
-Available on the development branch; **not included in published RC4**.
+Available in **0.13.0rc5**.
 Use the same active Psycopg AsyncConnection for your business SQL and publication:
 
 ```python
@@ -66,7 +66,7 @@ The SQLAlchemy adapter still accepts synchronous Connection/Session only.
 
 The [runnable isolated example](async-transaction.py) creates and removes its own
 schema and verifies an actor result. Run against a dedicated local PostgreSQL
-with PGHOST/PGPORT/PGUSER/PGDATABASE configured, from a development checkout:
+with PGHOST/PGPORT/PGUSER/PGDATABASE configured, from a checkout matching the installed RC5:
 
 ```bash
 IDDQUEUE_TEST_DATABASE=dedicated uv run --locked --extra binary python docs/async-transaction.py

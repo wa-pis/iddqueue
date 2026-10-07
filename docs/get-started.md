@@ -3,7 +3,7 @@
 Install the published release candidate:
 
     uv venv
-    uv pip install "iddqueue[binary]==0.13.0rc4"
+    uv pip install "iddqueue[binary]==0.13.0rc5"
 
 The binary extra supplies libpq through Psycopg's binary distribution. Base installation instead needs system libpq. Configure PGHOST, PGPORT, PGUSER, PGPASSWORD and PGDATABASE, or pass a connection string to PostgresBroker.
 
@@ -36,7 +36,7 @@ For an application module named tasks, run `dramatiq tasks` separately, then sen
 
     export IDDQUEUE_TEST_DATABASE=dedicated
     python docs/quickstart.py
-    uv build --out-dir dist/0.13.0rc4
-    uv run --locked --extra binary --extra monitoring python scripts/check_package.py --quickstart --expected-version 0.13.0rc4 dist/0.13.0rc4/iddqueue-0.13.0rc4-py3-none-any.whl
+    uv build --out-dir dist/0.13.0rc5
+    uv run --locked --extra binary --extra monitoring python scripts/check_package.py --quickstart --expected-version 0.13.0rc5 dist/0.13.0rc5/iddqueue-0.13.0rc5-py3-none-any.whl
 
 It asserts six storage tables, the enqueued row and result 5, then stops the worker, closes pools and drops the schema. Runtime examples and operations: [User Guide](user-guide.md) and [Deployment Guide](deployment-guide.md).

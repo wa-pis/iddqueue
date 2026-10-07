@@ -1,7 +1,7 @@
 # Release readiness
 
 Build and checks do not create tags or publish a package. The repository is public;
-0.13.0rc4 is published on GitHub and PyPI. Future publication requires a separate
+0.13.0rc5 is published on GitHub and PyPI. Future publication requires a separate
 explicit request. See [Trusted Publishing](publishing.md).
 
 1. Select the candidate commit; check `git status --short` and `git rev-parse HEAD`.
@@ -61,4 +61,4 @@ Hashes identify a build, not an assurance that an arbitrary later build is equal
 The readiness procedure stops here. Version changes, release tags, package upload
 and repository settings are separate actions, never implied by passing checks.
 
-Published release candidate: [0.13.0rc4 notes](rc-0.13.0rc4.md).
+Published release candidate: [0.13.0rc5 notes](rc-0.13.0rc5.md).
