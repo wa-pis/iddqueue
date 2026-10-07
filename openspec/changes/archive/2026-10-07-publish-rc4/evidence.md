@@ -20,3 +20,11 @@ Finalcandidate signed6eb5aac4a1a11472d575c3e4e425e5a2285d825a pushmain. Finalwhe
 Finalcandidateca68594f035b46a4b21e0a8a9ae4ad50da6c6d4f signed/pushed; Tests37557035497firstattemptactual6/6success, Documentation37557035482success. Lock/crashchangesarchived; fixedpublisherworkflowtargetca68594 andfinalhashesverified. Publicrc4/sqlalchemy/customrecipes docscheckedHTTP200/expectedcontent. Tag/publicationpending.
 
 Signedtagv0.13.0rc4 verifiedgoodSSHsignature, points toca68594; pushed. GitHubhttps://github.com/wa-pis/iddqueue/releases/tag/v0.13.0rc4 isPrereleasetrue/targetCommitishca68594; assetswheel36247bytes/sdist27315bytes/SHA256SUMS194bytes. Downloadreadbackbothhashesequalfinal1fd710c4/25a03c41, checksumsfilebytesmatch. PyPIpending.
+
+Publisher signedcommitd2732483b609724d675fe2a07344878f4e573caf pushmain. PyPI Trusted Publishing37557486173success, exactdownloadedGitHubassets validatedwithoutrebuild. PublisherTests37557474420actual6/6success/Documentation37557474421success. SignedtagpushTests37557356139actual6/6success also verified.
+
+PyPIhttps://pypi.org/project/iddqueue/0.13.0rc4/ JSONversion0.13.0rc4/LicenseExpressionPostgreSQL/twoexacthashesmatchfinalassets. Freshindexinstall/tmp/iddqueue-rc4-index-check [binary,monitoring,sqlalchemy] from https://pypi.org/simple/ succeeded(no direct_url.json), outsidecheckoutimports/version/license/Domain/SQLAlchemy/domainmetrics and uvpipcheckpassed. Первое immediateindexinstall ещёнеразрешилversion; publicsimpleindexRC4confirmed и explicitindexretrypassed. Первыйquickstartзапускбезdedicatedguard rejectedbeforeDBwork; correctguardrerunpending.
+
+Correctguardcleanindexquickstart exit0: sixstorage tables/enqueue/actorresult5, isolatedquickstartschema removed; nativeworker/poolstopped. PyPIcleaninstallationacceptance complete. GitHubreleasebody nowlinksPyPI/OIDC37557486173, readbackconfirmed. Release0.13.0rc4achieved; archivalactionpendingonly.
+
+Releasechangeархивирован2026-10-07; allsix tasks complete, roadmap/config synchronized.
