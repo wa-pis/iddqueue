@@ -1,3 +1,4 @@
+import json
 import os
 import signal
 import sys
@@ -28,8 +29,19 @@ class Listener(object):
         self.conn.close()
         self.conn = self.cursor = None
 
-    def wait(self, count=1, timeout=8):
-        self.notifies = list(self.conn.notifies(timeout=timeout, stop_after=count))
+    def wait(self, count=1, timeout=8, message_ids=None):
+        wanted = set(message_ids) if message_ids is not None else None
+        self.notifies = []
+        with closing(self.conn.notifies(timeout=timeout)) as stream:
+            for notification in stream:
+                if wanted is not None:
+                    message_id = json.loads(notification.payload).get("message_id")
+                    if message_id not in wanted:
+                        continue
+                    wanted.remove(message_id)
+                self.notifies.append(notification)
+                if len(self.notifies) == count:
+                    break
         if len(self.notifies) < count:
             raise self.Timeout("Timeout")
         return self.notifies

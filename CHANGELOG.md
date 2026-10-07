@@ -12,7 +12,7 @@ No pending release entries.
 - Discard malformed PostgreSQL notification hints without restarting consumers or releasing active locks; use a consistent UUID identity for claim/ACK.
 - Acquire each claim advisory lock once regardless of PostgreSQL scan plan, preventing reentrant lock leaks after ACK/NACK.
 - Bind the local PostgreSQL example to loopback.
-- Fix Grafana dotted/multiple domain interpolation, use deterministic retry/delay tests and document fresh Prometheus directories after hard restarts.
+- Fix Grafana dotted/multiple domain interpolation, use deterministic retry/delay/crash tests and document fresh Prometheus directories after hard restarts.
 - Add external schema management, custom recipe and graceful worker restart/shutdown guides with installed acceptance evidence.
 
 - Add optional debugging metrics guide, storage exporter example and Grafana dashboard using native metrics.

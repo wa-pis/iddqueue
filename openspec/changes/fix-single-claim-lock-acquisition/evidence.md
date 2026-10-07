@@ -7,3 +7,5 @@ SQL uncorrelated scalar subquery одинраз наstatement; тотжепар�
 Первый PG18 test setup вызвал SyntaxError из psqlmetacommand и test отсутствия witnessschema; не passing evidence. Послеудаления metacommand и создания witness schema checks executed успешно. FreshdisposablePG18; PG14 основной dedicatedcluster55433.
 
 FinalPG18 EXPLAIN: InitPlan1/Result, One-Time Filter:(InitPlan1).col1 и SeqScan rowfilter без lockfunction; послеACK extra pg_advisory_unlock False. Полный scripts/check_release.sh exit0 наPG14.20/Python3.13.14:190passed58.58s; Ruff/lock/pipcheck/docsstrict/OpenSpec/build/LICENSE/base+monitoring+sqlalchemy installed/quickstart passed. Это новый gate, прежние188pass/hashcandidateисторические.
+
+Signed6eb5aac pushmain. Isolated installedRC4wheel onPG18 additionally confirms forcedSeqScan/singleACKrelease, malformedNOTIFYsame sessions, SQLAlchemyatomicity and domainResults. Source/README/metadata bytes match assets. CI37556241736 pending.

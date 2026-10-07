@@ -102,6 +102,21 @@ def execution_time():
     return time.time()
 
 
+@dramatiq.actor(store_results=True, max_retries=0)
+def crash_probe(marker):
+    with iddqueue.utils.transaction(pool) as curs:
+        curs.execute("INSERT INTO functest.witness(payload) VALUES (%s)",
+                     (Jsonb({"crash_started": marker}),))
+    deadline = time.monotonic() + 30
+    while time.monotonic() < deadline:
+        with iddqueue.utils.transaction(pool) as curs:
+            curs.execute("SELECT 1 FROM functest.witness WHERE payload->>'crash_ready'=%s", (marker,))
+            if curs.fetchone():
+                return marker
+        time.sleep(0.02)
+    raise RuntimeError("Crash test did not release the actor gate")
+
+
 @dramatiq.actor(store_results=True, max_retries=1, min_backoff=500, max_backoff=500)
 def retryable(marker):
     conn = iddqueue.utils.getconn(pool)

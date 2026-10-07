@@ -1,11 +1,24 @@
+import json
 import signal
 import time
 from random import randint
 from uuid import uuid4
 
 import pytest
+from dramatiq.results import ResultTimeout
 
-from tests.func.actors import execution_time, rejecting, retryable, sleeper, writer
+from tests.func.actors import crash_probe, execution_time, rejecting, retryable, writer
+
+
+def test_listener_matches_task(listener, pgconn):
+    expected = str(uuid4())
+    with listener:
+        with pgconn() as curs:
+            for message_id in [str(uuid4()), expected]:
+                curs.execute("SELECT pg_notify('dramatiq.default.ack', %s)",
+                             (json.dumps({"message_id": message_id}),))
+        received = listener.wait(message_ids=[expected])
+        assert [json.loads(n.payload)["message_id"] for n in received] == [expected]
 
 
 @pytest.mark.timeout(12)
@@ -24,7 +37,7 @@ def test_massive(listener, pgconn, witness, worker):
             messages.append(message)
 
         # Wait for *count* ack from workers.
-        listener.wait(count)
+        listener.wait(count, message_ids=[m.message_id for m in messages])
 
     # Ensure the witness table has effectively been updated.
     with pgconn() as curs:
@@ -66,8 +79,8 @@ def test_retry(pgconn, witness, worker):
 @pytest.mark.timeout(4)
 def test_nack(listener, pgconn, witness, worker):
     with listener:
-        rejecting.send(message="Rejecting from func test.")
-        listener.wait(1)
+        message = rejecting.send(message="Rejecting from func test.")
+        listener.wait(1, message_ids=[message.message_id])
 
     with pgconn() as curs:
         curs.execute("SELECT payload FROM functest.witness LIMIT 1;")
@@ -106,27 +119,30 @@ def test_reconnect(listener, pgconn, worker):
         message  # This is for pytest to dump message UUID in error logs.
 
         # Wait for *count* ack from workers.
-        listener.wait(1, timeout=30)
+        listener.wait(1, timeout=30, message_ids=[message.message_id])
 
 
-def test_crash(listener, worker):
-    with listener:
-        with worker.open_log() as fo:
-            # Send a somewhat long message. Longer than dramatiq loop.
-            sleeper.send(1.5)
+@pytest.mark.timeout(20)
+def test_crash(pgconn, witness, worker):
+    marker = uuid4().hex
+    worker.crash_message = crash_probe.send(marker)
+    deadline = time.monotonic() + 8
+    while time.monotonic() < deadline:
+        with pgconn() as curs:
+            curs.execute("SELECT 1 FROM functest.witness WHERE payload->>'crash_started'=%s", (marker,))
+            if curs.fetchone():
+                break
+        time.sleep(0.02)
+    else:
+        pytest.fail("Crash actor never reached controlled gate")
+    worker.crash()
+    worker.proc.wait(timeout=5)
+    with pytest.raises(ResultTimeout):
+        worker.crash_message.get_result(block=True, timeout=2000)
+    with pgconn() as curs:
+        curs.execute("INSERT INTO functest.witness(payload) VALUES (jsonb_build_object('crash_ready', %s::text))",
+                     (marker,))
 
-            # Watch log for message reception.
-            worker.watch_log(fo, "Received message sleeper(1.5)")
 
-        # Kill *all* dramatiq processes.
-        worker.crash()
-
-        # Ensure that the message is not processed.
-        with pytest.raises(listener.Timeout):
-            listener.wait(1, timeout=2)
-
-
-def test_recover(listener, restart_worker):
-    # Now restart worker and ensure the message is processed.
-    with listener:
-        listener.wait(1, timeout=5)
+def test_recover(worker, restart_worker):
+    assert worker.crash_message.get_result(block=True, timeout=10000) == worker.crash_message.args[0]
