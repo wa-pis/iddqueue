@@ -20,3 +20,17 @@ Signed candidate09a8393377f5335b3cf0eb85c08845cbb9751f3c pushedmain, GitHub sign
 ## GitHub stable release
 
 Signedtagv0.13.0 goodSSHsignature, targetcandidate09a8393377f5335b3cf0eb85c08845cbb9751f3c. https://github.com/wa-pis/iddqueue/releases/tag/v0.13.0 isPrereleasefalse/isDraftfalse; wheel36687bytes,sdist27984bytes,SHA256SUMS188bytes. All3assetsdownloaded/tmp/iddqueue-stable-github-readback, byte-for-byte matchedlocal. Release notes include features/upgrade/limits/candidateCI/hashes.
+
+## PyPI и registry acceptance
+
+Signedpublisher28f0e4641aaef4096ff7fe5a9355732f8e8ae6cc pushedmain; remote publish.yml fetched черезGitHubAPI и byte-compared с local передdispatch. OIDC37676419804success, environmentpypi. PyPI https://pypi.org/project/iddqueue/0.13.0/: version0.13.0/license_expressionPostgreSQL/обаSHA256matched; JSONreadback/tmp/iddqueue-stable-pypi.json.
+
+Cleanvenv/tmp/iddqueue-stable-index-check внеcheckout: uvpipinstall --no-cache --default-indexhttps://pypi.org/simple/ iddqueue[binary,monitoring,sqlalchemy]==0.13.0. Девятьpackages installed; compatibilitycheckpassed. Metadata/version/licenseconfirmed,direct_url.jsonabsent,bothasyncmethods coroutineconfirmed. Freshresolved versions: dramatiq2.2.1,iddqueue0.13.0,prometheus-client0.26.0,psycopg3.3.6,psycopg-binary3.3.6,psycopg-pool3.3.3,sqlalchemy2.1.4,tenacity9.2.1,typing-extensions4.16.0. Lockdependencies unchanged; freshindexresolution закономерно использует доступные версии в пределах existingranges.
+
+Copiedquickstart/async-transactionexecutedbin/python-I: installedpackage only, dedicatedPG14. Six tables/enqueue/result5 и businesscommit/asyncactorresultpassed; bothworkerstopped, isolatedschemasremoved.
+
+Signedtag Tests37676249343success; publisherDocumentation37676365231success. PublisherTests37676365249 success/all6jobs. GitHub latest tagv0.13.0, isPrereleasefalse; release accepted.
+
+## Archive
+
+Change архивирован2026-10-07 послефактическойpublication/acceptance; alltaskscomplete. Release notes добавленывdocs/changelog/GitHubRelease, readbackGitHubbodyconfirmedOIDCrunlink. Безdeltas/main-specchanges.

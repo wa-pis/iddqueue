@@ -12,9 +12,9 @@ context: |
   Delivery: at-least-once; задачи должны быть идемпотентными.
   Existing public API: PostgresBroker, PostgresBackend, generate_init_sql, iddqueue CLI.
   Local migration implemented before OpenSpec adoption on 2026-10-02.
-  Verified: RC5 200 tests in55.84s; candidateCI37587847172first6/6, publisherCI37588308019sixsuccess, OIDC37588338940success, PyPIhashes/cleanindexasyncactorrecipepassed. Historical RC4 191 tests on Python 3.13.14/PostgreSQL 14.20; candidate CI 37557035497 first-attempt 6/6, publisher CI 37557474420 6/6, Ruff/docs/OpenSpec/build/LICENSE/clean index quickstart passed.
+  Verified: stable0.13.0 200tests55.87s, candidateCI37675872261sixsuccess, publisherCI37676365249sixsuccess, OIDC37676419804success, GitHub/PyPIhashes and cleanindexsync/asyncactorrecipespassed. Historical RC5 200 tests in55.84s; candidateCI37587847172first6/6, publisherCI37588308019sixsuccess, OIDC37588338940success, PyPIhashes/cleanindexasyncactorrecipepassed. Historical RC4 191 tests on Python 3.13.14/PostgreSQL 14.20; candidate CI 37557035497 first-attempt 6/6, publisher CI 37557474420 6/6, Ruff/docs/OpenSpec/build/LICENSE/clean index quickstart passed.
   Historical GitHub CI passed all six Python 3.10/3.13/3.14 and PostgreSQL 14/18 combinations; run 37541082307; installed base/monitoring wheel acceptance and strict docs checks and installed-wheel quickstart passed.
-  GitHub: https://github.com/wa-pis/iddqueue, public, main; 0.13.0rc5 опубликован на GitHub/PyPI через Trusted Publishing, будущая публикация требует отдельного запроса.
+  GitHub: https://github.com/wa-pis/iddqueue, public, main; 0.13.0 опубликован на GitHub/PyPI через Trusted Publishing, будущая публикация требует отдельного запроса.
   Preserve PostgreSQL license and original contributor credits.
   Feature roadmap: openspec/roadmap.md; previous six features and baseline archived; extend-postgres-capabilities все семь этапов выполнены, main specs синхронизированы; change архивирован 2026-10-03.
   Project maintenance practices completed, project-maintenance main spec synced; change archived 2026-10-04. uv migration completed; uv.lock, native uv_build and locked CI/release gate; change archived 2026-10-04.

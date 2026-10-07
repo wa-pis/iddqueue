@@ -63,9 +63,12 @@ The release gate checks unit/functional tests on a dedicated PostgreSQL instance
 Ruff, locked dependencies, strict documentation/OpenSpec, wheel/sdist LICENSE,
 isolated installation profiles, quickstart and the async business/actor recipe.
 Local validation passed: **200 tests**, async actor recipe, strict docs/OpenSpec,
-build/LICENSE and isolated base/monitoring/SQLAlchemy profiles. All six candidate
-CI combinations must pass before publication. GitHub and PyPI
-receive the same verified artifacts with SHA256 readback and a clean registry install.
+build/LICENSE and isolated base/monitoring/SQLAlchemy profiles. [All six candidate CI combinations passed](https://github.com/wa-pis/iddqueue/actions/runs/37675872261).
+[GitHub release](https://github.com/wa-pis/iddqueue/releases/tag/v0.13.0) and
+[PyPI 0.13.0](https://pypi.org/project/iddqueue/0.13.0/) contain the same verified
+wheel/sdist. [OIDC publication succeeded](https://github.com/wa-pis/iddqueue/actions/runs/37676419804).
+SHA256 readback matched; a clean registry installation passed both quickstart
+and the async business transaction/actor recipe.
 
 The completed static Codex Security diff review after RC4 covered 20 changed paths
 and found no new security findings. This is not a fresh full-repository or

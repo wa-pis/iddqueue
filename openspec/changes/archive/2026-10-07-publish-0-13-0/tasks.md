@@ -7,5 +7,5 @@
 ## 2. Publication
 
 - [x] 2.1 Signed tag и GitHub stable release exact assets; проверить tag/target и SHA256 downloaded assets.
-- [ ] 2.2 Pin publisher version/SHA/hashes, signed push; проверить remote workflow и OIDC PyPI success.
-- [ ] 2.3 Проверить PyPI metadata/hash, clean index installation/async recipe, actual publisher CI/docs; обновить evidence/roadmap и архивировать change.
+- [x] 2.2 Pin publisher version/SHA/hashes, signed push; проверить remote workflow и OIDC PyPI success.
+- [x] 2.3 Проверить PyPI metadata/hash, clean index installation/async recipe, actual publisher CI/docs; обновить evidence/roadmap и архивировать change.

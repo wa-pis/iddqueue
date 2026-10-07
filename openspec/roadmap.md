@@ -2,7 +2,7 @@
 
 ## 0.13.0 — стабильный выпуск
 
-[publish-0-13-0](changes/publish-0-13-0/proposal.md): выпуск авторизован пользователем. Release notes, gate, CI и публикация требуют фактической проверки.
+[publish-0-13-0](changes/archive/2026-10-07-publish-0-13-0/proposal.md): стабильный 0.13.0 опубликован в GitHub/PyPI. Local200tests55.87s; candidateCI37675872261sixsuccess, publisherCI37676365249sixsuccess, OIDC37676419804success. Signedcandidate09a8393/tagv0.13.0; exact GitHub/PyPI hashes, cleanindexsync/asyncactorrecipespassed. Release notes/docs/changelog обновлены. Runtime/SQL побайтово идентичны RC5; DDL не требуется. Change архивирован.
 
 ## RC5 — выпуск 2026-10-07
 
