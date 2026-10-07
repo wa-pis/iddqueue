@@ -2,11 +2,11 @@
 
 ## RC5 — выпуск 2026-10-07
 
-[publish-rc5](changes/publish-rc5/proposal.md): пользователь авторизовал GitHub/PyPI RC5 с async transactional enqueue. Security diff20paths/findings0 завершён; metadata/docs/About обновляются, release gate/CI/publication ещё требуют фактической проверки.
+[publish-rc5](changes/archive/2026-10-07-publish-rc5/proposal.md): RC5 опубликован в GitHub и PyPI с async transactional enqueue. Release gate: 200 tests passed; candidate и publisher CI 6/6, Documentation success. OIDC run 37588338940 success; SHA256 GitHub/PyPI совпали, clean index installation и async actor recipe прошли. Документация и About обновлены, security diff: 20 paths, 0 findings. Change архивирован.
 
 ## Async transactional enqueue — завершено 2026-10-07
 
-[add-async-transactional-enqueue](changes/archive/2026-10-07-add-async-transactional-enqueue/proposal.md): реализованы awaitable single/batch методы для caller Psycopg AsyncConnection, delay/dedup/savepoint, cancellation и атомарные business/task/NOTIFY проверки. 200 local tests passed in 55.90s; runnable actor recipe/cleanup, Ruff/lock/docs/OpenSpec passed. Signed dc6539b, GitHub signature verified; Tests 37581161072 first-attempt 6/6, Documentation 37581161030 success, matrix build/LICENSE/installed-wheel gates passed. Main specs синхронизированы, change архивирован. Без DDL/новых dependencies; sync broker и SQLAlchemy adapter сохранены. API доступен в main после RC4, опубликованный RC4 неизменен; новая публикация требует отдельного запроса.
+[add-async-transactional-enqueue](changes/archive/2026-10-07-add-async-transactional-enqueue/proposal.md): реализованы awaitable single/batch методы для caller Psycopg AsyncConnection, delay/dedup/savepoint, cancellation и атомарные business/task/NOTIFY проверки. 200 local tests passed in 55.90s; runnable actor recipe/cleanup, Ruff/lock/docs/OpenSpec passed. Signed dc6539b, GitHub signature verified; Tests 37581161072 first-attempt 6/6, Documentation 37581161030 success, matrix build/LICENSE/installed-wheel gates passed. Main specs синхронизированы, change архивирован. Без DDL/новых dependencies; sync broker и SQLAlchemy adapter сохранены. API опубликован в RC5; опубликованный RC4 неизменен.
 
 ## Tooling — 2026-10-04
 

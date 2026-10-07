@@ -7,5 +7,5 @@
 ## 2. Publication
 
 - [x] 2.1 Signed tag/GitHub prerelease exact assets, скачать и проверить SHA256.
-- [ ] 2.2 Pin publisher version/SHA/hashes, signed push и OIDC PyPI success.
-- [ ] 2.3 Проверить PyPI metadata/hash, clean index installation и async recipe, actual publisher CI; evidence/roadmap/archive.
+- [x] 2.2 Pin publisher version/SHA/hashes, signed push и OIDC PyPI success.
+- [x] 2.3 Проверить PyPI metadata/hash, clean index installation и async recipe, actual publisher CI; evidence/roadmap/archive.
