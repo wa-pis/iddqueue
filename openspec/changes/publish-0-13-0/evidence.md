@@ -12,3 +12,11 @@ eaa5e6c855485249908c67eaab24ddfd71b762f2030cefe7cba31f5ec68c1826  iddqueue-0.13.
 8531940c89b29e88161e547f1d441b13f52f3c01a8330de315a91862356b4ddb  iddqueue-0.13.0.tar.gz
 
 Remote CI и publication ещё не проверены.
+
+## Candidate CI
+
+Signed candidate09a8393377f5335b3cf0eb85c08845cbb9751f3c pushedmain, GitHub signatureverifiedtrue/reasonvalid. Tests37675872261 success: Python3.10/3.13/3.14 × PostgreSQL14/18, all6jobs success. Documentation37675872233build/deploysuccess. PublicHTTP release-0.13.0/get-started checked. Local200tests55.87s.
+
+## GitHub stable release
+
+Signedtagv0.13.0 goodSSHsignature, targetcandidate09a8393377f5335b3cf0eb85c08845cbb9751f3c. https://github.com/wa-pis/iddqueue/releases/tag/v0.13.0 isPrereleasefalse/isDraftfalse; wheel36687bytes,sdist27984bytes,SHA256SUMS188bytes. All3assetsdownloaded/tmp/iddqueue-stable-github-readback, byte-for-byte matchedlocal. Release notes include features/upgrade/limits/candidateCI/hashes.
