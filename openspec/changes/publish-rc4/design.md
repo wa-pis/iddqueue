@@ -9,3 +9,5 @@ Release gate в новой dist/0.13.0rc4; candidate signed commit после л
 ## Risks / Trade-offs
 
 PyPI version immutable, неизвестный outcome требует readback, не слепого повторного upload. SQLAlchemy optional/sync; никаких DDL изменений RC3->RC4. Security review — статический standard scan с явно ограниченным prose/dependency coverage; не обещать отсутствие всех уязвимостей.
+
+Candidatea529e5e CI5/6initialfailure выявил scan-plan lock reentrance. Включён fix-single-claim-lock-acquisition; RC4 ещё не published/tagged. Прежние локальные188pass/hashfacts сохраняются исторически, finalcandidate/hashes будут новыми.

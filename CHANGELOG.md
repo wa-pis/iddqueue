@@ -10,6 +10,7 @@ No pending release entries.
 ## 0.13.0rc4 — release candidate — 2026-10-07
 
 - Discard malformed PostgreSQL notification hints without restarting consumers or releasing active locks; use a consistent UUID identity for claim/ACK.
+- Acquire each claim advisory lock once regardless of PostgreSQL scan plan, preventing reentrant lock leaks after ACK/NACK.
 - Bind the local PostgreSQL example to loopback.
 - Fix Grafana dotted/multiple domain interpolation, use deterministic retry/delay tests and document fresh Prometheus directories after hard restarts.
 - Add external schema management, custom recipe and graceful worker restart/shutdown guides with installed acceptance evidence.

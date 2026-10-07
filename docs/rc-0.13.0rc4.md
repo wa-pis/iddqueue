@@ -9,6 +9,7 @@ Fourth release candidate, following [RC3](rc-0.13.0rc3.md).
 - Debugging guide, separate storage exporter example and Grafana dashboard, including dotted/multiple domains.
 - External schema management, custom recipes and native graceful SIGHUP/SIGTERM worker lifecycle guidance.
 - Malformed NOTIFY hints are discarded without tearing down consumers. Claims still use durable database contents; UUID lock identity is consistent for claim/ACK.
+- Claim SQL acquires its session advisory lock once per statement even with sequential scans, so one ACK/NACK releases it.
 - Local PostgreSQL Compose binds to loopback. Deterministic retry/delay regressions and hard-restart metrics directory guidance.
 
 No DDL migration is required from RC3. SQLAlchemy/monitoring extras remain

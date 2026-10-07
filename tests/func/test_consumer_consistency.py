@@ -169,3 +169,28 @@ def test_scan_and_alternate_uuid_hints(area, alternate_durable):
     with psycopg.connect("", autocommit=True) as conn:
         assert conn.execute("SELECT pg_try_advisory_lock(%s)",
                             (message_lock(one, schema=broker.queries.schema),)).fetchone()[0]
+
+
+@pytest.mark.parametrize("reject", [False, True])
+def test_claim_lock_acquired_once_with_sequential_scan(area, reject):
+    broker, consumer = area
+    c = consumer()
+    for _ in range(50):
+        broker.enqueue(task("other"))
+    message = task()
+    broker.enqueue(message)
+    conn = c.get_consume_conn()
+    conn.execute("SET enable_indexscan=off")
+    conn.execute("SET enable_bitmapscan=off")
+    plan = conn.execute("EXPLAIN " + c.queries.CONSUME_ONE,
+                        (message.message_id, message.queue_name,
+                         message_lock(message, schema=broker.queries.schema))).fetchall()
+    assert any("Seq Scan" in row[0] for row in plan)
+    c.notifies = [hint(message)]
+    claimed = next(c)
+    assert claimed.message_id == message.message_id
+    (c.nack if reject else c.ack)(claimed)
+    c.purge_locks()
+    with psycopg.connect("", autocommit=True) as observer:
+        assert observer.execute("SELECT pg_try_advisory_lock(%s)",
+                                (message_lock(message, schema=broker.queries.schema),)).fetchone()[0]

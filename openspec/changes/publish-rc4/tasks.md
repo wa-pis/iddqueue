@@ -1,6 +1,6 @@
 ## 1. Candidate
 
-- [x] 1.1 Завершить security/readiness fixes, actual CI и OpenSpec archive.
+- [ ] 1.1 Завершить security/readiness fixes, actual CI и OpenSpec archive.
 - [x] 1.2 Metadata/version/lock/docs/release notes; полный release gate, installed profiles, LICENSE и immutable hashes.
 - [ ] 1.3 Signed candidate push, фактические Tests6/6 и Documentation success.
 

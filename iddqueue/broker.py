@@ -603,7 +603,8 @@ QUERIES = QueryManager(
                 mtime = NOW()
             WHERE message_id = %s AND queue_name = %s
             AND state IN ('queued', 'consumed')
-            AND pg_try_advisory_lock(%s)
+            -- Uncorrelated subquery acquires the session lock once per statement.
+            AND (SELECT pg_try_advisory_lock(%s))
             RETURNING message::text;
         """
         ),
