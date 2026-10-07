@@ -21,3 +21,7 @@ b80dc688df636f63c380cbb6a287417260fbd926239ea2d6826621585c22ec36  iddqueue-0.13.
 ## Remote
 
 CandidateCI/publication/readbacks pending; unchecked tasks remain pending.
+
+## Candidate and GitHub publication
+
+Signedcandidate186542bdf615ea48cb53a8142cc588f5726af5f8 pushedmain; GitHubverified=true/reasonvalid. Tests37587847172success/all6jobsfirstattempt; Documentation37587847095success. Signedtagv0.13.0rc5 verified and pushed; GitHub https://github.com/wa-pis/iddqueue/releases/tag/v0.13.0rc5 isPrerelease=true, targetCommitish exactcandidate. Wheel36744bytes/sdist27996bytes/SHA256SUMS194bytes. All3 assets downloaded to/tmp/iddqueue-rc5-github-readback and bytes matched local exactfiles. Publisherpins version/candidate/hashes and remainsmanual; PyPI not yet verified.
