@@ -32,7 +32,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "max by (domain) (iddqueue_domain_ready{job=\"$storage_job\",domain=~\"${domain:regex}\"})",
+          "expr": "max by (domain) (iddqueue_domain_ready{job=\"$storage_job\",domain=~\"${domain}\"})",
           "datasource": {
             "type": "prometheus",
             "uid": "$datasource"
@@ -64,7 +64,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "max by (domain) (iddqueue_domain_oldest_ready_seconds{job=\"$storage_job\",domain=~\"${domain:regex}\"})",
+          "expr": "max by (domain) (iddqueue_domain_oldest_ready_seconds{job=\"$storage_job\",domain=~\"${domain}\"})",
           "datasource": {
             "type": "prometheus",
             "uid": "$datasource"
@@ -96,7 +96,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "max by (domain) (iddqueue_domain_scheduled{job=\"$storage_job\",domain=~\"${domain:regex}\"})",
+          "expr": "max by (domain) (iddqueue_domain_scheduled{job=\"$storage_job\",domain=~\"${domain}\"})",
           "datasource": {
             "type": "prometheus",
             "uid": "$datasource"
@@ -128,7 +128,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(dramatiq_messages_inprogress{job=\"$worker_job\",queue_name=~\"${domain:regex}(\\\\.DQ)?\"})",
+          "expr": "sum(dramatiq_messages_inprogress{job=\"$worker_job\",queue_name=~\"${domain}(\\\\.DQ)?\"})",
           "datasource": {
             "type": "prometheus",
             "uid": "$datasource"
@@ -160,7 +160,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "max by (domain) (iddqueue_domain_messages{job=\"$storage_job\",domain=~\"${domain:regex}\",state=\"rejected\"})",
+          "expr": "max by (domain) (iddqueue_domain_messages{job=\"$storage_job\",domain=~\"${domain}\",state=\"rejected\"})",
           "datasource": {
             "type": "prometheus",
             "uid": "$datasource"
@@ -192,7 +192,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(increase(dramatiq_message_errors_total{job=\"$worker_job\",queue_name=~\"${domain:regex}(\\\\.DQ)?\"}[$__range]))",
+          "expr": "sum(increase(dramatiq_message_errors_total{job=\"$worker_job\",queue_name=~\"${domain}(\\\\.DQ)?\"}[$__range]))",
           "datasource": {
             "type": "prometheus",
             "uid": "$datasource"
@@ -224,7 +224,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(increase(dramatiq_message_retries_total{job=\"$worker_job\",queue_name=~\"${domain:regex}(\\\\.DQ)?\"}[$__range]))",
+          "expr": "sum(increase(dramatiq_message_retries_total{job=\"$worker_job\",queue_name=~\"${domain}(\\\\.DQ)?\"}[$__range]))",
           "datasource": {
             "type": "prometheus",
             "uid": "$datasource"
@@ -256,7 +256,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(increase(dramatiq_message_rejects_total{job=\"$worker_job\",queue_name=~\"${domain:regex}(\\\\.DQ)?\"}[$__range]))",
+          "expr": "sum(increase(dramatiq_message_rejects_total{job=\"$worker_job\",queue_name=~\"${domain}(\\\\.DQ)?\"}[$__range]))",
           "datasource": {
             "type": "prometheus",
             "uid": "$datasource"
@@ -288,7 +288,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(rate(dramatiq_messages_total{job=\"$worker_job\",queue_name=~\"${domain:regex}(\\\\.DQ)?\"}[$__rate_interval]))",
+          "expr": "sum(rate(dramatiq_messages_total{job=\"$worker_job\",queue_name=~\"${domain}(\\\\.DQ)?\"}[$__rate_interval]))",
           "datasource": {
             "type": "prometheus",
             "uid": "$datasource"
@@ -320,7 +320,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "histogram_quantile(0.50, sum by (le) (rate(dramatiq_message_duration_milliseconds_bucket{job=\"$worker_job\",queue_name=~\"${domain:regex}(\\\\.DQ)?\"}[$__rate_interval]))) / 1000",
+          "expr": "histogram_quantile(0.50, sum by (le) (rate(dramatiq_message_duration_milliseconds_bucket{job=\"$worker_job\",queue_name=~\"${domain}(\\\\.DQ)?\"}[$__rate_interval]))) / 1000",
           "datasource": {
             "type": "prometheus",
             "uid": "$datasource"
@@ -352,7 +352,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "histogram_quantile(0.95, sum by (le) (rate(dramatiq_message_duration_milliseconds_bucket{job=\"$worker_job\",queue_name=~\"${domain:regex}(\\\\.DQ)?\"}[$__rate_interval]))) / 1000",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(dramatiq_message_duration_milliseconds_bucket{job=\"$worker_job\",queue_name=~\"${domain}(\\\\.DQ)?\"}[$__rate_interval]))) / 1000",
           "datasource": {
             "type": "prometheus",
             "uid": "$datasource"
@@ -384,7 +384,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum by (actor_name) (rate(dramatiq_message_errors_total{job=\"$worker_job\",queue_name=~\"${domain:regex}(\\\\.DQ)?\"}[$__rate_interval]))",
+          "expr": "sum by (actor_name) (rate(dramatiq_message_errors_total{job=\"$worker_job\",queue_name=~\"${domain}(\\\\.DQ)?\"}[$__rate_interval]))",
           "datasource": {
             "type": "prometheus",
             "uid": "$datasource"

@@ -1,11 +1,11 @@
 import signal
 import time
-from datetime import datetime, timezone
 from random import randint
+from uuid import uuid4
 
 import pytest
 
-from tests.func.actors import failing, rejecting, sleeper, writer
+from tests.func.actors import execution_time, rejecting, retryable, sleeper, writer
 
 
 @pytest.mark.timeout(12)
@@ -44,21 +44,23 @@ def test_massive(listener, pgconn, witness, worker):
     assert locks == 0
 
 
-@pytest.mark.timeout(8)
-def test_retry(listener, pgconn, witness, worker):
-    # Start listening for ack.
-    with listener:
-        failing.send(always=False, message="Testing retry")
-
-        failed = True
-        while failed:
-            # Wait for ack of current try.
-            listener.wait()
-
-            # Check whether the task has been sucessful.
-            with pgconn() as curs:
-                curs.execute("SELECT * FROM functest.witness;")
-            failed = 0 == curs.rowcount
+@pytest.mark.timeout(30)
+def test_retry(pgconn, witness, worker):
+    marker = uuid4().hex
+    message = retryable.send(marker)
+    deadline = time.monotonic() + 8
+    while time.monotonic() < deadline:
+        with pgconn() as curs:
+            curs.execute("SELECT message FROM dramatiq.queue WHERE message_id=%s", (message.message_id,))
+            payload = curs.fetchone()[0]
+        if payload["options"].get("pg_failure", {}).get("attempt") == 1:
+            break
+        time.sleep(0.01)
+    else:
+        pytest.fail("Controlled first failure was not persisted")
+    with pgconn() as curs:
+        curs.execute("INSERT INTO functest.witness(payload) VALUES (jsonb_build_object('ready', %s::text))", (marker,))
+    assert message.get_result(block=True, timeout=10000) == marker
 
 
 @pytest.mark.timeout(4)
@@ -73,31 +75,15 @@ def test_nack(listener, pgconn, witness, worker):
     assert "Rejecting from func test." == payload["kwargs"]["message"]
 
 
-@pytest.mark.timeout(8)
-def test_delay(listener, pgconn, worker):
-    with listener:
-        queue_time = datetime.now(timezone.utc)
-        writer.send("no delay")
-        writer.send_with_options(args=("delayed",), delay=1000)
-        listener.wait()
-        immediate_delta = datetime.now(timezone.utc) - queue_time
-        listener.wait()
-        delayed_delta = datetime.now(timezone.utc) - queue_time
-
-    assert immediate_delta.total_seconds() < 1
-    assert delayed_delta.total_seconds() > 1
-
-    with listener:
-        queue_time = datetime.now(timezone.utc)
-        # Dramatiq worker loops each second. Thus, delaying 2s ensure the
-        # message wont be processed before SIGHUP.
-        writer.send_with_options(args=("requeued",), delay=2000)
-        # SIGHUP triggers requeue, restart and recover.
-        worker.proc.send_signal(signal.SIGHUP)
-        listener.wait()
-        delayed_delta = datetime.now(timezone.utc) - queue_time
-
-    assert delayed_delta.total_seconds() > 1
+@pytest.mark.timeout(30)
+def test_delay(worker):
+    immediate = execution_time.send()
+    delayed = execution_time.send_with_options(delay=1000)
+    assert immediate.get_result(block=True, timeout=10000) >= immediate.message_timestamp / 1000
+    assert delayed.get_result(block=True, timeout=10000) >= delayed.options["eta"] / 1000
+    requeued = execution_time.send_with_options(delay=2000)
+    worker.proc.send_signal(signal.SIGHUP)
+    assert requeued.get_result(block=True, timeout=10000) >= requeued.options["eta"] / 1000
 
 
 def test_reconnect(listener, pgconn, worker):

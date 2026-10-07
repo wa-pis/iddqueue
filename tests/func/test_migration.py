@@ -1,4 +1,5 @@
 import threading
+import time
 from concurrent.futures import ThreadPoolExecutor
 from uuid import uuid4
 
@@ -154,7 +155,11 @@ def test_retry_wakes_consumer_after_old_lock_release(pool, monkeypatch):
         assert next(observer) is None
         owner.ack(claimed)
         owner.purge_locks()
-        retried = next(observer)
+        deadline = time.monotonic() + 2
+        retried = None
+        while retried is None and time.monotonic() < deadline:
+            retried = next(observer)
+        assert retried is not None, "Retry did not wake consumer after lock release"
         assert retried.message_id == task.message_id
         assert retried.options["retries"] == 1
         observer.ack(retried)

@@ -1,11 +1,11 @@
 ## 1. Dashboard
 
-- [ ] 1.1 Confirm dotted-domain regression, исправить interpolation, проверить реальный Grafana single/multi/All и PromQL.
+- [x] 1.1 Confirm dotted-domain regression, исправить interpolation, проверить реальный Grafana single/multi/All и PromQL.
 
 ## 2. Tests and lifecycle
 
-- [ ] 2.1 Controlled retry, message-specific delay/result assertions и bounded lock-release observation; repeat regressions.
-- [ ] 2.2 Документировать native Prometheus directory lifetime/hard restart и проверить idle inprogress0 после свежего directory.
+- [x] 2.1 Controlled retry, message-specific delay/result assertions и bounded lock-release observation; repeat regressions.
+- [x] 2.2 Документировать native Prometheus directory lifetime/hard restart и проверить idle inprogress0 после свежего directory.
 
 ## 3. Validation
 

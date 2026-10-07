@@ -21,6 +21,15 @@ directory per worker service. Multiple spawned processes within that service
 share its multiprocess metrics directory. Do not share that directory between
 independent replicas or unrelated jobs. Scrape each replica's endpoint once.
 
+Use a fresh directory for each replica lifetime, including a restart after
+SIGKILL. A hard kill skips Dramatiq's shutdown cleanup, so reusing its directory
+can preserve stale `inprogress` gauges. For example, create a unique directory
+before each launch and export it as `dramatiq_prom_db`. Remove an old directory
+only after every process using it has exited; never clean an active replica's
+files. A fresh directory resets process-local counters and loses unsampled
+history. Prometheus `rate` handles counter resets, but these metrics cannot
+reconstruct work lost in the crash window.
+
 Start the separate storage exporter with the same database/schema/prefix:
 
 ```sh
