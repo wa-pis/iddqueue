@@ -3,7 +3,7 @@
 The `Domain` API is included in `0.13.0rc3`:
 
 ```sh
-uv pip install "iddqueue[binary]==0.13.0rc3"
+uv pip install "iddqueue[binary]==0.13.0rc4"
 ```
 
 ## Declare tasks without DSN
@@ -145,9 +145,9 @@ schema/prefix namespaces for storage separation and database roles/databases
 when access isolation is required. One standard worker uses one broker; several
 DSNs require independent process bootstraps, not an automatic multi-broker worker.
 
-## Domain monitoring (development checkout)
+## Domain monitoring
 
-This monitoring API is not included in published RC3 yet. It does not require
+This monitoring API is included in RC4. It does not require
 importing actor modules or registering Domain objects:
 
 ```python

@@ -1,7 +1,7 @@
-# SQLAlchemy transactional publication (development checkout)
+# SQLAlchemy transactional publication (0.13.0rc4)
 
-This optional adapter is not in published RC3 yet. Install the checkout with
-`uv sync --extra binary --extra sqlalchemy`. SQLAlchemy remains optional for
+This optional adapter is included in RC4. Install it with
+`uv pip install "iddqueue[binary,sqlalchemy]==0.13.0rc4"`. SQLAlchemy remains optional for
 producers; the broker and workers still use synchronous Psycopg 3.
 
 ```python

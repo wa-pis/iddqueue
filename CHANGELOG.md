@@ -5,6 +5,15 @@ remain preserved with upstream credits. Unreleased entries are not publication.
 
 ## Unreleased
 
+No pending release entries.
+
+## 0.13.0rc4 — release candidate — 2026-10-07
+
+- Discard malformed PostgreSQL notification hints without restarting consumers or releasing active locks; use a consistent UUID identity for claim/ACK.
+- Bind the local PostgreSQL example to loopback.
+- Fix Grafana dotted/multiple domain interpolation, use deterministic retry/delay tests and document fresh Prometheus directories after hard restarts.
+- Add external schema management, custom recipe and graceful worker restart/shutdown guides with installed acceptance evidence.
+
 - Add optional debugging metrics guide, storage exporter example and Grafana dashboard using native metrics.
 
 - Add optional synchronous SQLAlchemy Connection/Session transactional enqueue adapter on Psycopg 3.

@@ -1,12 +1,12 @@
 # Debugging queues
 
-The development checkout includes a ready-made metrics kit. Domain gauges and
-this kit are not in published RC3 yet. Monitoring stays optional; no exporter or
+RC4 includes a ready-made metrics kit and domain gauges. Monitoring stays optional; no exporter or
 middleware is started by the broker automatically.
 
 ## Enable processing and storage metrics
 
-Install the checkout with `uv sync --extra binary --extra monitoring`.
+Install with `uv pip install "iddqueue[binary,monitoring]==0.13.0rc4"`.
+The exporter/dashboard examples are available in the repository.
 Add native processing middleware in the worker bootstrap before starting workers:
 
 ```python
@@ -110,4 +110,4 @@ and retry expectations.
 
 References: [Grafana JSON model](https://grafana.com/docs/grafana/latest/visualizations/dashboards/build-dashboards/view-dashboard-json-model/),
 [Prometheus histogram aggregation](https://prometheus.io/docs/practices/histograms/),
-[domain metric semantics](domains.md#domain-monitoring-development-checkout).
+[domain metric semantics](domains.md#domain-monitoring).
