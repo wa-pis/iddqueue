@@ -1,8 +1,8 @@
 # План развития PostgreSQL-проекта
 
-## Async transactional enqueue — план 2026-10-07
+## Async transactional enqueue — завершено 2026-10-07
 
-[add-async-transactional-enqueue](changes/add-async-transactional-enqueue/proposal.md): отдельные awaitable single/batch методы для caller Psycopg AsyncConnection; commit/rollback, delay/dedup, savepoint и cancellation checks. Proposal/design/delta specs/tasks подготовлены; реализация и проверки runtime ещё не выполнены. Без DDL/новых dependencies; sync broker и async SQLAlchemy adapter не меняются. RC4 опубликован без этой возможности; новая публикация требует отдельного запроса.
+[add-async-transactional-enqueue](changes/archive/2026-10-07-add-async-transactional-enqueue/proposal.md): реализованы awaitable single/batch методы для caller Psycopg AsyncConnection, delay/dedup/savepoint, cancellation и атомарные business/task/NOTIFY проверки. 200 local tests passed in 55.90s; runnable actor recipe/cleanup, Ruff/lock/docs/OpenSpec passed. Signed dc6539b, GitHub signature verified; Tests 37581161072 first-attempt 6/6, Documentation 37581161030 success, matrix build/LICENSE/installed-wheel gates passed. Main specs синхронизированы, change архивирован. Без DDL/новых dependencies; sync broker и SQLAlchemy adapter сохранены. API доступен в main после RC4, опубликованный RC4 неизменен; новая публикация требует отдельного запроса.
 
 ## Tooling — 2026-10-04
 

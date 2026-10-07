@@ -16,5 +16,5 @@
 
 - [x] 3.1 Добавить framework-independent runnable async transaction recipe; обновить API/FastAPI/user-guide/актуальные ограничения, явно сохранить отсутствие этой возможности в RC4 и async SQLAlchemy adapter.
 - [x] 3.2 Выполнить полный tests/unit tests/func на выделенном PostgreSQL, Ruff, uv lock --check, strict docs и openspec validate --all --strict; записать реальные команды/результаты в evidence.md. Build/LICENSE — при packaging изменениях.
-- [ ] 3.3 Сделать отдельный подписанный feature commit, push в wa-pis/iddqueue main и проверить фактический GitHub CI; не публиковать пакет/tag.
-- [ ] 3.4 После успешной проверки синхронизировать delta specs, архивировать change и обновить roadmap/evidence по фактическим результатам.
+- [x] 3.3 Сделать отдельный подписанный feature commit, push в wa-pis/iddqueue main и проверить фактический GitHub CI; не публиковать пакет/tag.
+- [x] 3.4 После успешной проверки синхронизировать delta specs, архивировать change и обновить roadmap/evidence по фактическим результатам.

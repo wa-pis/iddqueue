@@ -19,4 +19,10 @@
 
 ## Remote verification
 
-Ожидается после подписанного feature commit и push. Новые tag/release/PyPI публикации не выполняются; документы явно обозначают development API вне RC4.
+Подписанный feature commit dc6539bfc03ddb7eecd71c031057fd27a224d825 отправлен в wa-pis/iddqueue main. GitHub verification: verified=true, reason=valid.
+
+Tests https://github.com/wa-pis/iddqueue/actions/runs/37581161072: success, все шесть Python 3.10/3.13/3.14 × PostgreSQL 14/18 jobs success с первой попытки. Каждый job выполняет full tests + runnable async recipe + strict docs/OpenSpec + build/LICENSE/installed wheel gate. Documentation https://github.com/wa-pis/iddqueue/actions/runs/37581161030: success. Новые tag/release/PyPI публикации не выполняются; документы явно обозначают development API вне RC4.
+
+## Finalization
+
+Два ADDED delta синхронизированы в main specs; полное совпадение requirements/scenarios проверено до архива. Change архивирован 2026-10-07; self-archive checkbox отмечен после фактического переноса. Strict OpenSpec после архива: 19/19, активных changes нет.
