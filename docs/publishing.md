@@ -1,12 +1,12 @@
 # PyPI Trusted Publishing
 
-The public GitHub prerelease is available at
-[v0.13.0rc5](https://github.com/wa-pis/iddqueue/releases/tag/v0.13.0rc5).
+The public GitHub release is available at
+[v0.13.0](https://github.com/wa-pis/iddqueue/releases/tag/v0.13.0).
 The manual [publish workflow](https://github.com/wa-pis/iddqueue/blob/main/.github/workflows/publish.yml) uploads those
 exact wheel/sdist files, after checking the recorded candidate SHA and fixed
 SHA256 hashes. It does not rebuild the candidate or need a stored API token.
 
-0.13.0rc5 has been published successfully through this workflow. RC1 remains available.
+0.13.0 has been published successfully through this workflow. Earlier release candidates remain available.
 The trusted publisher is configured; do not add it again or rerun the same
 immutable release upload. For a new release, prepare a verified candidate and
 update the workflow's version, candidate SHA and hashes first.
@@ -26,19 +26,20 @@ and add a pending GitHub publisher:
 | Environment name | `pypi` |
 
 If you already own the PyPI project, add the same publisher in its project
-Publishing settings instead. A pending publisher creates the project on first
+Publishing settings instead. Set Environment name to `pypi` to restrict the publisher
+to that environment rather than allowing any environment. A pending publisher creates the project on first
 successful upload; it does not reserve the name beforehand.
 
-For the initial upload after registration, run **Publish RC to PyPI** on `main`, or:
+For the initial upload after registration, run **Publish to PyPI** on `main`, or:
 
 ```sh
 gh workflow run publish.yml --repo wa-pis/iddqueue --ref main
 ```
 
-Check actual job success, PyPI version `0.13.0rc5` and both file SHA256 values,
-then install `iddqueue[binary]==0.13.0rc5` in a clean environment. Do not treat
+Check actual job success, PyPI version `0.13.0` and both file SHA256 values,
+then install `iddqueue[binary]==0.13.0` in a clean environment. Do not treat
 workflow preparation or a queued job as successful publication. Do not paste
-API tokens into issues or chat. This workflow is scoped to the exact configured RC;
+API tokens into issues or chat. This workflow is scoped to the exact configured release;
 a future version needs its own verified candidate and hashes.
 
 References: [PyPI pending publishers](https://docs.pypi.org/trusted-publishers/creating-a-project-through-oidc/),
@@ -47,11 +48,11 @@ References: [PyPI pending publishers](https://docs.pypi.org/trusted-publishers/c
 ## Publish a future verified candidate manually
 
 1. Complete the [release checks](release.md), using a new version.
-2. Open the repository's **Releases**, create the matching prerelease and attach
+2. Open the repository's **Releases**, create the matching release (mark prerelease only for an RC) and attach
    the verified wheel and sdist. Record the candidate commit and file hashes.
 3. Update `publish.yml` to that version, commit and hashes; commit and push to
    `main`. Keep the existing `pypi` environment and trusted publisher.
-4. Open **Actions → Publish RC to PyPI → Run workflow**, select `main` and run.
+4. Open **Actions → Publish to PyPI → Run workflow**, select `main` and run.
 5. Open the completed run. Both validation and publication must succeed. Check
    the new version and file hashes on PyPI, then install it in a fresh environment.
 

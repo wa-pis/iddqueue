@@ -3,8 +3,8 @@
 A recipe is a small, reproducible application example: one task, its bootstrap,
 commands to run it, and an expected result. Start with existing [recipes](recipes.md)
 and extend the closest one. Domain actors below are available in published
-**0.13.0rc5**. Optional [SQLAlchemy publication](sqlalchemy.md) and domain monitoring are
-also included in RC5.
+**0.13.0**. Optional [SQLAlchemy publication](sqlalchemy.md) and domain monitoring are
+also included in 0.13.0.
 
 ## 1. Define the contract
 
@@ -107,7 +107,7 @@ Equivalent commands, run from the directory containing `myrecipe/`:
 
 ```sh
 uv venv
-uv pip install 'iddqueue[binary]==0.13.0rc5'
+uv pip install 'iddqueue[binary]==0.13.0'
 export DATABASE_URL='postgresql://localhost/recipe_test'
 # CLI uses PostgreSQL's standard environment variables.
 export PGHOST=localhost PGDATABASE=recipe_test

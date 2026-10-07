@@ -254,7 +254,7 @@ wheels = [
 
 [[package]]
 name = "iddqueue"
-version = "0.13.0rc5"
+version = "0.13.0"
 source = { editable = "." }
 dependencies = [
     { name = "dramatiq" },

@@ -1,5 +1,9 @@
 # План развития PostgreSQL-проекта
 
+## 0.13.0 — стабильный выпуск
+
+[publish-0-13-0](changes/publish-0-13-0/proposal.md): выпуск авторизован пользователем. Release notes, gate, CI и публикация требуют фактической проверки.
+
 ## RC5 — выпуск 2026-10-07
 
 [publish-rc5](changes/archive/2026-10-07-publish-rc5/proposal.md): RC5 опубликован в GitHub и PyPI с async transactional enqueue. Release gate: 200 tests passed; candidate и publisher CI 6/6, Documentation success. OIDC run 37588338940 success; SHA256 GitHub/PyPI совпали, clean index installation и async actor recipe прошли. Документация и About обновлены, security diff: 20 paths, 0 findings. Change архивирован.

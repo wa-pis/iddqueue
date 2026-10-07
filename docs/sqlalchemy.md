@@ -1,7 +1,7 @@
-# SQLAlchemy transactional publication (0.13.0rc5)
+# SQLAlchemy transactional publication (0.13.0)
 
-This optional adapter is included in RC5. Install it with
-`uv pip install "iddqueue[binary,sqlalchemy]==0.13.0rc5"`. SQLAlchemy remains optional for
+This optional adapter is included in 0.13.0. Install it with
+`uv pip install "iddqueue[binary,sqlalchemy]==0.13.0"`. SQLAlchemy remains optional for
 producers; the broker and workers still use synchronous Psycopg 3.
 
 ```python

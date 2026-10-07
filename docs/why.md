@@ -22,4 +22,4 @@ No current IDDQueue throughput or latency advantage over other brokers has been 
 
 The inherited [perf.py](https://github.com/wa-pis/iddqueue/blob/main/tests/perf.py) and [perfagg.py](https://github.com/wa-pis/iddqueue/blob/main/tests/perfagg.py) scripts are exploratory tools, outside the current acceptance suite. They are not a validated performance guarantee or a required development check; review their setup before running them on a separate test database.
 
-RC5 also provides explicit awaitable transactional publication on Psycopg AsyncConnection. See [async recipes](recipes.md#async-transactional-publishing).
+0.13.0 also provides explicit awaitable transactional publication on Psycopg AsyncConnection. See [async recipes](recipes.md#async-transactional-publishing).

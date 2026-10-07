@@ -81,7 +81,7 @@ Synchronous [transactional enqueue](user-guide.md) uses a Psycopg
 Connection: move the whole business transaction into a thread if using that API. Sending through
 an independent pool is not atomic with your application's transaction.
 
-RC5 provides `await broker.enqueue_in_transaction_async(...)`
+0.13.0 provides `await broker.enqueue_in_transaction_async(...)`
 and `await broker.enqueue_many_in_transaction_async(...)` on an active caller-owned
 Psycopg AsyncConnection. Business writes and publication use that same connection;
 commit exposes both and rollback cancels both. See the framework-independent

@@ -36,6 +36,6 @@ PostgresScheduler persists fixed intervals, polls due rows and atomically publis
 
 ## Async transaction input
 
-RC5 includes explicit awaitable single/batch publication on a
+0.13.0 includes explicit awaitable single/batch publication on a
 caller-owned Psycopg AsyncConnection. The synchronous methods remain available. See the [async recipe](recipes.md#async-transactional-publishing)
 for ownership, cancellation and synchronous hook limits. Workers and results remain synchronous.

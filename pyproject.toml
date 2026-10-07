@@ -1,6 +1,6 @@
 [project]
 name = "iddqueue"
-version = "0.13.0rc5"
+version = "0.13.0"
 description = "Postgres Broker for Dramatiq Task Queue"
 authors = [{name = "Étienne BERSAC"}]
 license = "PostgreSQL"

@@ -3,7 +3,7 @@
 The `Domain` API is included in `0.13.0rc3`:
 
 ```sh
-uv pip install "iddqueue[binary]==0.13.0rc5"
+uv pip install "iddqueue[binary]==0.13.0"
 ```
 
 ## Declare tasks without DSN

@@ -5,7 +5,7 @@ middleware is started by the broker automatically.
 
 ## Enable processing and storage metrics
 
-Install with `uv pip install "iddqueue[binary,monitoring]==0.13.0rc5"`.
+Install with `uv pip install "iddqueue[binary,monitoring]==0.13.0"`.
 The exporter/dashboard examples are available in the repository.
 Add native processing middleware in the worker bootstrap before starting workers:
 

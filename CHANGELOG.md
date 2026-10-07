@@ -7,6 +7,13 @@ remain preserved with upstream credits. Unreleased entries are not publication.
 
 No pending release entries.
 
+## 0.13.0 — stable release — 2026-10-07
+
+- Promote the verified RC5 runtime to the first stable IDDQueue release; no runtime, dependency or database schema changes from RC5.
+- Include Psycopg 3 broker/results, PostgreSQL coordination, domain actors/queues, sync/async transactional publication, deduplication and batches, task operations, scheduling and optional monitoring/SQLAlchemy integration.
+- Publish complete release notes and stable installation/upgrade instructions; preserve the upstream PostgreSQL license and credits.
+- Pre-1.0 extension APIs remain subject to the documented support policy; stable release does not change at-least-once delivery or require automatic schema migration.
+
 ## 0.13.0rc5 — release candidate — 2026-10-07
 
 - Add explicit awaitable single/batch transactional publication using caller-owned Psycopg AsyncConnection, with delay, deduplication, savepoints and cancellation propagation.
