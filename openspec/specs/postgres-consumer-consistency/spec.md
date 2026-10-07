@@ -48,7 +48,6 @@ Retry wakeup после unlock SHALL сохраняться.
 - **WHEN** retry опубликован до освобождения lock предыдущей попытки
 - **THEN** unlock отправляет wakeup, retry доступен без ожидания случайного recovery scan
 
-
 ### Requirement: Minimal outgoing task notifications
 
 Broker SHALL отправлять в уведомлениях публикации, ACK и NACK только JSON object с message_id, независимо от размера задачи. Аргументы, options, actor names и failure diagnostics MUST оставаться в защищённом SQL storage и не попадать в notification payload. Приём legacy full hints SHALL сохраняться согласно Authoritative queue claim.
@@ -64,3 +63,15 @@ Broker SHALL отправлять в уведомлениях публикаци
 #### Scenario: Legacy notification reception
 - **WHEN** consumer получает старое полное уведомление с устаревшими аргументами
 - **THEN** consumer исполняет authoritative сохранённые данные и новое ACK/NACK содержит только ID
+
+### Requirement: Malformed notification tolerance
+
+Consumer SHALL пропускать недействительные JSON/object/message_id hints без исключения, закрытия sessions или освобождения locks исполняемых задач. Только boolean true scan marker SHALL запускать queue scan. ID-only и legacy full hints с действительным UUID MUST сохраняться; durable claim остаётся authoritative.
+
+#### Scenario: Restricted sender malformed hints
+- **WHEN** роль без queue privileges отправляет malformed JSON, scalar/array/null, missing ID или invalid UUID на известный enqueue channel
+- **THEN** consumer сохраняет sessions и processing locks и claims следующую действительную задачу
+
+#### Scenario: Legacy and scan control
+- **WHEN** consumer получает valid UUID legacy hint либо boolean true scan marker
+- **THEN** выполняется обычный durable claim либо queue scan, без доверия к sender actor/args

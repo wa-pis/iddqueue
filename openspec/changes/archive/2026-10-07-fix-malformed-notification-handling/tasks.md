@@ -5,5 +5,5 @@
 
 ## 2. Validation
 
-- [ ] 2.1 Full tests/unit tests/func, Ruff, lock, docs и strict OpenSpec; evidence, signed commit/push и actual6/6 CI.
-- [ ] 2.2 Синхронизировать spec и архивировать завершённый change.
+- [x] 2.1 Full tests/unit tests/func, Ruff, lock, docs и strict OpenSpec; evidence, signed commit/push и actual6/6 CI.
+- [x] 2.2 Синхронизировать spec и архивировать завершённый change.

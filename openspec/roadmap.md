@@ -181,3 +181,7 @@ Domain observability завершён 2026-10-07: 165 tests, actual CI 375403043
 [document-graceful-worker-lifecycle](changes/archive/2026-10-07-document-graceful-worker-lifecycle/proposal.md): native SIGHUP8results/newPIDs и active-task SIGTERM/exit0/connections0 подтверждены; deployment guide signals/timeouts/container grace обновлён. 175 local tests passed, actual CI37547185094 6/6 и Documentation37547185152success; архив2026-10-07.
 
 Readiness verification завершена и архивирована:175tests57.96s, CI37547185094 6/6. Три findings остаются в fix-readiness-observation-gaps; не исправлены этой проверкой.
+
+## RC4 security remediation — 2026-10-07
+
+Standard Codex Security review commit28044df: medium malformedNOTIFY/lowlocalComposebinding; runtime/scriptsCI/executabletests/examples reviewed, prose/dependencyfeeds partial. [fix-malformed-notification-handling](changes/archive/2026-10-07-fix-malformed-notification-handling/proposal.md) signed190932d Tests37553480914actual6/6/Documentation37553480856success; [restrict-local-postgres-example](changes/archive/2026-10-07-restrict-local-postgres-example/proposal.md) signedde9f077 Tests37554835896actual6/6/Documentation37554835914success. Full188tests61.47s, restricted-role malformed regression and alternate UUID ACKlocks confirmed. Spec synced/security changes archived. [publish-rc4](changes/publish-rc4/proposal.md) authorized/pending; RC3 assets immutable.
