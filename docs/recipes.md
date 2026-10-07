@@ -28,6 +28,50 @@ milliseconds, measured from enqueue time. Enqueue middleware hooks run around
 the SQL operation: `after_enqueue` does not mean the outer transaction has
 committed. Workers still provide at-least-once delivery.
 
+### Async transactional publishing (development)
+
+Available on the development branch; **not included in published RC4**.
+Use the same active Psycopg AsyncConnection for your business SQL and publication:
+
+```python
+async with connection.transaction():
+    await connection.execute("UPDATE orders SET status = %s WHERE id = %s",
+                             ("confirmed", order_id))
+    message = await broker.enqueue_in_transaction_async(
+        send_receipt.message(order_id), connection=connection,
+        deduplication_key=str(order_id), deduplication_ttl=60000,
+    )
+```
+
+For a batch, use `await broker.enqueue_many_in_transaction_async(messages,
+connection=connection, options=options)`, where options is one dictionary per
+message (delay/deduplication_key/deduplication_ttl); the limit is 1000 messages.
+Results preserve input order. Duplicate keys return the existing Message.
+Batch and deduplication operations use an internal savepoint: failure rolls back
+their writes, not earlier business writes. The caller decides whether to commit
+the surrounding transaction.
+
+The connection must already be in an active transaction in the same database
+with the broker's schema/prefix. There is no implicit BEGIN, pool fallback,
+commit, close or retry. Exceptions and cancellation propagate; after a failed
+single SQL statement the caller must roll back before reusing that transaction.
+Let your outer transaction context handle cancellation. A cancellation after
+publication does not undo a transaction already committed; delivery remains
+at least once and a lost commit response has an uncertain outcome.
+
+Enqueue hooks remain synchronous on the event loop and describe SQL execution,
+not external commit. Keep custom hooks short; blocking hooks still block the
+loop. This API does not change actor.send, result retrieval or worker I/O.
+The SQLAlchemy adapter still accepts synchronous Connection/Session only.
+
+The [runnable isolated example](async-transaction.py) creates and removes its own
+schema and verifies an actor result. Run against a dedicated local PostgreSQL
+with PGHOST/PGPORT/PGUSER/PGDATABASE configured, from a development checkout:
+
+```bash
+IDDQUEUE_TEST_DATABASE=dedicated uv run --locked --extra binary python docs/async-transaction.py
+```
+
 ### PostgreSQL limiters and group callbacks
 
 Existing installations must add the coordination table before enabling this

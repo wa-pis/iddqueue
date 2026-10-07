@@ -1,5 +1,9 @@
 # План развития PostgreSQL-проекта
 
+## Async transactional enqueue — план 2026-10-07
+
+[add-async-transactional-enqueue](changes/add-async-transactional-enqueue/proposal.md): отдельные awaitable single/batch методы для caller Psycopg AsyncConnection; commit/rollback, delay/dedup, savepoint и cancellation checks. Proposal/design/delta specs/tasks подготовлены; реализация и проверки runtime ещё не выполнены. Без DDL/новых dependencies; sync broker и async SQLAlchemy adapter не меняются. RC4 опубликован без этой возможности; новая публикация требует отдельного запроса.
+
 ## Tooling — 2026-10-04
 
 [migrate-to-uv](changes/archive/2026-10-04-migrate-to-uv/proposal.md): выполнен переход Poetry → uv, lock/dev groups/build/CI/release gate/docs. Версии зависимостей сохранены; 143 tests passed, installed wheel/quickstart/LICENSE passed, CI 37228008729 6/6 success. Main spec synced; change архивирован. Runtime и публикация вне scope.

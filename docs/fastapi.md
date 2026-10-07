@@ -77,12 +77,17 @@ Request cancellation/disconnection does not stop a running publication thread;
 a commit may have succeeded even if the client received no response. Retrying
 that HTTP request may enqueue another message; no exactly-once promise is made.
 
-[Transactional enqueue](user-guide.md) supports a synchronous Psycopg Connection.
-An application's Psycopg AsyncConnection transaction cannot be passed to that
-API. Sending through this example's independent pool is not atomic with an
-async business transaction. To use existing transactional enqueue, perform the
-business writes and publication on the same synchronous connection, moving the
-whole transaction into a thread when invoked from an async endpoint.
+RC4 [transactional enqueue](user-guide.md) requires a synchronous Psycopg
+Connection: move the whole business transaction into a thread. Sending through
+an independent pool is not atomic with your application's transaction.
+
+The development branch provides `await broker.enqueue_in_transaction_async(...)`
+and `await broker.enqueue_many_in_transaction_async(...)` on an active caller-owned
+Psycopg AsyncConnection. Business writes and publication use that same connection;
+commit exposes both and rollback cancels both. See the framework-independent
+[async transaction recipe](recipes.md#async-transactional-publishing-development).
+These methods are not available in published RC4. SQLAlchemy async inputs remain
+unsupported by the optional adapter.
 
 Async actors remain available through Dramatiq's AsyncIO middleware; that does
 not make PostgreSQL publication or result retrieval asynchronous.

@@ -13,7 +13,7 @@ from dramatiq.common import compute_backoff, current_millis, dq_name, q_name
 from dramatiq.errors import BrokerConnectionError
 from dramatiq.message import Message
 from dramatiq.results import Results
-from psycopg import Notify, sql
+from psycopg import AsyncConnection, Notify, sql
 from psycopg.pq import TransactionStatus
 from psycopg.types.json import Jsonb
 
@@ -162,6 +162,70 @@ class PostgresBroker(Broker):
         self.emit_after("enqueue", message, delay)
         return message
 
+    async def enqueue_in_transaction_async(self, message, *, connection, delay=None,
+                                           deduplication_key=None, deduplication_ttl=None):
+        """Publish on a caller-owned active AsyncConnection; never commit or retry.
+
+        Synchronous middleware hooks describe SQL execution, not external commit.
+        """
+        self._check_async_transaction(connection)
+        if deduplication_key is not None or deduplication_ttl is not None:
+            async with connection.transaction():
+                async with connection.cursor() as curs:
+                    returned, published = await self._enqueue_deduplicated_async(
+                        curs, message, delay, deduplication_key, deduplication_ttl)
+                if published:
+                    self.emit_after("enqueue", returned, delay)
+                return returned
+        message = self._prepare_enqueue(message, delay)
+        async with connection.cursor() as curs:
+            await curs.execute(self.queries.ENQUEUE, self._enqueue_params(message))
+        self.emit_after("enqueue", message, delay)
+        return message
+
+    async def enqueue_many_in_transaction_async(self, messages, *, connection, options=None):
+        """Publish an atomic batch under a savepoint in the caller's transaction."""
+        self._check_async_transaction(connection)
+        entries = self._batch_entries(messages, options)
+        if not entries:
+            return []
+        returned, published = [], []
+        async with connection.transaction():
+            async with connection.cursor() as curs:
+                if all(o.get("deduplication_key") is None and o.get("deduplication_ttl") is None
+                       for _, o in entries):
+                    for message, option in entries:
+                        delay = option.get("delay")
+                        message = self._prepare_enqueue(message, delay)
+                        returned.append(message)
+                        published.append((message, delay))
+                    await curs.executemany(self.queries.ENQUEUE,
+                                           [self._enqueue_params(m) for m in returned])
+                else:
+                    for message, option in entries:
+                        delay = option.get("delay")
+                        if option.get("deduplication_key") is not None or option.get("deduplication_ttl") is not None:
+                            message, inserted = await self._enqueue_deduplicated_async(
+                                curs, message, delay, option.get("deduplication_key"),
+                                option.get("deduplication_ttl"))
+                        else:
+                            message = self._prepare_enqueue(message, delay)
+                            await curs.execute(self.queries.ENQUEUE, self._enqueue_params(message))
+                            inserted = True
+                        returned.append(message)
+                        if inserted:
+                            published.append((message, delay))
+            for message, delay in published:
+                self.emit_after("enqueue", message, delay)
+        return returned
+
+    @staticmethod
+    def _check_async_transaction(connection):
+        if not isinstance(connection, AsyncConnection):
+            raise TypeError("async transactional enqueue requires a Psycopg AsyncConnection")
+        if connection.info.transaction_status != TransactionStatus.INTRANS:
+            raise ValueError("async transactional enqueue requires an active transaction")
+
     def enqueue_many(self, messages, *, options=None):
         """Atomically enqueue up to 1000 messages with aligned enqueue options."""
         entries = self._batch_entries(messages, options)
@@ -226,14 +290,13 @@ class PostgresBroker(Broker):
                     published.append((message, delay))
         return returned, published
 
-    def _enqueue_deduplicated(self, curs, message, delay, key, ttl):
+    def _deduplication_query(self, message, key, ttl):
         if not isinstance(key, str) or not key:
             raise ValueError("deduplication_key must be a nonempty string")
         if type(ttl) is not int or ttl <= 0:
             raise ValueError("deduplication_ttl must be positive integer milliseconds")
         table = sql.Identifier(self.queries.schema, self.queries.prefix + "deduplication")
-        queue = q_name(message.queue_name)
-        curs.execute(sql.SQL("""
+        query = sql.SQL("""
             INSERT INTO {} AS stored (queue_name, key, message_id, message, expires_at)
             VALUES (%s, %s, %s, %s, clock_timestamp() + %s * interval '1 millisecond')
             ON CONFLICT (queue_name, key) DO UPDATE SET
@@ -241,7 +304,14 @@ class PostgresBroker(Broker):
                 expires_at = EXCLUDED.expires_at
             WHERE stored.expires_at <= clock_timestamp()
             RETURNING message_id
-        """).format(table), (queue, key, message.message_id, Jsonb(tidy4json(message)), ttl))
+        """).format(table)
+        return table, query, (q_name(message.queue_name), key, message.message_id,
+                              Jsonb(tidy4json(message)), ttl)
+
+    def _enqueue_deduplicated(self, curs, message, delay, key, ttl):
+        table, query, params = self._deduplication_query(message, key, ttl)
+        queue = q_name(message.queue_name)
+        curs.execute(query, params)
         if curs.fetchone() is None:
             curs.execute(sql.SQL(
                 "SELECT message FROM {} WHERE queue_name = %s AND key = %s"
@@ -250,6 +320,23 @@ class PostgresBroker(Broker):
         message = self._prepare_enqueue(message, delay)
         self._write_enqueue(curs, message)
         curs.execute(sql.SQL(
+            "UPDATE {} SET message = %s WHERE queue_name = %s AND key = %s"
+        ).format(table), (Jsonb(tidy4json(message)), queue, key))
+        return message, True
+
+    async def _enqueue_deduplicated_async(self, curs, message, delay, key, ttl):
+        table, query, params = self._deduplication_query(message, key, ttl)
+        queue = q_name(message.queue_name)
+        await curs.execute(query, params)
+        if await curs.fetchone() is None:
+            await curs.execute(sql.SQL(
+                "SELECT message FROM {} WHERE queue_name = %s AND key = %s"
+            ).format(table), (queue, key))
+            row = await curs.fetchone()
+            return Message.decode(json.dumps(row[0]).encode()), False
+        message = self._prepare_enqueue(message, delay)
+        await curs.execute(self.queries.ENQUEUE, self._enqueue_params(message))
+        await curs.execute(sql.SQL(
             "UPDATE {} SET message = %s WHERE queue_name = %s AND key = %s"
         ).format(table), (Jsonb(tidy4json(message)), queue, key))
         return message, True

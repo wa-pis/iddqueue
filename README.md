@@ -108,7 +108,9 @@ Close broker-owned pools on shutdown; callers close pools they supply.
 
 The broker and result APIs are synchronous. Async actors use Dramatiq's AsyncIO
 middleware; FastAPI async endpoints offload publication to a thread.
-Transactional enqueue does not accept a Psycopg AsyncConnection.
+RC4 transactional enqueue requires a synchronous Psycopg connection.
+The development branch adds explicit awaitable single/batch methods for Psycopg
+AsyncConnection; see [transactional recipes](docs/recipes.md#async-transactional-publishing-development).
 
 Session-bound locks/listeners require persistent database sessions; PgBouncer
 transaction pooling is unsuitable. Namespace separation is not access control.

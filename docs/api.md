@@ -66,6 +66,17 @@ pool and url arguments have the same meaning and the same behaviour as for Postg
 
 `broker.enqueue_in_transaction(message, *, connection, delay=None)` requires a synchronous Psycopg 3 connection with an active transaction. It returns the enqueued message, including the delayed queue and eta when `delay` is supplied in milliseconds. An idle connection raises `ValueError`; database errors propagate without automatic retries.
 
+Development branch (not published RC4): `await broker.enqueue_in_transaction_async(message, *, connection, delay=None, deduplication_key=None, deduplication_ttl=None)`
+and `await broker.enqueue_many_in_transaction_async(messages, *, connection, options=None)`
+require a Psycopg 3 AsyncConnection already in an active transaction. Wrong input
+type raises TypeError; an inactive connection raises ValueError. They return a
+Message or ordered list with the existing delay/deduplication/batch-limit semantics.
+Deduplication and batch operations use a savepoint. Errors and cancellation
+propagate without retries or closing the connection; a failed single SQL statement
+can require caller rollback. Middleware hooks remain synchronous and do not signify
+external commit. No async SQLAlchemy adapter or async actor.send is implied.
+
+
 The caller owns commit, rollback and the connection. The task and its notification become visible only when the caller commits. A rollback removes both the task and the caller's business changes, provided they use the same PostgreSQL database. Enqueue middleware hooks describe the SQL operation, not the eventual commit of the external transaction.
 
 ## PostgreSQL coordination

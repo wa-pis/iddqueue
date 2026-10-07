@@ -33,3 +33,10 @@ PostgresRateLimiterBackend supports Dramatiq counters, window/bucket/concurrent 
 `iddqueue failed list/show` and `retry ID` inspect rejected tasks and start a fresh retry cycle; full payload is opt-in. Statistics include cancelled state. `attempt_history=True` adds diagnostic execution records; arguments/options/ results are omitted but exception text may contain application data. Incomplete records can mean running or crashed actors. Middleware failures can leave gaps: this is not an atomic audit log. Run history purge explicitly for retention.
 
 PostgresScheduler persists fixed intervals, polls due rows and atomically publishes/advances each occurrence. Multiple schedulers share work using row locks. Missed intervals coalesce into one task; no cron/calendar or full replay. Pausing a destination still allows publication. Disable preserves queued tasks. Examples, CLI flags and detailed limitations: [recipes](recipes.md) and [API Reference](api.md).
+
+## Async transaction input (development)
+
+The development branch adds explicit awaitable single/batch publication on a
+caller-owned Psycopg AsyncConnection. Published RC4 supports synchronous
+transaction input only. See the [async recipe](recipes.md#async-transactional-publishing-development)
+for ownership, cancellation and synchronous hook limits. Workers and results remain synchronous.
