@@ -6,6 +6,7 @@ from itertools import islice
 from queue import Empty, Queue
 from random import randint
 from textwrap import dedent
+from uuid import UUID
 
 from dramatiq.broker import Broker, Consumer, MessageProxy
 from dramatiq.common import compute_backoff, current_millis, dq_name, q_name
@@ -326,15 +327,25 @@ class PostgresConsumer(Consumer):
         # If we have some notifies, loop to find one todo.
         while self.notifies:
             notify = self.notifies.pop(0)
-            payload = json.loads(notify.payload)
-            if payload.get("scan"):
+            try:
+                payload = json.loads(notify.payload)
+                if not isinstance(payload, dict):
+                    continue
+                if payload.get("scan") is not True:
+                    message_id = payload.get("message_id")
+                    if not isinstance(message_id, str):
+                        continue
+                    message_id = str(UUID(message_id))
+            except (ValueError, RecursionError):
+                continue
+            if payload.get("scan") is True:
                 self.notifies += self.fetch_pending_notifies()
                 continue
             # Legacy full payloads are hints too; claim returns durable data.
-            message = Message(self.queue_name, "", (), {}, {}, message_id=payload["message_id"])
+            message = Message(self.queue_name, "", (), {}, {}, message_id=message_id)
             claimed = self.consume_one(message)
             if claimed:
-                self.in_processing.add(claimed.message_id)
+                self.in_processing.add(str(UUID(str(claimed.message_id))))
                 return MessageProxy(claimed)
             else:
                 logger.debug(
@@ -353,13 +364,13 @@ class PostgresConsumer(Consumer):
         # This function is executed in worker thread!
         if getattr(message, "_pg_cancelled", False):
             self.unlock_q.put_nowait(message)
-            self.in_processing.remove(message.message_id)
+            self.in_processing.remove(str(UUID(str(message.message_id))))
             return
         if getattr(message, "_pg_paused", False):
             with transaction(self.pool) as curs:
                 curs.execute(self.queries.DEFER_PAUSED, (message.message_id, message.queue_name))
             self.unlock_q.put_nowait(message)
-            self.in_processing.remove(message.message_id)
+            self.in_processing.remove(str(UUID(str(message.message_id))))
             return
 
         with transaction(self.pool) as curs:
@@ -380,7 +391,7 @@ class PostgresConsumer(Consumer):
                 ),
             )
         self.unlock_q.put_nowait(message)
-        self.in_processing.remove(message.message_id)
+        self.in_processing.remove(str(UUID(str(message.message_id))))
 
     @raise_connection_error
     def auto_purge(self):
@@ -442,7 +453,7 @@ class PostgresConsumer(Consumer):
 
     @raise_connection_error
     def consume_one(self, message):
-        if message.message_id in self.in_processing:
+        if str(UUID(str(message.message_id))) in self.in_processing:
             logger.debug("%s already consumed by self.", message.message_id)
             return
 
@@ -487,7 +498,7 @@ class PostgresConsumer(Consumer):
                 ),
             )
         self.unlock_q.put_nowait(message)
-        self.in_processing.remove(message.message_id)
+        self.in_processing.remove(str(UUID(str(message.message_id))))
 
     @raise_connection_error
     def fetch_pending_notifies(self):
@@ -552,7 +563,7 @@ _max_positive_int = 2**63
 def message_lock(message, *, schema="dramatiq", prefix=""):
     # create sha256 hash from input and create a 64 bit int from it, using
     # 16 hex char. any 16 char range is ok. it takes the center ones
-    global_id = message.queue_name + str(message.message_id)
+    global_id = message.queue_name + str(UUID(str(message.message_id)))
     if schema != "dramatiq" or prefix:
         global_id = storage_namespace(schema, prefix) + global_id
     hex = sha256(global_id.encode("utf-8")).hexdigest()

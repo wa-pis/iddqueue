@@ -106,3 +106,66 @@ def test_completed_locks_release_with_backlog(area, reject, saturated):
     with psycopg.connect("", autocommit=True) as conn:
         assert conn.execute("SELECT pg_try_advisory_lock(%s)",
                             (message_lock(one, schema=broker.queries.schema),)).fetchone()[0]
+
+
+@pytest.mark.parametrize("payload", ["{", "null", "[]", "1", '"hint"', "{}",
+                                     '{"message_id":null}', '{"message_id":1}',
+                                     '{"message_id":[]}', '{"message_id":"invalid"}',
+                                     '{"scan":"true"}'])
+def test_malformed_notifications_preserve_sessions_and_locks(area, payload, monkeypatch):
+    broker, consumer = area
+    c = consumer()
+    one, two = task(), task()
+    broker.enqueue(one)
+    c.notifies = [hint(one)]
+    assert next(c).message_id == one.message_id
+    sessions = c._listen_conn, c._consume_conn
+    role = "sender_" + uuid4().hex[:10]
+    with psycopg.connect("", autocommit=True) as admin:
+        admin.execute(sql.SQL("CREATE ROLE {} NOLOGIN").format(sql.Identifier(role)))
+        try:
+            with psycopg.connect("", autocommit=True) as sender:
+                sender.execute(sql.SQL("SET ROLE {}").format(sql.Identifier(role)))
+                assert not sender.execute("SELECT has_schema_privilege(current_user, %s, 'USAGE')",
+                                          (broker.queries.schema,)).fetchone()[0]
+                sender.execute("SELECT pg_notify(%s, %s)",
+                               (broker.queries.channel("jobs", "enqueue"), payload))
+            c.poll_for_notify()
+            assert any(n.payload == payload for n in c.notifies)
+            # Force legitimate control through a full hint, not periodic scanning.
+            monkeypatch.setattr("iddqueue.broker.randint", lambda *args: 1)
+            broker.enqueue(two)
+            c.notifies.append(hint(two))
+            assert next(c).message_id == two.message_id
+            assert (c._listen_conn, c._consume_conn) == sessions
+            assert not admin.execute("SELECT pg_try_advisory_lock(%s)",
+                                    (message_lock(one, schema=broker.queries.schema),)).fetchone()[0]
+        finally:
+            admin.execute(sql.SQL("DROP ROLE {}").format(sql.Identifier(role)))
+
+
+@pytest.mark.parametrize("alternate_durable", [False, True])
+def test_scan_and_alternate_uuid_hints(area, alternate_durable):
+    broker, consumer = area
+    c = consumer()
+    one, two = task(), task()
+    if alternate_durable:
+        one = one.copy(message_id=one.message_id.upper())
+    broker.enqueue(one)
+    c.notifies = [Notify(pid=0, channel="unused", payload=json.dumps(
+        {"message_id": "{" + one.message_id.upper() + "}"}))]
+    assert next(c).message_id == one.message_id
+    broker.enqueue(two)
+    c.notifies = [Notify(pid=0, channel="unused", payload='{"scan":true}')]
+    assert next(c).message_id == two.message_id
+    with psycopg.connect("", autocommit=True) as conn:
+        assert not conn.execute("SELECT pg_try_advisory_lock(%s)",
+                                (message_lock(one, schema=broker.queries.schema),)).fetchone()[0]
+
+    c.notifies = [hint(one, full=False)]
+    assert next(c) is None
+    c.ack(one)
+    c.purge_locks()
+    with psycopg.connect("", autocommit=True) as conn:
+        assert conn.execute("SELECT pg_try_advisory_lock(%s)",
+                            (message_lock(one, schema=broker.queries.schema),)).fetchone()[0]
