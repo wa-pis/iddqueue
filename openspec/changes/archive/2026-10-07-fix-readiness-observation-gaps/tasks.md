@@ -9,5 +9,5 @@
 
 ## 3. Validation
 
-- [ ] 3.1 Full unit/func dedicatedPG, Ruff/lock/docs/OpenSpec, signed commit/push, actual6/6 CI.
-- [ ] 3.2 Записать evidence и архивировать после выполнения.
+- [x] 3.1 Full unit/func dedicatedPG, Ruff/lock/docs/OpenSpec, signed commit/push, actual6/6 CI.
+- [x] 3.2 Записать evidence и архивировать после выполнения.

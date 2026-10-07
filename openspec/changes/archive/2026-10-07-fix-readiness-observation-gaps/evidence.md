@@ -7,3 +7,5 @@ Installed development-wheel runtime stand:160billingtasks8.59s, SIGKILL whole tw
 Tests теперь deterministic retry marker/pg_failure, message-specific execution timestamps/ETA и bounded observer deadline2s после locks. Full188passed61.47s на dedicatedPG. Repeat checks ещё ожидаются. Ruff/lock/strictdocs passed; OpenSpec/remoteCI/архив pending.
 
 Пять отдельных последовательных повторов retry/delay/lock-release: каждый3passed,9.48/9.53/9.50/9.49/9.47s. Stand завершён SIGTERM, CONNECTIONS_AFTER_CLOSE0, temporaryschema удалена. Full188passed61.47s; strict OpenSpec22/22passed. CI ещё pending.
+
+Signed227df9f pushmain, Tests37555126713actual6/6success, Documentation37555126707success. RC4 release gate повторно188passed59.58s; installed base/monitoring/sqlalchemy profiles/quickstart/build/LICENSE passed.
