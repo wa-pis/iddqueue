@@ -4,7 +4,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: publish-0.13.0rc3
+  group: publish-0.13.0rc4
   cancel-in-progress: false
 jobs:
   publish:
@@ -26,13 +26,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           mkdir artifacts
-          gh release view v0.13.0rc3 --repo wa-pis/iddqueue --json targetCommitish --jq .targetCommitish | \
-            awk '$0 != "911ca1a3a197b1745af15f6a4bf399cd470ce969" { exit 1 }'
-          gh release download v0.13.0rc3 --repo wa-pis/iddqueue --dir artifacts \
-            --pattern 'iddqueue-0.13.0rc3-py3-none-any.whl' --pattern 'iddqueue-0.13.0rc3.tar.gz'
+          gh release view v0.13.0rc4 --repo wa-pis/iddqueue --json targetCommitish --jq .targetCommitish | \
+            awk '$0 != "ca68594f035b46a4b21e0a8a9ae4ad50da6c6d4f" { exit 1 }'
+          gh release download v0.13.0rc4 --repo wa-pis/iddqueue --dir artifacts \
+            --pattern 'iddqueue-0.13.0rc4-py3-none-any.whl' --pattern 'iddqueue-0.13.0rc4.tar.gz'
           cd artifacts
           printf '%s\n' \
-            '25e56080f3871e9fa0553be67b3b21d4ace8b363abe42feab45f8f1363520bf9  iddqueue-0.13.0rc3-py3-none-any.whl' \
-            '3bcad9cc15030b3baedc40ef0bcf109d79d3a781f88a5f650f7d9129a540013a  iddqueue-0.13.0rc3.tar.gz' | sha256sum --check --strict
+            '1fd710c4c8a425c736a70812b787ec9145a5e7be45633effc38aa6f9c0fa8938  iddqueue-0.13.0rc4-py3-none-any.whl' \
+            '25a03c41578af2b74a1c8da6f04d7d843152f749e6cbe89e7ad60e9135291f8b  iddqueue-0.13.0rc4.tar.gz' | sha256sum --check --strict
       - name: Publish exact candidate with OIDC
-        run: uv publish --trusted-publishing always artifacts/iddqueue-0.13.0rc3-py3-none-any.whl artifacts/iddqueue-0.13.0rc3.tar.gz
+        run: uv publish --trusted-publishing always artifacts/iddqueue-0.13.0rc4-py3-none-any.whl artifacts/iddqueue-0.13.0rc4.tar.gz

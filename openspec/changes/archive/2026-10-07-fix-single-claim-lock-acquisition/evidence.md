@@ -9,3 +9,5 @@ SQL uncorrelated scalar subquery одинраз наstatement; тотжепар�
 FinalPG18 EXPLAIN: InitPlan1/Result, One-Time Filter:(InitPlan1).col1 и SeqScan rowfilter без lockfunction; послеACK extra pg_advisory_unlock False. Полный scripts/check_release.sh exit0 наPG14.20/Python3.13.14:190passed58.58s; Ruff/lock/pipcheck/docsstrict/OpenSpec/build/LICENSE/base+monitoring+sqlalchemy installed/quickstart passed. Это новый gate, прежние188pass/hashcandidateисторические.
 
 Signed6eb5aac pushmain. Isolated installedRC4wheel onPG18 additionally confirms forcedSeqScan/singleACKrelease, malformedNOTIFYsame sessions, SQLAlchemyatomicity and domainResults. Source/README/metadata bytes match assets. CI37556241736 pending.
+
+Finalsignedcandidateca68594f035b46a4b21e0a8a9ae4ad50da6c6d4f: actualTests37557035497firstattempt6/6success(Python3.10/3.13/3.14xPG14/18), Documentation37557035482success. RuntimeSQLunchangedfrom6eb5aac, helperfixcoversunrelatedcrashoracle. Finalhashes1fd710c4wheel/25a03c41sdist verifiedandfixedpublishworkflowtargetca68594 beforepublication.

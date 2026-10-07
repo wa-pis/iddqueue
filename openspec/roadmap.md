@@ -185,3 +185,7 @@ Readiness verification завершена и архивирована:175tests57
 ## RC4 security remediation — 2026-10-07
 
 Standard Codex Security review commit28044df: medium malformedNOTIFY/lowlocalComposebinding; runtime/scriptsCI/executabletests/examples reviewed, prose/dependencyfeeds partial. [fix-malformed-notification-handling](changes/archive/2026-10-07-fix-malformed-notification-handling/proposal.md) signed190932d Tests37553480914actual6/6/Documentation37553480856success; [restrict-local-postgres-example](changes/archive/2026-10-07-restrict-local-postgres-example/proposal.md) signedde9f077 Tests37554835896actual6/6/Documentation37554835914success. Full188tests61.47s, restricted-role malformed regression and alternate UUID ACKlocks confirmed. Spec synced/security changes archived. [publish-rc4](changes/publish-rc4/proposal.md) authorized/pending; RC3 assets immutable.
+
+## RC4 release gate fixes — 2026-10-07
+
+[fix-single-claim-lock-acquisition](changes/archive/2026-10-07-fix-single-claim-lock-acquisition/proposal.md): SeqScan reentrant advisory-lock leak reproduced onPG14/18; one-time scalar InitPlanfix and ACK/NACKregression. Signed6eb5aac. [fix-crash-test-message-correlation](changes/archive/2026-10-07-fix-crash-test-message-correlation/proposal.md): controlledstarted/readygate and task-specificresult/filteredACK, signedca68594. Final191tests57.97s, actualTests37557035497firstattempt6/6, Documentation37557035482success; earliercandidateCI failurespreservedinevidence. Bothchangesarchived. RC4tag/publicationpending.
